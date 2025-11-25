@@ -33,12 +33,4 @@ Join the [SwarmKit Developers Discord](https://discord.gg/Q36D8dGyNF) to connect
 
 ## License
 
-Proprietary and Confidential
-
-Copyright (c) 2025 Swarmlink, Inc. All rights reserved.
-
-This software is licensed under proprietary terms. See the [LICENSE](./LICENSE) file for full terms and conditions.
-
-Unauthorized copying, modification, distribution, or use is strictly prohibited.
-
-For licensing inquiries: brandomagnani@swarmlink.ai
+See the [LICENSE](./LICENSE) file for full terms and conditions.
