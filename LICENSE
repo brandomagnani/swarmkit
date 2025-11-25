@@ -1,19 +1,26 @@
-PROPRIETARY LICENSE
+SWARMKIT PROPRIETARY SOFTWARE LICENSE
 
 Copyright (c) 2025 Swarmlink, Inc. All rights reserved.
 
-This software and associated documentation files (the "Software") are proprietary 
-and confidential. Unauthorized copying, modification, distribution, or use of this 
-Software, via any medium, is strictly prohibited without express written permission.
+BETA EVALUATION LICENSE
 
-USAGE RIGHTS:
-Licensed users may use the compiled/distributed artifacts of this Software solely 
-for their internal business purposes.
+This repository contains documentation and cookbooks for SwarmKit.
+The SwarmKit SDK is provided for evaluation and beta testing purposes only.
 
-RESTRICTIONS:
-- No access to source code
-- No modification or derivative works
-- No redistribution
-- No reverse engineering
+PERMITTED:
+- Install SwarmKit via npm/PyPI for evaluation and development
+- Build applications using the SwarmKit SDK during the beta period
+- Deploy applications using the SwarmKit SDK to production
+- Use the documentation and cookbooks in this repository
+
+PROHIBITED:
+- Redistribute the SwarmKit SDK itself
+- Reverse engineer, decompile, or extract source code from the SDK
+- Create derivative works of the SwarmKit SDK
+- Use SwarmKit in competing products or services
+
+NO WARRANTY. THIS SOFTWARE IS PROVIDED "AS IS" FOR BETA EVALUATION.
+
+This license may be revised upon general availability.
 
 For licensing inquiries, contact: brandomagnani@swarmlink.ai
