@@ -27,6 +27,7 @@ SwarmKit lets you run and orchestrate terminal-based AI agents in secure sandbox
 
 - [TypeScript SDK](./docs/typescript-sdk.md)
 - [Python SDK](./docs/python-sdk.md)
+- [Cookbooks](./cookbooks)
 
 ## Reporting Bugs
 
