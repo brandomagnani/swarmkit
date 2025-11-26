@@ -24,6 +24,7 @@ const swarmkit = new SwarmKit()
         apiKey: process.env.SWARMKIT_API_KEY!
     })
     .withSandbox(sandbox)
+    .withSessionTagPrefix("my-app") // optional tag for the agent session
     .withSystemPrompt("You are a helpful coding assistant.")
     .withMcpServers({
         "exa": {
@@ -43,6 +44,8 @@ console.log(result.stdout);
 // Clean up
 await swarmkit.kill();
 ```
+
+**Tracing:** Every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces)—no extra setup needed. Optionally use `withSessionTagPrefix()` to label your traces for easy filtering.
 
 ---
 

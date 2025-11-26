@@ -24,6 +24,7 @@ swarmkit = SwarmKit(
         api_key=os.getenv('SWARMKIT_API_KEY')
     ),
     sandbox=sandbox,
+    session_tag_prefix='my-agent',  # optional tag for the agent session
     system_prompt='You are a helpful coding assistant.',
     mcp_servers={
         'exa': {
@@ -42,6 +43,8 @@ print(result.stdout)
 # Clean up
 await swarmkit.kill()
 ```
+
+**Tracing:** Every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces)—no extra setup needed. Optionally use `session_tag_prefix` to label your traces for easy filtering.
 
 ---
 
