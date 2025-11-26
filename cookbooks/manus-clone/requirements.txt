@@ -1,2 +1,2 @@
-swarmkit
+swarmkit  # Use published version
 python-dotenv

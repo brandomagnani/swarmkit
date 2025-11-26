@@ -18,7 +18,7 @@ load_dotenv()  # Load .env file
 # ─────────────────────────────────────────────────────────────
 
 AGENT = AgentConfig(
-    type="codex",                              # claude, codex, gemini,
+    type="acp-codex",                              # claude, codex, gemini,
     api_key=os.getenv("SWARMKIT_API_KEY"),
     # model="gpt-5.1-codex-max",                # optional: override default model
 )
@@ -50,7 +50,7 @@ agent = SwarmKit(
 # ─────────────────────────────────────────────────────────────
 
 async def main():
-    agent.on("stdout", lambda x: print(x + ("\n" if x.rstrip().endswith("}") else ""), end=""))
+    agent.on("stdout", lambda x: print(x, end=""))
 
     print("\n🤖 Agent ready. Ask anything.\n")
 
