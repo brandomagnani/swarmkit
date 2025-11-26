@@ -2,24 +2,26 @@
 
 SwarmKit lets you run and orchestrate terminal-based AI agents in secure sandboxes with built-in observability.
 
-**[REQUEST ACCESS](https://dashboard.swarmlink.ai/request-access)**
-
 ## Get Started
 
-**TypeScript:**
-```bash
-npm install @swarmkit/sdk @swarmkit/e2b
-```
+1. Get your **SwarmKit API key** at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/) (new users: [request access](https://dashboard.swarmlink.ai/request-access) first)
 
-**Python:**
-```bash
-pip install swarmkit
-```
+2. Get an **E2B API key** at [e2b.dev](https://e2b.dev) for sandbox execution
 
-Get your API keys:
-- **SwarmKit API key** - Sign up at https://dashboard.swarmlink.ai/request-access
-- **E2B API key** - Sign up at https://e2b.dev/sign-up
+3. Install the SDK:
 
+   **TypeScript:**
+   ```bash
+   npm install @swarmkit/sdk @swarmkit/e2b
+   ```
+
+   **Python:**
+   ```bash
+   pip install swarmkit
+   ```
+   **Note:** Requires [Node.js 18+](https://nodejs.org/) (the Python SDK uses a lightweight Node.js bridge).
+
+4. Check out the [official documentation](https://github.com/brandomagnani/swarmkit/tree/main/docs) and [cookbooks](https://github.com/brandomagnani/swarmkit/tree/main/cookbooks) to start shipping with SwarmKit!
 
 ## Documentation
 
