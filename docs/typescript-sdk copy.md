@@ -146,7 +146,7 @@ type AgentResponse = {
 };
 ```
 
-### 4.1 run
+### 4.1 `run`
 
 Runs the agent with a given prompt. 
 
@@ -164,7 +164,7 @@ console.log(result.stdout);
 
 - Calling `run()` multiple times maintains the agent context / history. 
 
-### 4.2 executeCommand
+### 4.2 `executeCommand`
 
 Runs a direct shell command in the sandbox working directory.
 
@@ -205,7 +205,7 @@ swarmkit.on("error", message => console.error("[error]", message));
 
 All listeners are optional; if omitted the agent still runs and you can inspect the return value after completion.
 
-### 4.4 uploadContext / uploadFiles
+### 4.4 `uploadContext` / `uploadFiles`
 
 Upload files to the sandbox at runtime (immediate upload).
 
@@ -230,7 +230,7 @@ await swarmkit.uploadFiles({
 
 > **Note:** The setup methods `withContext()` and `withFiles()` use the same format, but upload on first `run()` instead of immediately.
 
-### 4.5 getOutputFiles
+### 4.5 `getOutputFiles`
 
 Fetch new files from `/output` after a run/command.  Files created before the last operation are filtered out.
 
@@ -263,7 +263,7 @@ await swarmkit.setSession("existing-sandbox-id"); // Sets sandbox ID; reconnecti
 
 `withSession("sandbox-id")` is a builder method equivalent to `setSession()` - use it during initialization to reconnect to an existing sandbox.
 
-### 4.7 getHost
+### 4.7 `getHost`
 
 Expose a forwarded port:
 

@@ -84,10 +84,16 @@ swarmkit = SwarmKit(
     # (optional) Prefix for observability logs
     session_tag_prefix='my-agent',
 
-    # (optional) Files uploaded to workspace/context/ on first run
-    context_files=[
-        {'path': 'docs/readme.txt', 'data': 'User provided context...'},
-    ],
+    # (optional) Uploads to {workingDir}/context/ on first run
+    context={
+        'docs/readme.txt': 'User provided context...',
+        'data.json': '{"key": "value"}',
+    },
+
+    # (optional) Uploads to {workingDir}/ on first run
+    files={
+        'scripts/setup.sh': '#!/bin/bash\necho hello',
+    },
 
     # (optional) MCP servers for agent tools
     mcp_servers={
@@ -102,7 +108,7 @@ swarmkit = SwarmKit(
 
 **Note:**
 - The sandbox is created on the first `run()` or `execute_command()` call (see below).
-- Context files, MCP servers, and system prompt are set up once on the first call.
+- Context files, workspace files, MCP servers, and system prompt are set up once on the first call.
 - Using `sandbox_id` parameter to reconnect skips setup since the sandbox already exists.
 
 ---
@@ -136,7 +142,7 @@ class ExecuteResult:
     stderr: str
 ```
 
-### 4.1 `run`
+### 4.1 run
 
 Runs the agent with a given prompt.
 
@@ -154,7 +160,7 @@ print(result.stdout)
 
 - Calling `run()` multiple times maintains the agent context / history.
 
-### 4.2 `execute_command`
+### 4.2 execute_command
 
 Runs a direct shell command in the sandbox working directory.
 
@@ -217,22 +223,32 @@ result = await task
 
 All listeners are optional; if omitted the agent still runs and you can inspect the return value after completion.
 
-### 4.4 `upload_file`
+### 4.4 upload_context / upload_files
 
-Write files to the sandbox. Accepts `str` or `bytes`. You can send a single path+content pair or a list.
+Upload files to the sandbox at runtime (immediate upload).
 
 ```python
-await swarmkit.upload_file('/home/user/workspace/scripts/setup.sh', '#!/bin/bash\necho hi\n')
+await swarmkit.upload_context({
+    'spec.json': json.dumps(spec),
+    'logo.png': logo_bytes,
+})
 
-await swarmkit.upload_file([
-    {'path': '/home/user/workspace/context/spec.json', 'data': json.dumps(spec)},
-    {'path': '/home/user/workspace/context/logo.png', 'data': logo_bytes},
-])
+await swarmkit.upload_files({
+    'scripts/setup.sh': '#!/bin/bash\necho hi\n',
+    'data/input.csv': csv_data,
+})
 ```
 
-**Note:** Unlike `context_files` which auto-prefixes relative paths to `context/`, `upload_file()` uses paths exactly as given.
+| Method | Destination | Default Path |
+|--------|-------------|--------------|
+| `upload_context()` | `{workingDir}/context/{path}` | `/home/user/workspace/context/` |
+| `upload_files()` | `{workingDir}/{path}` | `/home/user/workspace/` |
 
-### 4.5 `get_output_files`
+**Format:** `{"path": content}` — key is relative path, value is `str` or `bytes`.
+
+> **Note:** The constructor parameters `context` and `files` use the same format, but upload on first `run()` instead of immediately.
+
+### 4.5 get_output_files
 
 Fetch new files from `/output` after a run/command. Files created before the last operation are filtered out.
 
@@ -264,7 +280,7 @@ await swarmkit.set_session('existing-sandbox-id')  # Sets sandbox ID; reconnecti
 
 `sandbox_id` constructor parameter is equivalent to `set_session()` - use it during initialization to reconnect to an existing sandbox.
 
-### 4.7 `get_host`
+### 4.7 get_host
 
 Expose a forwarded port:
 
@@ -289,10 +305,10 @@ Calling `run` or `execute_command` for the first time provisions the workspace:
 /home/user/workspace/
     ├── output/    # Final artifacts (returned to caller)
     ├── scripts/   # Generated code
-    ├── context/   # Input files from context_files
+    ├── context/   # Input files from context
     └── temp/      # Scratch space
 ```
-Relative context file paths are automatically prefixed with `{working_directory}/context/`. Provide absolute paths if you need to write elsewhere.
+Files passed to `context` are uploaded to `context/`. Files passed to `files` are uploaded relative to the working directory.
 
 SwarmKit also writes a default system prompt:
 
@@ -323,7 +339,7 @@ Ideal for coding applications (when working with repositories).
 SwarmKit(..., workspace_mode='swe')
 ```
 
-SWE mode skips directory scaffolding and does **not** prepend the workspace instructions above—useful when targeting an existing repository layout. All other features (`system_prompt`, `context_files`, etc.) continue to work normally.
+SWE mode skips directory scaffolding and does **not** prepend the workspace instructions above—useful when targeting an existing repository layout. All other features (`system_prompt`, `context`, `files`, etc.) continue to work normally.
 
 
 ---
@@ -440,7 +456,7 @@ Additionally, every run and command is logged locally to structured JSON lines u
 {tag}_{provider}_{sandboxId}_{agent}_{timestamp}.jsonl
 ```
 
-- `{tag}` – `my-prefix-` + 8 random hex characters (e.g. `my-prefix-a1b2c3d4`)
+- `{tag}` – `my-prefix-` + 16 random hex characters (e.g. `my-prefix-a1b2c3d4e5f6g7h8`)
 - `{provider}` – the sandbox provider (e.g. `e2b`)
 - `{sandboxId}` – the active sandbox ID
 - `{agent}` – the agent type (`codex`, `acp-qwen`, …)
