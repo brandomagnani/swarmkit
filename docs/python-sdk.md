@@ -16,7 +16,7 @@ pip install swarmkit
 
 Get your API keys:
 - **SwarmKit API key** - Sign up at https://dashboard.swarmlink.ai/request-access
-- **E2B API key** - Sign up at https://e2b.dev
+- **E2B API key** - Sign up at https://e2b.dev/sign-up
 
 **Note:** Requires [Node.js 18+](https://nodejs.org/) (the SDK uses a lightweight Node.js bridge).
 
@@ -514,17 +514,3 @@ All three are optional and can be mixed as needed.
 Everything above delegates to the TypeScript SDK implementation via a JSON-RPC bridge.  The Python SDK provides a Pythonic wrapper with type hints, dataclasses, and async patterns.
 
 Happy shipping!
-
----
-
-## License
-
-Proprietary and Confidential
-
-Copyright (c) 2025 Swarmlink, Inc. All rights reserved.
-
-This software is licensed under proprietary terms. See the [LICENSE](../../LICENSE) file for full terms and conditions.
-
-Unauthorized copying, modification, distribution, or use is strictly prohibited.
-
-For licensing inquiries: brandomagnani@swarmlink.ai

@@ -4,14 +4,12 @@ Copyright (c) 2025 Swarmlink, Inc. All rights reserved.
 
 BETA EVALUATION LICENSE
 
-This repository contains documentation and cookbooks for SwarmKit.
 The SwarmKit SDK is provided for evaluation and beta testing purposes only.
 
 PERMITTED:
 - Install SwarmKit via npm/PyPI for evaluation and development
 - Build applications using the SwarmKit SDK during the beta period
 - Deploy applications using the SwarmKit SDK to production
-- Use the documentation and cookbooks in this repository
 
 PROHIBITED:
 - Redistribute the SwarmKit SDK itself

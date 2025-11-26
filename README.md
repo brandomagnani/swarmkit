@@ -18,7 +18,7 @@ pip install swarmkit
 
 Get your API keys:
 - **SwarmKit API key** - Sign up at https://dashboard.swarmlink.ai/request-access
-- **E2B API key** - Sign up at https://e2b.dev
+- **E2B API key** - Sign up at https://e2b.dev/sign-up
 
 
 ## Documentation
