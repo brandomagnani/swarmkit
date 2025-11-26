@@ -36,7 +36,16 @@ if os.getenv("EXA_API_KEY"):                    # optional: web search
         "env": {"EXA_API_KEY": os.getenv("EXA_API_KEY")}
     }
 
-agent = SwarmKit(config=AGENT, sandbox=SANDBOX, mcp_servers=MCP_SERVERS)
+SYSTEM_PROMPT = """You are Manus, a powerful autonomous AI agent.
+You can execute code, browse the web, manage files, and solve complex tasks."""
+
+agent = SwarmKit(
+    config=AGENT,
+    sandbox=SANDBOX,
+    system_prompt=SYSTEM_PROMPT,
+    mcp_servers=MCP_SERVERS,
+    session_tag_prefix="manus-clone",
+)
 
 # ─────────────────────────────────────────────────────────────
 
