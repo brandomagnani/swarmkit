@@ -1,3 +1,2 @@
-# swarmkit  # Use local version for testing
--e /Users/ildebrandomagnani/MANUS-API/ai-terminal/packages/sdk-py
+swarmkit
 python-dotenv

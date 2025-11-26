@@ -1,6 +1,6 @@
 # Manus Clone
 
-Build your own Manus in 50 lines. An autonomous AI agent in your terminal.
+Build your own Manus in a few lines of code. An autonomous AI agent in your terminal.
 
 ## Setup
 
