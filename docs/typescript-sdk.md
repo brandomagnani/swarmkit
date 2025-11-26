@@ -226,7 +226,7 @@ await swarmkit.uploadFiles({
 | `uploadContext()` | `{workingDir}/context/{path}` | `/home/user/workspace/context/` |
 | `uploadFiles()` | `{workingDir}/{path}` | `/home/user/workspace/` |
 
-**Format:** `{ "path": content }` — key is relative path, value is `string | Buffer | ArrayBuffer`.
+**Format:** `{ "path": content }` — key is relative path, value is `string | Buffer | ArrayBuffer | Uint8Array`.
 
 > **Note:** The setup methods `withContext()` and `withFiles()` use the same format, but upload on first `run()` instead of immediately.
 
@@ -240,8 +240,8 @@ for (const file of files) {
   if (typeof file.content === "string") {
     console.log("text file:", file.path);
   } else {
-    // Buffer | ArrayBuffer
-    await fs.promises.writeFile(localPath(file.name), Buffer.from(file.content));
+    // Buffer | ArrayBuffer | Uint8Array
+    await fs.promises.writeFile(localPath(file.name), Buffer.from(file.content as ArrayBuffer));
   }
 }
 ```
