@@ -51,7 +51,7 @@ for (const file of files) {
 await swarmkit.kill();
 ```
 
-**Tracing:** Every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces)—no extra setup needed. Optionally use `withSessionTagPrefix()` to label your traces for easy filtering.
+- **Tracing:** Every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces)—no extra setup needed. Optionally use `withSessionTagPrefix()` to label your agent session for easy filtering.
 
 ---
 
