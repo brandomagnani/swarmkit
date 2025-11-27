@@ -18,9 +18,9 @@ load_dotenv()  # Load .env file
 # ─────────────────────────────────────────────────────────────
 
 AGENT = AgentConfig(
-    type="acp-codex",                              # claude, codex, gemini,
+    type="gemini",                              # claude, codex, gemini,
     api_key=os.getenv("SWARMKIT_API_KEY"),
-    # model="gpt-5.1-codex-max",                # optional: override default model
+    model="gemini-3-pro-preview",             # optional: override default model
 )
 
 SANDBOX = E2BProvider(

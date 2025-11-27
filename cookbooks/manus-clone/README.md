@@ -20,7 +20,7 @@ source .venv/bin/activate
 python manus.py
 ```
 
-Start chatting with Manus and check the traces at https://dashboard.swarmlink.ai/traces
+Ask Manus anything and check the traces at https://dashboard.swarmlink.ai/traces.
 
 ## What it does
 
