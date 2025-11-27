@@ -2,7 +2,9 @@
 """
 Manus Clone
 -----------
-Build your own Manus in a few lines of code. An autonomous AI agent in your terminal.
+Build your own Manus in a few lines of code. 
+A sandboxed AI agent in your terminal that can think, 
+execute code, browse the web, read / edit files, and solve complex tasks.
 
 Run: python manus.py
 """
