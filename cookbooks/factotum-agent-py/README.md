@@ -1,7 +1,8 @@
 # Factotum Agent (Python)
 
-An interactive chat with a sandboxed AI agent that can think, execute code, browse the web, read / edit files, and solve complex tasks.
-Ask for anything—any files the agent creates are automatically downloaded to your local `output/` folder.
+- An interactive chat with a sandboxed AI agent that can think, execute code, browse the web, read / edit files, and solve complex tasks.
+- Ask for anything—any files the agent creates are automatically downloaded to your local `output/` folder.
+- Check traces at https://dashboard.swarmlink.ai/traces. Type `/quit` to exit.
 
 ## Setup
 
@@ -20,8 +21,6 @@ cp .env.example .env
 source .venv/bin/activate
 python factotum.py
 ```
-
-Ask anything and check the traces at https://dashboard.swarmlink.ai/traces. Type `/quit` to exit.
 
 ## What it does
 
