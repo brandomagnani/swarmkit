@@ -12,7 +12,7 @@ npm install
 cp .env.example .env
 ```
 
-- Edit `.env` with your API keys: `SWARMKIT_API_KEY`, `E2B_API_KEY`, `EXA_API_KEY` (optional)
+- Edit `.env` with your API keys: `SWARMKIT_API_KEY` ([swarmlink.ai](https://swarmlink.ai)), `E2B_API_KEY` ([e2b.dev](https://e2b.dev)), `EXA_API_KEY` ([exa.ai](https://exa.ai), optional)
 
 ## Run
 
