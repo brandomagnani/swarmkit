@@ -54,6 +54,7 @@ async function main() {
     const prompt = (await ask("\nyou: ")).trim();
     if (!prompt) continue;
     if (["/quit", "/exit", "/q"].includes(prompt)) {
+      await agent.kill();
       console.log("\n👋 Goodbye");
       process.exit(0);
     }
@@ -71,4 +72,8 @@ async function main() {
 
 mkdirSync("output", { recursive: true });
 main().catch(console.error);
-process.on("SIGINT", () => (console.log("\n\n👋 Goodbye"), process.exit(0)));
+process.on("SIGINT", async () => {
+  await agent.kill();
+  console.log("\n\n👋 Goodbye");
+  process.exit(0);
+});

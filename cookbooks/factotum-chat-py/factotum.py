@@ -60,6 +60,7 @@ async def main():
         if not prompt:
             continue
         if prompt in ("/quit", "/exit", "/q"):
+            await agent.kill()
             print("\n👋 Goodbye")
             break
 
@@ -73,9 +74,13 @@ async def main():
                 out.write(content)
             print(f"\n📄 Saved: {path}")
 
+async def shutdown():
+    await agent.kill()
+    print("\n\n👋 Goodbye")
+
 if __name__ == "__main__":
     os.makedirs("output", exist_ok=True)
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n\n👋 Goodbye")
+        asyncio.run(shutdown())
