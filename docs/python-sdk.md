@@ -63,7 +63,7 @@ swarmkit = SwarmKit(
         type='codex',
         api_key=os.getenv('SWARMKIT_API_KEY'),
         model='gpt-5.1-codex',               # (optional) Uses default if omitted
-        reasoning_effort='medium',           # (optional) Only Codex agents use this
+        reasoning_effort='medium',           # (optional) 'medium' | 'high' - Only Codex agents
     ),
 
     # (required) Sandbox provider for execution
@@ -119,10 +119,10 @@ All agents use a single SwarmKit API key from [dashboard.swarmlink.ai](https://d
 
 | Type         | Recommended Models                                        | Notes                                                                         |
 |--------------|-----------------------------------------------------------|-------------------------------------------------------------------------------|
-| `codex`      | `gpt-5.1`, `gpt-5.1-codex`, `gpt-5.1-codex-max`           | • Codex Agent<br>• persistent memory<br>• supports `reasoning_effort`         |
+| `codex`      | `gpt-5.1`, `gpt-5.1-codex`                                | • Codex Agent<br>• persistent memory<br>• `reasoning_effort`: `medium`, `high` |
 | `claude`     | `claude-opus-4-5-20251101` (`opus`), `claude-sonnet-4-5-20250929` (`sonnet`)                   | • Claude agent<br>• persistent memory                                         |
 | `gemini`     | `gemini-3-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash` | • Gemini agent<br>• persistent memory                                      |
-| `acp-codex` [experimental]  | `gpt-5.1`, `gpt-5.1-codex`, `gpt-5.1-codex-max`           | • Codex via ACP<br>• persistent ACP session + memory<br>• supports `reasoning_effort` |
+| `acp-codex` [experimental]  | `gpt-5.1`, `gpt-5.1-codex`                                | • Codex via ACP<br>• persistent ACP session + memory<br>• `reasoning_effort`: `medium`, `high` |
 | `acp-claude` [experimental] | `claude-opus-4-5-20251101`(`opus`), `claude-sonnet-4-5-20250929`(`sonnet`)                    | • Claude via ACP<br>• persistent ACP session + memory                         |
 | `acp-gemini` [experimental] | `gemini-3-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash` | • Gemini via ACP<br>• persistent ACP session + memory                      |
 | `acp-qwen` [experimental]   | `qwen3-coder-plus`, `qwen3-vl-plus`, `qwen3-max-preview`  | • Qwen via ACP<br>• persistent ACP session + memory                           |
