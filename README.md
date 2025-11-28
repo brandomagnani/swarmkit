@@ -4,9 +4,11 @@ SwarmKit lets you run and orchestrate terminal-based AI agents in secure sandbox
 
 ## Get Started
 
-1. Get your **SwarmKit API key** at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/) ($10 free, NO CC REQUIRED)
+1. Get your **SwarmKit API key** at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/) (new users: [request access](https://dashboard.swarmlink.ai/request-access) first)
+   - $10 free credits, NO CC REQUIRED
 
-2. Get an **E2B API key** at [e2b.dev](https://e2b.dev/sign-in) for sandbox execution ($100 free, NO CC REQUIRED)
+2. Get an **E2B API key** at [e2b.dev](https://e2b.dev/sign-in) for sandbox execution
+   - $100 free credits, NO CC REQUIRED
 
 3. Install the SDK:
 
