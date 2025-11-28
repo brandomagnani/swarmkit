@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-Factotum Chat
--------------
-A sandboxed AI agent in your terminal that can think,
-execute code, browse the web, read / edit files, and solve complex tasks.
+Factotum Chat - A sandboxed AI agent in your terminal that can think, execute code,
+browse the web, read / edit files, and solve complex tasks.
+Ask for anything—any files created are automatically saved to `output/`.
 
 Run: python factotum.py
 """

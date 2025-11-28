@@ -1,7 +1,6 @@
 # Factotum Chat (Python)
 
-A sandboxed AI agent in your terminal that can think,
-execute code, browse the web, read / edit files, and solve complex tasks.
+A sandboxed AI agent in your terminal that can think, execute code, browse the web, read / edit files, and solve complex tasks. Ask for anything—any files created are automatically saved to `output/`.
 
 ## Setup
 
