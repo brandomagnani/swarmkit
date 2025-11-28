@@ -2,7 +2,7 @@
 """
 Factotum Chat - A sandboxed AI agent in your terminal that can think, execute code,
 browse the web, read / edit files, and solve complex tasks.
-Ask for anything—any files created are automatically saved to `output/`.
+Ask for anything—any files the agent creates are automatically downloaded to your local `output/` folder.
 
 Run: python factotum.py
 """
