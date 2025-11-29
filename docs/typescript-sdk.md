@@ -123,10 +123,10 @@ All agents use a single SwarmKit API key from [dashboard.swarmlink.ai](https://d
 
 | Type         | Recommended Models                                        | Notes                                                                         |
 |--------------|-----------------------------------------------------------|-------------------------------------------------------------------------------|
-| `codex`      | `gpt-5.1`, `gpt-5.1-codex`                                | • Codex Agent<br>• persistent memory<br>• `reasoningEffort`: `medium`, `high` |
+| `codex`      | `gpt-5.1`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`          | • Codex Agent<br>• persistent memory<br>• `reasoningEffort`: `medium`, `high` |
 | `claude`     | `claude-opus-4-5-20251101` (`opus`), `claude-sonnet-4-5-20250929` (`sonnet`)                   | • Claude agent<br>• persistent memory                                         |
 | `gemini`     | `gemini-3-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash` | • Gemini agent<br>• persistent memory                                      |
-| `acp-codex` [experimental]  | `gpt-5.1`, `gpt-5.1-codex`                                | • Codex via ACP<br>• persistent ACP session + memory<br>• `reasoningEffort`: `medium`, `high` |
+| `acp-codex` [experimental]  | `gpt-5.1`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`          | • Codex via ACP<br>• persistent ACP session + memory<br>• `reasoningEffort`: `medium`, `high` |
 | `acp-claude` [experimental] | `claude-opus-4-5-20251101`(`opus`), `claude-sonnet-4-5-20250929`(`sonnet`)                    | • Claude via ACP<br>• persistent ACP session + memory                         |
 | `acp-gemini` [experimental] | `gemini-3-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash` | • Gemini via ACP<br>• persistent ACP session + memory                      |
 | `acp-qwen` [experimental]   | `qwen3-coder-plus`, `qwen3-vl-plus`, `qwen3-max-preview`  | • Qwen via ACP<br>• persistent ACP session + memory                           |
