@@ -21,6 +21,21 @@ const sandbox = createE2BProvider({
 });
 
 const mcpServers: Record<string, any> = {};
+
+// Chrome DevTools MCP - browser automation and debugging
+mcpServers["chrome-devtools"] = {
+  command: "npx",
+  args: [
+    "chrome-devtools-mcp@latest",
+    "--headless=true",
+    "--isolated=true",
+    "--chromeArg=--no-sandbox",
+    "--chromeArg=--disable-setuid-sandbox",
+    "--chromeArg=--disable-dev-shm-usage",
+  ],
+  env: {},
+};
+
 if (process.env.EXA_API_KEY) {
   mcpServers["exa"] = {
     command: "npx",

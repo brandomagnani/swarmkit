@@ -18,9 +18,9 @@ load_dotenv()  # Load .env file
 # ─────────────────────────────────────────────────────────────
 
 AGENT = AgentConfig(
-    type="gemini",                              # claude, codex, gemini,
+    type="claude",                              # claude, codex, gemini,
     api_key=os.getenv("SWARMKIT_API_KEY"),
-    model="gemini-3-pro-preview",             # optional: override default model
+    #model="gpt-5.1-codex",             # optional: override default model
 )
 
 SANDBOX = E2BProvider(
@@ -29,6 +29,21 @@ SANDBOX = E2BProvider(
 )
 
 MCP_SERVERS = {}
+
+# Chrome DevTools MCP - browser automation and debugging
+MCP_SERVERS["chrome-devtools"] = {
+    "command": "npx",
+    "args": [
+        "chrome-devtools-mcp@latest",
+        "--headless=true",
+        "--isolated=true",
+        "--chromeArg=--no-sandbox",
+        "--chromeArg=--disable-setuid-sandbox",
+        "--chromeArg=--disable-dev-shm-usage",
+    ],
+    "env": {}
+}
+
 if os.getenv("EXA_API_KEY"):                    # optional: web search
     MCP_SERVERS["exa"] = {
         "command": "npx",
