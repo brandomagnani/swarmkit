@@ -24,3 +24,5 @@ Thumbs.db
 node_modules/
 dist/
 package-lock.json
+dev-utils/
+cookbooks/browser-use-py/
