@@ -177,52 +177,60 @@ result = await swarmkit.execute_command(
 
 ### 4.3 Streaming events
 
-Both `run()` and `execute_command()` stream output in real-time during execution.
+Both `run()` and `execute_command()` stream output in real-time.
 
 **Pattern 1: Callback-based**:
 
 ```python
+# Raw output
 swarmkit.on('stdout', lambda data: print(data, end=''))
 swarmkit.on('stderr', lambda data: print(f'[ERR] {data}', end=''))
 swarmkit.on('update', lambda data: print(f'[UPDATE] {data}'))
 swarmkit.on('error', lambda error: print(f'[ERROR] {error}'))
-swarmkit.on('complete', lambda info: print(f"[COMPLETE] exit={info['exit_code']}, sandbox={info['sandbox_id']}"))
+
+# Parsed output (recommended)
+swarmkit.on('content', lambda event: print(event['update']))
 ```
 
 **Pattern 2: Async generator**:
 
 ```python
-import asyncio
-
 task = asyncio.create_task(swarmkit.run(prompt='Analyze data.csv'))
 
 async for event in swarmkit.stream():
     match event.type:
+        case 'content':
+            print(event.update)  # Parsed ACP-style event
         case 'stdout':
             print(event.data, end='')
-        case 'stderr':
-            print(f'[ERR] {event.data}', end='')
-        case 'update':
-            print(f'[UPDATE] {event.data}')
-        case 'error':
-            print(f'[ERROR] {event.error}')
         case 'complete':
-            print(f'[COMPLETE] exit={event.exit_code}')
             break
 
 result = await task
 ```
 
-**Event behavior**:
+**Events**:
 
-- `'update'` – Always receives start message (`{"type": "start", "sandbox_id": "..."}`) and end message (`{"type": "end", "sandbox_id": "...", "output": {...}}`). Also receives agent output if no `stdout` listener is registered (fallback).
-- `'stdout'` – Receives agent output only (JSON streams), if a listener is registered.
-- `'stderr'` – Receives stderr chunks (string).
-- `'error'` – Terminal error message (string).
+| Event | Description |
+|-------|-------------|
+| `content` | Parsed ACP-style events (recommended). Takes priority over `stdout`. |
+| `stdout` | Raw JSONL output |
+| `stderr` | Stderr chunks |
+| `update` | Start/end messages. Fallback for output if no `stdout`/`content` listener. |
+| `error` | Terminal errors |
+| `complete` | Run finished with `exit_code`, `sandbox_id` |
 
-**No duplication:** When both `stdout` and `update` listeners are registered, `stdout` receives agent output and `update` receives only start/end messages.
+**Content event types** (`event.update['sessionUpdate']`):
 
-All listeners are optional; if omitted the agent still runs and you can inspect the return value after completion.
+| Type | Description |
+|------|-------------|
+| `agent_message_chunk` | Text/image from agent |
+| `agent_thought_chunk` | Reasoning/thinking |
+| `tool_call` | Tool started (status: `pending`) |
+| `tool_call_update` | Tool finished (status: `completed`/`failed`) |
+| `plan` | TodoWrite updates |
+
+All listeners are optional.
 
 ### 4.4 upload_context / upload_files
 

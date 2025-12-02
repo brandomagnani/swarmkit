@@ -180,31 +180,40 @@ const result = await swarmkit.executeCommand("pytest", {
 
 ### 4.3 Streaming events
 
-`SwarmKit` extends Node's `EventEmitter`. Both `run()` and `executeCommand()` stream output in real-time during execution:
+`SwarmKit` extends Node's `EventEmitter`. Both `run()` and `executeCommand()` stream output in real-time:
 
 ```ts
+// Raw output
 swarmkit.on("stdout", chunk => process.stdout.write(chunk));
 swarmkit.on("stderr", chunk => process.stderr.write(chunk));
-swarmkit.on("update", message => {
-  try {
-    console.log("[update]", JSON.parse(message));
-  } catch {
-    console.log("[update]", message);
-  }
-});
-swarmkit.on("error", message => console.error("[error]", message));
+swarmkit.on("update", msg => console.log("[update]", msg));
+swarmkit.on("error", msg => console.error("[error]", msg));
+
+// Parsed output (recommended)
+swarmkit.on("content", event => console.log(event.update));
 ```
 
-**Event behavior**:
+**Events**:
 
-- `"update"` – Always receives start message (`{"type": "start", "sandbox_id": "..."}`) and end message (`{"type": "end", "sandbox_id": "...", "output": {...}}`). Also receives agent output if no `stdout` listener is registered (fallback).
-- `"stdout"` – Receives agent output only (JSON streams), if a listener is registered.
-- `"stderr"` – Receives stderr chunks (string).
-- `"error"` – Terminal error message (string).
+| Event | Description |
+|-------|-------------|
+| `content` | Parsed ACP-style events (recommended). Takes priority over `stdout`. |
+| `stdout` | Raw JSONL output |
+| `stderr` | Stderr chunks |
+| `update` | Start/end messages. Fallback for output if no `stdout`/`content` listener. |
+| `error` | Terminal errors |
 
-**No duplication:** When both `stdout` and `update` listeners are registered, `stdout` receives agent output and `update` receives only start/end messages.
+**Content event types** (`event.update.sessionUpdate`):
 
-All listeners are optional; if omitted the agent still runs and you can inspect the return value after completion.
+| Type | Description |
+|------|-------------|
+| `agent_message_chunk` | Text/image from agent |
+| `agent_thought_chunk` | Reasoning/thinking |
+| `tool_call` | Tool started (status: `pending`) |
+| `tool_call_update` | Tool finished (status: `completed`/`failed`) |
+| `plan` | TodoWrite updates |
+
+All listeners are optional.
 
 ### 4.4 uploadContext / uploadFiles
 
