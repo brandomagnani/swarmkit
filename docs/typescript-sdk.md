@@ -208,8 +208,9 @@ swarmkit.on("content", event => console.log(event.update));
 | Type | Description |
 |------|-------------|
 | `agent_message_chunk` | Text/image from agent |
-| `agent_thought_chunk` | Reasoning/thinking |
-| `tool_call` | Tool started (status: `pending`) |
+| `agent_thought_chunk` | Reasoning/thinking (Codex/Claude) |
+| `user_message_chunk` | User message echo (Gemini) |
+| `tool_call` | Tool started (status: `pending`/`in_progress`) |
 | `tool_call_update` | Tool finished (status: `completed`/`failed`) |
 | `plan` | TodoWrite updates |
 
