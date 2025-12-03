@@ -62,7 +62,7 @@ const rl = createInterface({ input: process.stdin, output: process.stdout });
 const ask = (q: string) => new Promise<string>((r) => rl.question(q, r));
 
 async function main() {
-  agent.on("stdout", (chunk) => process.stdout.write(chunk));
+  agent.on("content", (event) => console.log(event.update));
   console.log("\n🤖 Agent ready. Ask anything.\n");
 
   while (true) {

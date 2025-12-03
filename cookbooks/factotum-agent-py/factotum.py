@@ -66,7 +66,7 @@ agent = SwarmKit(
 # ─────────────────────────────────────────────────────────────
 
 async def main():
-    agent.on("stdout", lambda x: print(x, end=""))
+    agent.on("content", lambda e: print(e.get("update")))
 
     print("\n🤖 Agent ready. Ask anything.\n")
 
