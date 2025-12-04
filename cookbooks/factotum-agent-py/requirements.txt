@@ -1,2 +1,3 @@
-swarmkit  # Use published version
+swarmkit
 python-dotenv
+rich

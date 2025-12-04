@@ -10,6 +10,8 @@ import asyncio
 import os
 from dotenv import load_dotenv
 from swarmkit import SwarmKit, AgentConfig, E2BProvider
+from rich_ui import RichRenderer, console
+from rich.panel import Panel
 
 load_dotenv()  # Load .env file
 
@@ -20,7 +22,6 @@ load_dotenv()  # Load .env file
 AGENT = AgentConfig(
     type="gemini",                              # claude, codex, gemini,
     api_key=os.getenv("SWARMKIT_API_KEY"),
-    #model="qwen3-coder-plus",
     model="gemini-3-pro-preview",             # optional: override default model
 )
 
@@ -52,7 +53,7 @@ if os.getenv("EXA_API_KEY"):                    # optional: web search
         "env": {"EXA_API_KEY": os.getenv("EXA_API_KEY")}
     }
 
-SYSTEM_PROMPT = """You are Factotum, a powerful autonomous AI agent.
+SYSTEM_PROMPT = """SYSTEM PROMPT: Your name is Factotum, a powerful autonomous AI agent.
 You can execute code, browse the web, manage files, and solve complex tasks."""
 
 agent = SwarmKit(
@@ -66,32 +67,43 @@ agent = SwarmKit(
 # ─────────────────────────────────────────────────────────────
 
 async def main():
-    agent.on("content", lambda e: print(e.get("update")))
+    renderer = RichRenderer()
+    agent.on("content", renderer.handle_event)
 
-    print("\n🤖 Agent ready. Ask anything.\n")
+    console.print()
+    console.print(Panel.fit(
+        "[bold cyan]🤖 Factotum[/bold cyan]\n"
+        "[dim]Autonomous AI Agent - Code, Browse, Files & More[/dim]",
+        border_style="cyan",
+    ))
+    console.print()
 
     while True:
-        prompt = input("\nyou: ").strip()
+        prompt = console.input("[bold green]you:[/bold green] ").strip()
         if not prompt:
             continue
         if prompt in ("/quit", "/exit", "/q"):
             await agent.kill()
-            print("\n👋 Goodbye")
+            console.print("\n[muted]👋 Goodbye[/muted]")
             break
 
-        print()
+        renderer.reset()
+        renderer.start_live()
         await agent.run(prompt=prompt)
+        renderer.stop_live()
 
         for f in await agent.get_output_files():
             path = f"output/{f.name}"
             content = f.content if isinstance(f.content, bytes) else f.content.encode("utf-8")
             with open(path, "wb") as out:
                 out.write(content)
-            print(f"\n📄 Saved: {path}")
+            console.print(f"[success]📄 Saved: {path}[/success]")
+
+        console.print()
 
 async def shutdown():
     await agent.kill()
-    print("\n\n👋 Goodbye")
+    console.print("\n\n[muted]👋 Goodbye[/muted]")
 
 if __name__ == "__main__":
     os.makedirs("output", exist_ok=True)
