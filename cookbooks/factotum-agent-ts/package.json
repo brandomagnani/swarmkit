@@ -6,8 +6,8 @@
     "start": "tsx factotum.ts"
   },
   "dependencies": {
-    "@swarmkit/e2b": "^0.1.22",
-    "@swarmkit/sdk": "^0.1.22",
+    "@swarmkit/e2b": "^0.1.25",
+    "@swarmkit/sdk": "^0.1.25",
     "dotenv": "^16.4.7"
   },
   "devDependencies": {
