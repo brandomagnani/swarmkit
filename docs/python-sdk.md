@@ -179,7 +179,9 @@ result = await swarmkit.execute_command(
 
 Both `run()` and `execute_command()` stream output in real-time.
 
-**Pattern 1: Callback-based**:
+> **Recommendation:** Use the **callback-based pattern** for most applications. It's simpler, less error-prone, and handles all streaming mechanics automatically. Only use the async generator pattern when you need fine-grained control over event flow.
+
+**Pattern 1: Callback-based (Recommended)**:
 
 ```python
 # Raw output
@@ -192,7 +194,7 @@ swarmkit.on('error', lambda error: print(f'[ERROR] {error}'))
 swarmkit.on('content', lambda event: print(event['update']))
 ```
 
-**Pattern 2: Async generator**:
+**Pattern 2: Async generator** (advanced):
 
 ```python
 task = asyncio.create_task(swarmkit.run(prompt='Analyze data.csv'))
@@ -220,18 +222,123 @@ result = await task
 | `error` | Terminal errors |
 | `complete` | Run finished with `exit_code`, `sandbox_id` |
 
-**Content event types** (`event.update['sessionUpdate']`):
+**Content event structure** (`event['update']` for callbacks, `event.update` for generators):
 
-| Type | Description |
-|------|-------------|
-| `agent_message_chunk` | Text/image from agent |
-| `agent_thought_chunk` | Reasoning/thinking (Codex/Claude) |
-| `user_message_chunk` | User message echo (Gemini) |
-| `tool_call` | Tool started (status: `pending`/`in_progress`) |
-| `tool_call_update` | Tool finished (status: `completed`/`failed`) |
-| `plan` | TodoWrite updates |
+| `sessionUpdate` | Description | Key Fields |
+|-----------------|-------------|------------|
+| `agent_message_chunk` | Text/image from agent | `content.type`, `content.text` |
+| `agent_thought_chunk` | Reasoning/thinking (Codex/Claude) | `content.type`, `content.text` |
+| `user_message_chunk` | User message echo (Gemini) | `content.type`, `content.text` |
+| `tool_call` | Tool started | `toolCallId`, `title`, `kind`, `status`, `rawInput` |
+| `tool_call_update` | Tool finished | `toolCallId`, `status` |
+| `plan` | TodoWrite updates | `entries[]` with `id`, `content`, `status` |
 
 All listeners are optional.
+
+#### Building a Real-Time UI with Callbacks
+
+When building interactive CLI applications with streaming, use a **stateful renderer class** with callbacks:
+
+```python
+from rich.console import Console
+from rich.live import Live
+from rich.panel import Panel
+
+class StreamRenderer:
+    def __init__(self):
+        self.events = []          # Ordered list of events (preserves interleaving)
+        self.current_message = "" # Accumulating text chunks
+        self.tools = {}           # tool_id -> {title, status, kind, rawInput}
+        self.live = None
+
+    def reset(self):
+        self.events = []
+        self.current_message = ""
+        self.tools = {}
+
+    def handle_event(self, event: dict):
+        """Main callback handler - register with swarmkit.on('content', ...)"""
+        update = event.get("update", {})
+        event_type = update.get("sessionUpdate")
+
+        if event_type == "agent_message_chunk":
+            content = update.get("content", {})
+            if content.get("type") == "text":
+                self.current_message += content.get("text", "")
+                self._refresh()
+
+        elif event_type == "tool_call":
+            # IMPORTANT: Flush current message to preserve order
+            if self.current_message.strip():
+                self.events.append({'type': 'message', 'text': self.current_message})
+                self.current_message = ""
+
+            tool_id = update.get("toolCallId", "")
+            self.tools[tool_id] = {
+                'title': update.get("title", "Tool"),
+                'kind': update.get("kind", "other"),
+                'status': update.get("status", "pending"),
+                'rawInput': update.get("rawInput", {}),
+            }
+            self.events.append({'type': 'tool', 'id': tool_id})
+            self._refresh()
+
+        elif event_type == "tool_call_update":
+            tool_id = update.get("toolCallId", "")
+            if tool_id in self.tools:
+                self.tools[tool_id]['status'] = update.get("status", "completed")
+                self._refresh()
+
+    def _refresh(self):
+        if self.live:
+            self.live.update(self._render())
+
+    def _render(self):
+        # Build display from self.events and self.current_message
+        # ... render tools, messages, etc.
+        return Panel("...")
+
+    def __rich__(self):
+        """Enable auto-refresh when passed to Live()"""
+        return self._render()
+
+    def start_live(self):
+        # Pass `self` to Live - enables __rich__() integration
+        self.live = Live(self, console=Console(), refresh_per_second=10)
+        self.live.start()
+
+    def stop_live(self):
+        if self.live:
+            self.live.stop()
+            self.live = None
+
+# Usage:
+renderer = StreamRenderer()
+swarmkit.on("content", renderer.handle_event)
+
+renderer.reset()
+renderer.start_live()
+await swarmkit.run(prompt="Your task here")
+renderer.stop_live()
+```
+
+**Key patterns for correct streaming UI:**
+
+1. **Register callbacks BEFORE calling `run()`** - Events start flowing immediately
+2. **Preserve event ordering** - Flush accumulated message text when a tool event arrives to maintain correct interleaving
+3. **Use `__rich__()` method** - When using Rich's `Live()`, pass `self` (not a static Panel) and implement `__rich__()` for proper auto-refresh
+4. **Track tools by ID** - Tools emit `tool_call` (start) and `tool_call_update` (end) with matching `toolCallId`
+5. **Handle both text and tool events** - Agents interleave thinking, tool calls, and responses
+
+**Common mistakes to avoid:**
+
+| Mistake | Problem | Fix |
+|---------|---------|-----|
+| Not flushing message buffer on tool events | Messages appear out of order | Append current message to events list before adding tool |
+| Passing static Panel to `Live()` | Display doesn't update properly | Pass renderer `self` with `__rich__()` method |
+| Only tracking `message_buffer` without events list | Loses interleaved tool/message ordering | Maintain ordered `events` list |
+| Using async generator for simple UIs | Unnecessary complexity, more error-prone | Use callback pattern instead |
+| Not calling `_refresh()` after state changes | UI appears frozen | Call refresh after every state mutation |
 
 ### 4.4 upload_context / upload_files
 
