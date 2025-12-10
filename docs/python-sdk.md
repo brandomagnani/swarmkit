@@ -117,18 +117,12 @@ swarmkit = SwarmKit(
 
 All agents use a single SwarmKit API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/).
 
-| Type         | Recommended Models                                        | Notes                                                                         |
-|--------------|-----------------------------------------------------------|-------------------------------------------------------------------------------|
-| `codex`      | `gpt-5.1`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`          | • Codex Agent<br>• persistent memory<br>• `reasoning_effort`: `medium`, `high` |
-| `claude`     | `claude-opus-4-5-20251101` (`opus`), `claude-sonnet-4-5-20250929` (`sonnet`)                   | • Claude agent<br>• persistent memory                                         |
-| `gemini`     | `gemini-3-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash` | • Gemini agent<br>• persistent memory                                      |
-| `acp-codex` [experimental]  | `gpt-5.1`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`          | • Codex via ACP<br>• persistent ACP session + memory<br>• `reasoning_effort`: `medium`, `high` |
-| `acp-claude` [experimental] | `claude-opus-4-5-20251101`(`opus`), `claude-sonnet-4-5-20250929`(`sonnet`)                    | • Claude via ACP<br>• persistent ACP session + memory                         |
-| `acp-gemini` [experimental] | `gemini-3-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash` | • Gemini via ACP<br>• persistent ACP session + memory                      |
-| `acp-qwen` [experimental]   | `qwen3-coder-plus`, `qwen3-vl-plus`, `qwen3-max-preview`  | • Qwen via ACP<br>• persistent ACP session + memory                           |
-
----
-- **Note**: ACP agents are experimental.
+| Type     | Recommended Models                                                          | Notes                                                                                  |
+|----------|-----------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| `codex`  | `gpt-5.1`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`                            | • Codex Agent<br>• persistent memory<br>• `reasoning_effort`: `medium`, `high` |
+| `claude` | `claude-opus-4-5-20251101` (`opus`), `claude-sonnet-4-5-20250929` (`sonnet`) | • Claude agent<br>• persistent memory                                                  |
+| `gemini` | `gemini-3-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash`                 | • Gemini agent<br>• persistent memory                                                  |
+| `qwen`   | `qwen3-coder-plus`, `qwen3-vl-plus`, `qwen3-max-preview`                     | • Qwen agent<br>• persistent memory                                                    |
 
 ## 4. Runtime Methods
 
@@ -177,52 +171,26 @@ result = await swarmkit.execute_command(
 
 ### 4.3 Streaming events
 
-Both `run()` and `execute_command()` stream output in real-time.
-
-> **Recommendation:** Use the **callback-based pattern** for most applications. It's simpler, less error-prone, and handles all streaming mechanics automatically. Only use the async generator pattern when you need fine-grained control over event flow.
-
-**Pattern 1: Callback-based (Recommended)**:
+Both `run()` and `execute_command()` stream output in real-time:
 
 ```python
 # Raw output
 swarmkit.on('stdout', lambda data: print(data, end=''))
 swarmkit.on('stderr', lambda data: print(f'[ERR] {data}', end=''))
-swarmkit.on('update', lambda data: print(f'[UPDATE] {data}'))
-swarmkit.on('error', lambda error: print(f'[ERROR] {error}'))
 
 # Parsed output (recommended)
 swarmkit.on('content', lambda event: print(event['update']))
-```
-
-**Pattern 2: Async generator** (advanced):
-
-```python
-task = asyncio.create_task(swarmkit.run(prompt='Analyze data.csv'))
-
-async for event in swarmkit.stream():
-    match event.type:
-        case 'content':
-            print(event.update)  # Parsed ACP-style event
-        case 'stdout':
-            print(event.data, end='')
-        case 'complete':
-            break
-
-result = await task
 ```
 
 **Events**:
 
 | Event | Description |
 |-------|-------------|
-| `content` | Parsed ACP-style events (recommended). Takes priority over `stdout`. |
+| `content` | Parsed ACP-style events (recommended) |
 | `stdout` | Raw JSONL output |
 | `stderr` | Stderr chunks |
-| `update` | Start/end messages. Fallback for output if no `stdout`/`content` listener. |
-| `error` | Terminal errors |
-| `complete` | Run finished with `exit_code`, `sandbox_id` |
 
-**Content event structure** (`event['update']` for callbacks, `event.update` for generators):
+**Content event structure** (`event['update']`):
 
 | `sessionUpdate` | Description | Key Fields |
 |-----------------|-------------|------------|
@@ -337,7 +305,6 @@ renderer.stop_live()
 | Not flushing message buffer on tool events | Messages appear out of order | Append current message to events list before adding tool |
 | Passing static Panel to `Live()` | Display doesn't update properly | Pass renderer `self` with `__rich__()` method |
 | Only tracking `message_buffer` without events list | Loses interleaved tool/message ordering | Maintain ordered `events` list |
-| Using async generator for simple UIs | Unnecessary complexity, more error-prone | Use callback pattern instead |
 | Not calling `_refresh()` after state changes | UI appears frozen | Call refresh after every state mutation |
 
 ### 4.4 upload_context / upload_files
