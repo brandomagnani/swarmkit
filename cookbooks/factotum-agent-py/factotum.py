@@ -2,12 +2,15 @@
 """
 Factotum Agent - An interactive chat with a sandboxed AI agent that can think, execute code,
 browse the web, read / edit files, and solve complex tasks.
-Ask for anything—any files the agent creates are automatically downloaded to your local `output/` folder.
+
+- Put files in `input/` folder - they're uploaded to the agent's context before each run
+- Files the agent creates are automatically downloaded to your `output/` folder
 
 Run: python factotum.py
 """
 import asyncio
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from swarmkit import SwarmKit, AgentConfig, E2BProvider
 from rich_ui import RichRenderer, console
@@ -90,6 +93,12 @@ async def main():
         console.print()
         renderer.reset()
         renderer.start_live()
+
+        # Upload input files to agent's context
+        input_files = {f.name: f.read_bytes() for f in Path("input").iterdir() if f.is_file()}
+        if input_files:
+            await agent.upload_context(input_files)
+
         await agent.run(prompt=prompt)
         renderer.stop_live()
 
@@ -107,6 +116,7 @@ async def shutdown():
     console.print("\n\n[muted]👋 Goodbye[/muted]")
 
 if __name__ == "__main__":
+    os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     try:
         asyncio.run(main())
