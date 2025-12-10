@@ -149,6 +149,7 @@ Runs the agent with a given prompt.
 const result = await swarmkit.run({
     prompt: "Analyze the data and create a report",
     timeoutMs: 15 * 60 * 1000,                // (optional) Default 1 hour
+    background: false,                         // (optional) Run in background
 });
 
 console.log(result.exitCode);
@@ -156,6 +157,7 @@ console.log(result.stdout);
 ```
 
 - If `timeoutMs` is omitted the agent uses the TypeScript default of 3_600_000 ms (1 hour).
+- If `background` is `true`, the call returns immediately while the agent continues running.
 
 - Calling `run()` multiple times maintains the agent context / history. 
 
