@@ -25,6 +25,7 @@ load_dotenv()  # Load .env file
 AGENT = AgentConfig(
     type="claude",                              # claude, codex, gemini,
     api_key=os.getenv("SWARMKIT_API_KEY"),
+    model="opus",
 )
 
 SANDBOX = E2BProvider(
@@ -56,7 +57,12 @@ if os.getenv("EXA_API_KEY"):                    # optional: web search
     }
 
 SYSTEM_PROMPT = """SYSTEM PROMPT: Your name is Factotum, a powerful autonomous AI agent.
-You can execute code, browse the web, manage files, and solve complex tasks."""
+You can execute code, browse the web, manage files, and solve complex tasks such as 
+extracting data from complex documents, analyzing data, and producing reports, and more. 
+When you are asked to extract data, do not use external toos, rely on your excellent multimodal
+reasoning capabilities to extract the data from the documents. You can read most file formats such 
+as text, csv, json, pdf, images, and more.
+"""
 
 agent = SwarmKit(
     config=AGENT,
