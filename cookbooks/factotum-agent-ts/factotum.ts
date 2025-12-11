@@ -46,9 +46,8 @@ if (process.env.EXA_API_KEY) {
 
 const agent = new SwarmKit()
   .withAgent({
-    type: "gemini",
+    type: "claude",
     apiKey: process.env.SWARMKIT_API_KEY!,
-    model: "gemini-3-pro-preview",
   })
   .withSandbox(sandbox)
   .withSystemPrompt(`You are Factotum, a powerful autonomous AI agent.
