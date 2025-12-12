@@ -38,6 +38,7 @@ class RichRenderer:
         self._last_was_tool = False
         self._last_plan_str = ""
         self._has_content = False
+        self._last_print_was_blank = False
 
     def _one_line(self, value: str, max_len: int = 120) -> str:
         if not isinstance(value, str):
@@ -56,6 +57,7 @@ class RichRenderer:
         self._last_was_tool = False
         self._last_plan_str = ""
         self._has_content = False
+        self._last_print_was_blank = False
 
     def handle_event(self, event: dict):
         update = event.get("update", {})
@@ -143,6 +145,11 @@ class RichRenderer:
         if not entries:
             return
 
+        # Flush any buffered message before rendering plan updates.
+        # TodoWrite often appears between assistant text messages; without this,
+        # separate assistant messages can be concatenated in the transcript.
+        self._flush_message()
+
         # Build plan string to check if it changed
         lines = []
         for entry in entries:
@@ -158,10 +165,6 @@ class RichRenderer:
             return
         self._last_plan_str = plan_str
 
-        # Blank line before plan if there's prior content
-        if self._has_content:
-            console.print()
-
         styled_lines = []
         for entry in entries:
             status = entry.get("status", "pending")
@@ -171,7 +174,9 @@ class RichRenderer:
             styled_lines.append(f"[{style}]{icon} {content}[/{style}]")
 
         console.print(Panel("\n".join(styled_lines), title="[bold]Plan[/bold]", border_style="cyan", padding=(0, 1)))
+        self._last_print_was_blank = False
         console.print()  # blank line after plan
+        self._last_print_was_blank = True
         self._last_was_tool = False
         self._has_content = True
         self._refresh_status_live()
@@ -180,6 +185,14 @@ class RichRenderer:
         if title in ("write_todos", "TodoWrite") or "todo" in title.lower():
             return False
         return True
+
+    def _has_visible_tools(self) -> bool:
+        for tool_id in self.tool_order:
+            tool = self.tools.get(tool_id, {}) or {}
+            title = tool.get('title', '') or ''
+            if self._should_display_tool(title):
+                return True
+        return False
 
     def _format_tool_line(self, tool_id: str) -> Text:
         tool = self.tools[tool_id]
@@ -213,11 +226,20 @@ class RichRenderer:
 
     def _flush_message(self):
         if self.current_message.strip():
-            if self._last_was_tool:
+            # If tools are currently displayed in the status region, visually separate
+            # the transcript message from the tool list.
+            if self._has_visible_tools() and not self._last_print_was_blank:
                 console.print()
+                self._last_print_was_blank = True
+
+            if self._last_was_tool and not self._last_print_was_blank:
+                console.print()
+                self._last_print_was_blank = True
 
             console.print(Markdown(self.current_message))
+            self._last_print_was_blank = False
             console.print()
+            self._last_print_was_blank = True
             self.current_message = ""
             self._last_was_tool = False
             self._has_content = True
@@ -290,15 +312,20 @@ class RichRenderer:
         console.print()
         console.print("[bold cyan]Factotum[/bold cyan]")
         console.print()
+        self._last_print_was_blank = True
         self._start_status_live()
 
     def stop_live(self):
         self._stop_status_live(final=True)
 
         if self.current_message.strip():
-            if self._last_was_tool:
+            # Ensure a blank line between the final tool list snapshot and the
+            # final markdown message (Live renders without adding extra spacing).
+            if self._has_visible_tools():
                 console.print()
+                self._last_print_was_blank = True
             console.print(Markdown(self.current_message))
+            self._last_print_was_blank = False
 
         if self.show_reasoning and self.thought_buffer.strip():
             console.print()
