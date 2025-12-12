@@ -11,7 +11,7 @@ import logUpdate from "log-update";
 import { marked } from "marked";
 import { markedTerminal } from "marked-terminal";
 import boxen from "boxen";
-import readline from "node:readline";
+import { TextDecoder } from "node:util";
 
 // Configure marked for terminal output
 marked.use(markedTerminal() as marked.MarkedExtension);
@@ -49,90 +49,14 @@ export const console_ = {
 // ─────────────────────────────────────────────────────────────
 
 export async function readPrompt(): Promise<string> {
-  // Ensure any previous live block is finalized.
   logUpdate.clear();
   logUpdate.done();
 
   const bgHex = "#303030";
   const prefixColor = "#00d75f";
 
-  const bg = chalk.bgHex(bgHex);
-  const promptPrefix = bg(chalk.hex(prefixColor).bold("> "));
-  const indentPrefix = bg("  ");
-
   const width = process.stdout.columns || 100;
-  // Don't hard-cap input height: grow to show full prompt.
-  // (If the prompt exceeds terminal height, the terminal will necessarily scroll.)
-  const maxInputLines = Number.POSITIVE_INFINITY;
-
-  const buffer: string[] = [];
-  let escArmed = false;
-  let isPasting = false;
-
-  function wrapVisualLines(text: string): string[] {
-    const lines = text.split(/\r?\n/);
-    const visual: string[] = [];
-    const availFirst = Math.max(1, width - 2);
-    const avail = availFirst;
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i] ?? "";
-      if (line.length === 0) {
-        visual.push("");
-        continue;
-      }
-      for (let j = 0; j < line.length; j += avail) {
-        visual.push(line.slice(j, j + avail));
-      }
-    }
-    return visual;
-  }
-
-  function consumeBracketedPaste(input: string): string {
-    // Terminals in bracketed paste mode wrap paste with:
-    //   ESC [ 200 ~  ...paste...  ESC [ 201 ~
-    // We'll strip markers and toggle isPasting.
-    const start = "\u001b[200~";
-    const end = "\u001b[201~";
-    let out = input;
-
-    // Process multiple markers if present.
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const s = out.indexOf(start);
-      const e = out.indexOf(end);
-      if (s === -1 && e === -1) break;
-      if (s !== -1 && (e === -1 || s < e)) {
-        isPasting = true;
-        out = out.replace(start, "");
-        continue;
-      }
-      if (e !== -1) {
-        isPasting = false;
-        out = out.replace(end, "");
-      }
-    }
-    return out;
-  }
-
-  function render() {
-    const text = buffer.join("");
-    const visual = wrapVisualLines(text);
-
-    const out: string[] = [];
-    out.push(bg(" ".repeat(width))); // pad above
-
-    for (let i = 0; i < visual.length && i < maxInputLines; i++) {
-      const chunk = visual[i] ?? "";
-      const prefix = i === 0 ? promptPrefix : indentPrefix;
-      const content = bg(chalk.white(chunk));
-      const padLen = Math.max(0, width - 2 - chunk.length);
-      out.push(prefix + content + bg(" ".repeat(padLen)));
-    }
-
-    out.push(bg(" ".repeat(width))); // pad below
-    logUpdate(out.join("\n"));
-  }
+  const bg = chalk.bgHex(bgHex);
 
   function printSubmittedPrompt(prompt: string) {
     const lines = prompt.split(/\r?\n/);
@@ -142,30 +66,33 @@ export async function readPrompt(): Promise<string> {
         : [line];
       for (const chunk of chunks) {
         const padLen = Math.max(0, width - chunk.length);
-        // No '>' after submit (match python).
-        // Full-width background on every physical line.
         console.log(bg(chunk + " ".repeat(padLen)));
       }
     }
   }
 
+  // Raw-input prompt bar (non-fullscreen) to match Python prompt_toolkit UX.
+  // - full-width gray background
+  // - multiline wrap, grows as needed
+  // - bracketed paste support (no accidental submit)
+  // - Enter submits, Esc+Enter inserts newline
   return await new Promise<string>((resolve) => {
     const stdin = process.stdin;
     const wasRaw = (stdin as any).isRaw;
+    const decoder = new TextDecoder("utf-8", { fatal: false });
 
-    readline.emitKeypressEvents(stdin);
-    if (stdin.isTTY) stdin.setRawMode(true);
-    stdin.resume();
+    let escArmed = false;
+    let pasteMode = false;
+    let pending = ""; // carry partial escape sequences across chunks
+    const buf: string[] = [];
 
-    // Enable bracketed paste mode to reliably detect paste boundaries and avoid
-    // treating pasted newlines as submit.
-    if (process.stdout.isTTY) {
-      process.stdout.write("\u001b[?2004h");
-    }
+    const PASTE_START = "\u001b[200~";
+    const PASTE_END = "\u001b[201~";
 
-    render();
+    const promptPrefix = bg(chalk.hex(prefixColor).bold("> "));
+    const indentPrefix = bg("  ");
 
-    const cleanup = () => {
+    function cleanup() {
       try {
         logUpdate.clear();
         logUpdate.done();
@@ -187,87 +114,169 @@ export async function readPrompt(): Promise<string> {
       } catch {
         // ignore
       }
-    };
+    }
 
-    const onKeypress = (str: string, key: any) => {
+    function wrapVisualLines(text: string): string[] {
+      const lines = text.split("\n");
+      const visual: string[] = [];
+      const avail = Math.max(1, width - 2);
+      for (const line of lines) {
+        if (line.length === 0) {
+          visual.push("");
+          continue;
+        }
+        for (let i = 0; i < line.length; i += avail) {
+          visual.push(line.slice(i, i + avail));
+        }
+      }
+      return visual;
+    }
+
+    function render() {
+      const text = buf.join("");
+      const visual = wrapVisualLines(text);
+      const out: string[] = [];
+      out.push(bg(" ".repeat(width))); // pad above
+      for (let i = 0; i < visual.length; i++) {
+        const chunk = visual[i] ?? "";
+        const prefix = i === 0 ? promptPrefix : indentPrefix;
+        const content = bg(chalk.white(chunk));
+        const padLen = Math.max(0, width - 2 - chunk.length);
+        out.push(prefix + content + bg(" ".repeat(padLen)));
+      }
+      out.push(bg(" ".repeat(width))); // pad below
+      logUpdate(out.join("\n"));
+    }
+
+    function stripAndHandleEscapes(input: string): string {
+      let s = pending + input;
+      pending = "";
+
+      // Preserve trailing partial sequences that might be paste markers.
+      const maxMarker = Math.max(PASTE_START.length, PASTE_END.length);
+      for (let k = Math.min(maxMarker - 1, s.length); k > 0; k--) {
+        const tail = s.slice(-k);
+        if (PASTE_START.startsWith(tail) || PASTE_END.startsWith(tail)) {
+          pending = tail;
+          s = s.slice(0, -k);
+          break;
+        }
+      }
+
+      // Handle bracketed paste markers.
+      while (true) {
+        const iStart = s.indexOf(PASTE_START);
+        const iEnd = s.indexOf(PASTE_END);
+        if (iStart === -1 && iEnd === -1) break;
+        if (iStart !== -1 && (iEnd === -1 || iStart < iEnd)) {
+          pasteMode = true;
+          s = s.slice(0, iStart) + s.slice(iStart + PASTE_START.length);
+          continue;
+        }
+        if (iEnd !== -1) {
+          pasteMode = false;
+          s = s.slice(0, iEnd) + s.slice(iEnd + PASTE_END.length);
+        }
+      }
+
+      return s;
+    }
+
+    function handleCsiSequence(s: string, startIndex: number): { consumed: number } | null {
+      // Consume CSI sequences: ESC [ ... finalByte
+      if (s[startIndex] !== "\u001b") return null;
+      if (s[startIndex + 1] !== "[") return null;
+      for (let j = startIndex + 2; j < s.length; j++) {
+        const ch = s[j]!;
+        // Final byte is in range 0x40-0x7E, commonly letter or '~'
+        const code = ch.charCodeAt(0);
+        if (code >= 0x40 && code <= 0x7e) {
+          return { consumed: j - startIndex + 1 };
+        }
+      }
+      // Incomplete CSI, keep for next chunk.
+      pending = s.slice(startIndex);
+      return { consumed: s.length - startIndex };
+    }
+
+    function submit() {
+      stdin.off("data", onData);
+      cleanup();
+      const value = buf.join("").replace(/\n$/, "");
+      buf.length = 0;
+      if (value.length > 0) {
+        printSubmittedPrompt(value);
+        console.log();
+      }
+      resolve(value);
+    }
+
+    const onData = (chunk: Buffer) => {
       try {
-        const safeStr = typeof str === "string" ? str : "";
-        str = consumeBracketedPaste(safeStr);
+        let text = decoder.decode(chunk, { stream: true });
+        text = stripAndHandleEscapes(text);
+        text = text.replace(/\r\n/g, "\n");
 
-        if (key?.ctrl && key?.name === "c") {
-          cleanup();
-          process.exit(0);
-        }
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i]!;
 
-        if (key?.name === "escape") {
-          escArmed = true;
-          return;
-        }
+          // Ctrl-C
+          if (ch === "\u0003") {
+            stdin.off("data", onData);
+            cleanup();
+            process.exit(0);
+          }
 
-        if (key?.name === "return" || key?.name === "enter") {
-          // If the newline came from a paste, treat it as input, not submit.
-          if (isPasting) {
-            buffer.push("\n");
+          // Escape sequences
+          if (ch === "\u001b") {
+            const csi = handleCsiSequence(text, i);
+            if (csi) {
+              i += csi.consumed - 1;
+              continue;
+            }
+            // Plain ESC (not CSI) arms newline mode
+            if (!pasteMode) escArmed = true;
+            continue;
+          }
+
+          // Backspace (DEL)
+          if (ch === "\u007f") {
             escArmed = false;
-            render();
+            const joined = buf.join("");
+            buf.length = 0;
+            buf.push(joined.slice(0, -1));
+            continue;
+          }
+
+          // Enter / newline
+          if (ch === "\r" || ch === "\n") {
+            if (pasteMode || escArmed) {
+              buf.push("\n");
+              escArmed = false;
+              continue;
+            }
+            submit();
             return;
           }
-          if (escArmed) {
-            buffer.push("\n");
-            escArmed = false;
-            render();
-            return;
-          }
 
-          // Submit.
-          stdin.off("keypress", onKeypress);
-          cleanup();
-
-          const value = buffer.join("").replace(/\r/g, "").replace(/\n$/, "");
-          buffer.length = 0;
-
-          if (value.length > 0) {
-            printSubmittedPrompt(value);
-            console.log(); // spacer
-          }
-
-          resolve(value);
-          return;
-        }
-
-        if (key?.name === "backspace") {
+          // Regular character
+          buf.push(ch);
           escArmed = false;
-          if (buffer.length > 0) {
-            const last = buffer[buffer.length - 1] ?? "";
-            if (last.length <= 1) buffer.pop();
-            else buffer[buffer.length - 1] = last.slice(0, -1);
-          }
-          render();
-          return;
         }
 
-        // Ignore arrows and other control keys.
-        if (key?.name && ["up", "down", "left", "right", "home", "end", "pageup", "pagedown"].includes(key.name)) {
-          escArmed = false;
-          return;
-        }
-
-        if (typeof str === "string" && str.length > 0) {
-          // Paste may come in as a long string; keep it.
-          // Normalize CRLF and keep embedded newlines as text.
-          buffer.push(str.replace(/\r/g, ""));
-          escArmed = false;
-          render();
-        }
+        render();
       } catch {
-        // Fail safe: restore terminal state and resolve empty prompt.
-        stdin.off("keypress", onKeypress);
+        stdin.off("data", onData);
         cleanup();
         resolve("");
       }
     };
 
-    stdin.on("keypress", onKeypress);
+    if (stdin.isTTY) stdin.setRawMode(true);
+    stdin.resume();
+    if (process.stdout.isTTY) process.stdout.write("\u001b[?2004h");
+    render();
+    stdin.on("data", onData);
   });
 }
 
