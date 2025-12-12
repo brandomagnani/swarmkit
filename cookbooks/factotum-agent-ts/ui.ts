@@ -212,7 +212,7 @@ export async function readPrompt(): Promise<string> {
 
       const out: string[] = [];
       out.push(bg(" ".repeat(width))); // pad above
-      const cursorBlock = chalk.bgWhite(" ");
+      const cursorBlockEmpty = chalk.bgWhite(" ");
       for (let i = 0; i < lines.length; i++) {
         const chunk = lines[i] ?? "";
         const prefix = i === 0 ? promptPrefix : indentPrefix;
@@ -220,12 +220,16 @@ export async function readPrompt(): Promise<string> {
         if (i === cursorLine) {
           const left = chunk.slice(0, cursorCol);
           const right = chunk.slice(cursorCol);
-          const padLen = Math.max(0, width - 2 - left.length - right.length - 1);
+          const under = right.length > 0 ? right[0]! : " ";
+          const cursorCell =
+            right.length > 0 ? chalk.bgWhite.black(under) : cursorBlockEmpty;
+          const rightRest = right.length > 0 ? right.slice(1) : "";
+          const padLen = Math.max(0, width - 2 - left.length - rightRest.length - 1);
           out.push(
             prefix +
               bg(chalk.white(left)) +
-              cursorBlock +
-              bg(chalk.white(right)) +
+              cursorCell +
+              bg(chalk.white(rightRest)) +
               bg(" ".repeat(padLen))
           );
         } else {
