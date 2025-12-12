@@ -61,11 +61,13 @@ export async function readPrompt(): Promise<string> {
   const indentPrefix = bg("  ");
 
   const width = process.stdout.columns || 100;
-  const rows = (process.stdout as any).rows || 24;
-  const maxInputLines = Math.max(1, rows - 5); // match python: keep some context above
+  // Don't hard-cap input height: grow to show full prompt.
+  // (If the prompt exceeds terminal height, the terminal will necessarily scroll.)
+  const maxInputLines = Number.POSITIVE_INFINITY;
 
   const buffer: string[] = [];
   let escArmed = false;
+  let isPasting = false;
 
   function wrapVisualLines(text: string): string[] {
     const lines = text.split(/\r?\n/);
@@ -86,17 +88,42 @@ export async function readPrompt(): Promise<string> {
     return visual;
   }
 
+  function consumeBracketedPaste(input: string): string {
+    // Terminals in bracketed paste mode wrap paste with:
+    //   ESC [ 200 ~  ...paste...  ESC [ 201 ~
+    // We'll strip markers and toggle isPasting.
+    const start = "\u001b[200~";
+    const end = "\u001b[201~";
+    let out = input;
+
+    // Process multiple markers if present.
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const s = out.indexOf(start);
+      const e = out.indexOf(end);
+      if (s === -1 && e === -1) break;
+      if (s !== -1 && (e === -1 || s < e)) {
+        isPasting = true;
+        out = out.replace(start, "");
+        continue;
+      }
+      if (e !== -1) {
+        isPasting = false;
+        out = out.replace(end, "");
+      }
+    }
+    return out;
+  }
+
   function render() {
     const text = buffer.join("");
     const visual = wrapVisualLines(text);
-    const clipped =
-      visual.length > maxInputLines ? visual.slice(visual.length - maxInputLines) : visual;
 
     const out: string[] = [];
     out.push(bg(" ".repeat(width))); // pad above
 
-    for (let i = 0; i < clipped.length; i++) {
-      const chunk = clipped[i] ?? "";
+    for (let i = 0; i < visual.length && i < maxInputLines; i++) {
+      const chunk = visual[i] ?? "";
       const prefix = i === 0 ? promptPrefix : indentPrefix;
       const content = bg(chalk.white(chunk));
       const padLen = Math.max(0, width - 2 - chunk.length);
@@ -130,71 +157,113 @@ export async function readPrompt(): Promise<string> {
     if (stdin.isTTY) stdin.setRawMode(true);
     stdin.resume();
 
+    // Enable bracketed paste mode to reliably detect paste boundaries and avoid
+    // treating pasted newlines as submit.
+    if (process.stdout.isTTY) {
+      process.stdout.write("\u001b[?2004h");
+    }
+
     render();
 
-    const onKeypress = (str: string, key: any) => {
-      if (key?.ctrl && key?.name === "c") {
+    const cleanup = () => {
+      try {
         logUpdate.clear();
         logUpdate.done();
+      } catch {
+        // ignore
+      }
+      try {
+        if (process.stdout.isTTY) process.stdout.write("\u001b[?2004l");
+      } catch {
+        // ignore
+      }
+      try {
         if (stdin.isTTY) stdin.setRawMode(Boolean(wasRaw));
+      } catch {
+        // ignore
+      }
+      try {
         stdin.pause();
-        process.exit(0);
+      } catch {
+        // ignore
       }
+    };
 
-      if (key?.name === "escape") {
-        escArmed = true;
-        return;
-      }
+    const onKeypress = (str: string, key: any) => {
+      try {
+        const safeStr = typeof str === "string" ? str : "";
+        str = consumeBracketedPaste(safeStr);
 
-      if (key?.name === "return" || key?.name === "enter") {
-        if (escArmed) {
-          buffer.push("\n");
+        if (key?.ctrl && key?.name === "c") {
+          cleanup();
+          process.exit(0);
+        }
+
+        if (key?.name === "escape") {
+          escArmed = true;
+          return;
+        }
+
+        if (key?.name === "return" || key?.name === "enter") {
+          // If the newline came from a paste, treat it as input, not submit.
+          if (isPasting) {
+            buffer.push("\n");
+            escArmed = false;
+            render();
+            return;
+          }
+          if (escArmed) {
+            buffer.push("\n");
+            escArmed = false;
+            render();
+            return;
+          }
+
+          // Submit.
+          stdin.off("keypress", onKeypress);
+          cleanup();
+
+          const value = buffer.join("").replace(/\r/g, "").replace(/\n$/, "");
+          buffer.length = 0;
+
+          if (value.length > 0) {
+            printSubmittedPrompt(value);
+            console.log(); // spacer
+          }
+
+          resolve(value);
+          return;
+        }
+
+        if (key?.name === "backspace") {
           escArmed = false;
+          if (buffer.length > 0) {
+            const last = buffer[buffer.length - 1] ?? "";
+            if (last.length <= 1) buffer.pop();
+            else buffer[buffer.length - 1] = last.slice(0, -1);
+          }
           render();
           return;
         }
 
-        // Submit.
+        // Ignore arrows and other control keys.
+        if (key?.name && ["up", "down", "left", "right", "home", "end", "pageup", "pagedown"].includes(key.name)) {
+          escArmed = false;
+          return;
+        }
+
+        if (typeof str === "string" && str.length > 0) {
+          // Paste may come in as a long string; keep it.
+          // Normalize CRLF and keep embedded newlines as text.
+          buffer.push(str.replace(/\r/g, ""));
+          escArmed = false;
+          render();
+        }
+      } catch {
+        // Fail safe: restore terminal state and resolve empty prompt.
         stdin.off("keypress", onKeypress);
-        if (stdin.isTTY) stdin.setRawMode(Boolean(wasRaw));
-        stdin.pause();
-        logUpdate.clear();
-        logUpdate.done();
-
-        const value = buffer.join("").replace(/\r/g, "").replace(/\n$/, "");
-        buffer.length = 0;
-
-        if (value.length > 0) {
-          printSubmittedPrompt(value);
-          console.log(); // spacer
-        }
-
-        resolve(value);
-        return;
-      }
-
-      if (key?.name === "backspace") {
-        escArmed = false;
-        if (buffer.length > 0) {
-          const last = buffer[buffer.length - 1] ?? "";
-          if (last.length <= 1) buffer.pop();
-          else buffer[buffer.length - 1] = last.slice(0, -1);
-        }
-        render();
-        return;
-      }
-
-      // Ignore arrows and other control keys.
-      if (key?.name && ["up", "down", "left", "right", "home", "end", "pageup", "pagedown"].includes(key.name)) {
-        escArmed = false;
-        return;
-      }
-
-      if (typeof str === "string" && str.length > 0) {
-        // Paste may come in as a long string; keep it.
-        buffer.push(str);
-        escArmed = false;
-        render();
+        cleanup();
+        resolve("");
       }
     };
 
