@@ -1,16 +1,23 @@
-"""Rich UI renderer for SwarmKit content events - Claude Code style incremental output."""
+"""Cookbook UI helpers (prompt + output renderer).
+
+Goal: keep `factotum.py` minimal. It should need only:
+- `read_prompt()` for user input
+- `make_renderer()` for streaming content output
+"""
 
 from __future__ import annotations
 
+import asyncio
 from rich.console import Console
 from rich.console import Group
+from rich.live import Live
 from rich.markdown import Markdown
 from rich.panel import Panel
-from rich.text import Text
-from rich.theme import Theme
-from rich.live import Live
 from rich.spinner import Spinner
 from rich.table import Table
+from rich.text import Text
+from rich.theme import Theme
+
 
 theme = Theme({
     "info": "cyan",
@@ -23,6 +30,128 @@ theme = Theme({
 })
 
 console = Console(theme=theme)
+
+
+def _print_submitted_prompt(prompt: str, *, bg: str) -> None:
+    width = getattr(console, "width", None) or 100
+    prompt_style = f"bold fg:#00d75f on {bg}"
+    text_style = f"fg:#ffffff on {bg}"
+    fill_style = f"on {bg}"
+
+    def emit(prefix: str, chunk: str) -> None:
+        # Render a single physical terminal line with full-width background.
+        t = Text(style=fill_style)
+        t.append(prefix, style=prompt_style)
+        t.append(chunk, style=text_style)
+        pad = max(0, width - len(prefix) - len(chunk))
+        if pad:
+            t.append(" " * pad, style=fill_style)
+        console.print(t, overflow="crop", no_wrap=True)
+
+    first_prefix = ""
+    cont_prefix = ""
+
+    for raw_line in prompt.splitlines() or [""]:
+        remaining = raw_line
+        prefix = first_prefix
+        while True:
+            avail = max(1, width - len(prefix))
+            chunk, remaining = remaining[:avail], remaining[avail:]
+            emit(prefix, chunk)
+            if not remaining:
+                break
+            prefix = cont_prefix
+
+
+async def read_prompt(*, fallback_console: Console | None = console) -> str:
+    """Read user input with a styled, full-width, multiline input bar.
+
+    - Enter submits.
+    - Esc then Enter inserts a newline (portable across terminals).
+    """
+    try:
+        from prompt_toolkit.application import Application
+        from prompt_toolkit.formatted_text import HTML
+        from prompt_toolkit.key_binding import KeyBindings
+        from prompt_toolkit.layout import Layout
+        from prompt_toolkit.layout.containers import HSplit, Window
+        from prompt_toolkit.layout.controls import FormattedTextControl
+        from prompt_toolkit.output import create_output
+        from prompt_toolkit.styles import Style
+        from prompt_toolkit.widgets import TextArea
+    except Exception:
+        if fallback_console is None:
+            raise
+        return (await asyncio.to_thread(fallback_console.input, "[bold green]>[/bold green] ")).rstrip("\n")
+
+    bg = "#303030"
+    style = Style.from_dict({
+        "inputbar": f"bg:{bg}",
+        "prompt": f"bold fg:#00d75f bg:{bg}",
+        "input": f"fg:#ffffff bg:{bg}",
+    })
+
+    text_area = TextArea(
+        prompt=HTML("<prompt>&gt;</prompt> "),
+        multiline=True,
+        wrap_lines=True,
+        style="class:input",
+    )
+
+    kb = KeyBindings()
+
+    @kb.add("enter")
+    def _submit(event) -> None:
+        event.app.exit(result=text_area.text)
+
+    @kb.add("escape", "enter")
+    def _newline(event) -> None:
+        text_area.buffer.insert_text("\n")
+
+    def _max_input_lines() -> int:
+        try:
+            rows = create_output().get_size().rows
+        except Exception:
+            rows = 24
+        # 2 pad lines + keep ~3 lines for context above.
+        return max(1, rows - 5)
+
+    def _input_height() -> int:
+        return max(1, min(text_area.document.line_count, _max_input_lines()))
+
+    input_window = Window(
+        content=text_area.control,
+        style="class:inputbar",
+        height=_input_height,
+        dont_extend_height=True,
+    )
+
+    pad = Window(
+        content=FormattedTextControl(""),
+        style="class:inputbar",
+        height=1,
+        dont_extend_height=True,
+    )
+
+    input_bar = HSplit([pad, input_window, pad])
+
+    app = Application(
+        layout=Layout(input_bar),
+        key_bindings=kb,
+        style=style,
+        full_screen=False,
+        erase_when_done=True,
+    )
+
+    prompt = ((await app.run_async()) or "").rstrip("\n")
+
+    # Re-print the submitted prompt into the transcript so it is never clipped.
+    # (The prompt_toolkit UI is erased on submit.) Keep the same "flat bar" style,
+    # without adding borders/boxes.
+    if prompt:
+        _print_submitted_prompt(prompt, bg=bg)
+
+    return prompt
 
 
 class RichRenderer:
@@ -133,7 +262,6 @@ class RichRenderer:
         if title:
             self.tools[tool_id]['title'] = title
 
-        # Skip todo tools
         effective_title = self.tools[tool_id].get('title', '')
         if effective_title in ("write_todos", "TodoWrite") or "todo" in effective_title.lower():
             return
@@ -146,11 +274,8 @@ class RichRenderer:
             return
 
         # Flush any buffered message before rendering plan updates.
-        # TodoWrite often appears between assistant text messages; without this,
-        # separate assistant messages can be concatenated in the transcript.
         self._flush_message()
 
-        # Build plan string to check if it changed
         lines = []
         for entry in entries:
             status = entry.get("status", "pending")
@@ -159,8 +284,6 @@ class RichRenderer:
             lines.append(f"{icon} {content}")
 
         plan_str = "\n".join(lines)
-
-        # Only print if plan content changed
         if plan_str == self._last_plan_str:
             return
         self._last_plan_str = plan_str
@@ -175,7 +298,7 @@ class RichRenderer:
 
         console.print(Panel("\n".join(styled_lines), title="[bold]Plan[/bold]", border_style="cyan", padding=(0, 1)))
         self._last_print_was_blank = False
-        console.print()  # blank line after plan
+        console.print()
         self._last_print_was_blank = True
         self._last_was_tool = False
         self._has_content = True
@@ -226,13 +349,7 @@ class RichRenderer:
 
     def _flush_message(self):
         if self.current_message.strip():
-            # If tools are currently displayed in the status region, visually separate
-            # the transcript message from the tool list.
             if self._has_visible_tools() and not self._last_print_was_blank:
-                console.print()
-                self._last_print_was_blank = True
-
-            if self._last_was_tool and not self._last_print_was_blank:
                 console.print()
                 self._last_print_was_blank = True
 
@@ -319,8 +436,6 @@ class RichRenderer:
         self._stop_status_live(final=True)
 
         if self.current_message.strip():
-            # Ensure a blank line between the final tool list snapshot and the
-            # final markdown message (Live renders without adding extra spacing).
             if self._has_visible_tools():
                 console.print()
                 self._last_print_was_blank = True
@@ -335,3 +450,8 @@ class RichRenderer:
                 border_style="dim",
                 padding=(0, 1),
             ))
+
+
+def make_renderer(*, show_reasoning: bool = False) -> RichRenderer:
+    """Create the Rich output renderer used for `agent.on("content", ...)`."""
+    return RichRenderer(show_reasoning=show_reasoning)

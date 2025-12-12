@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from swarmkit import SwarmKit, AgentConfig, E2BProvider
-from rich_ui import RichRenderer, console
+from ui import make_renderer, read_prompt, console
 from rich.panel import Panel
 
 load_dotenv()  # Load .env file
@@ -73,91 +73,8 @@ agent = SwarmKit(
 
 # ─────────────────────────────────────────────────────────────
 
-async def prompt_input() -> str:
-    """Read user input with a styled, full-width input bar.
-
-    Uses prompt_toolkit when available (recommended) for a Codex-like multiline input
-    experience. Falls back to Rich's console.input() if prompt_toolkit isn't installed.
-    """
-    try:
-        from prompt_toolkit.application import Application
-        from prompt_toolkit.formatted_text import HTML
-        from prompt_toolkit.key_binding import KeyBindings
-        from prompt_toolkit.layout import Layout
-        from prompt_toolkit.layout.containers import HSplit, Window
-        from prompt_toolkit.output import create_output
-        from prompt_toolkit.styles import Style
-        from prompt_toolkit.layout.controls import FormattedTextControl
-        from prompt_toolkit.widgets import TextArea
-    except Exception:
-        # Keep prompt responsive even inside async main.
-        return (await asyncio.to_thread(console.input, "[bold green]>[/bold green] ")).rstrip("\n")
-
-    bg = "#303030"
-    style = Style.from_dict({
-        "inputbar": f"bg:{bg}",
-        "prompt": f"bold fg:#00d75f bg:{bg}",
-        "input": f"fg:#ffffff bg:{bg}",
-    })
-
-    text_area = TextArea(
-        prompt=HTML("<prompt>&gt;</prompt> "),
-        multiline=True,
-        wrap_lines=True,
-        style="class:input",
-    )
-
-    kb = KeyBindings()
-
-    @kb.add("enter")
-    def _submit(event) -> None:
-        event.app.exit(result=text_area.text)
-
-    # prompt_toolkit doesn't support Shift+Enter in a portable way.
-    # Use Esc then Enter to insert a newline.
-    @kb.add("escape", "enter")
-    def _newline(event) -> None:
-        text_area.buffer.insert_text("\n")
-
-    def _max_input_lines() -> int:
-        try:
-            rows = create_output().get_size().rows
-        except Exception:
-            rows = 24
-        # 2 pad lines + keep ~3 lines for context above.
-        return max(1, rows - 5)
-
-    def _input_height() -> int:
-        return max(1, min(text_area.document.line_count, _max_input_lines()))
-
-    input_window = Window(
-        content=text_area.control,
-        style="class:inputbar",
-        height=_input_height,
-        dont_extend_height=True,
-    )
-
-    pad = Window(
-        content=FormattedTextControl(""),
-        style="class:inputbar",
-        height=1,
-        dont_extend_height=True,
-    )
-
-    input_bar = HSplit([pad, input_window, pad])
-
-    app = Application(
-        layout=Layout(input_bar),
-        key_bindings=kb,
-        style=style,
-        full_screen=False,
-    )
-
-    # Run prompt-toolkit without nesting event loops.
-    return ((await app.run_async()) or "").rstrip("\n")
-
 async def main():
-    renderer = RichRenderer()
+    renderer = make_renderer()
     agent.on("content", renderer.handle_event)
 
     console.print()
@@ -169,7 +86,7 @@ async def main():
     console.print()
 
     while True:
-        prompt = await prompt_input()
+        prompt = await read_prompt()
         if not prompt:
             continue
         if prompt in ("/quit", "/exit", "/q"):
