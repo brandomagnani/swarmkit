@@ -85,7 +85,8 @@ export async function readPrompt(): Promise<string> {
     let pasteMode = false;
     let pasteEndedThisChunk = false; // Delay pasteMode=false until after processing
     let pending = ""; // carry partial escape sequences across chunks
-    const buf: string[] = [];
+    let textValue = "";
+    let cursorIndex = 0;
 
     const PASTE_START = "\u001b[200~";
     const PASTE_END = "\u001b[201~";
@@ -133,17 +134,104 @@ export async function readPrompt(): Promise<string> {
       return visual;
     }
 
+    function layoutWithCursor(value: string, cursor: number): { lines: string[]; cursorLine: number; cursorCol: number } {
+      const avail = Math.max(1, width - 2);
+      const clamped = Math.max(0, Math.min(cursor, value.length));
+
+      const lines: string[] = [""];
+      let lineIndex = 0;
+      let col = 0;
+      let cursorLine = 0;
+      let cursorCol = 0;
+
+      for (let i = 0; i <= value.length; i++) {
+        if (i === clamped) {
+          cursorLine = lineIndex;
+          cursorCol = col;
+        }
+
+        if (i === value.length) break;
+        const ch = value[i]!;
+
+        if (ch === "\n") {
+          lines.push("");
+          lineIndex++;
+          col = 0;
+          continue;
+        }
+
+        if (col >= avail) {
+          lines.push("");
+          lineIndex++;
+          col = 0;
+        }
+
+        lines[lineIndex] += ch;
+        col++;
+      }
+
+      // If cursor lands exactly on a wrap boundary, show it on the next line.
+      if (cursorCol >= avail) {
+        lines.push("");
+        cursorLine++;
+        cursorCol = 0;
+      }
+
+      return { lines, cursorLine, cursorCol };
+    }
+
+    function deleteBeforeCursor(): void {
+      if (cursorIndex <= 0) return;
+      textValue = textValue.slice(0, cursorIndex - 1) + textValue.slice(cursorIndex);
+      cursorIndex -= 1;
+    }
+
+    function deleteAtCursor(): void {
+      if (cursorIndex >= textValue.length) return;
+      textValue = textValue.slice(0, cursorIndex) + textValue.slice(cursorIndex + 1);
+    }
+
+    function insertAtCursor(s: string): void {
+      if (!s) return;
+      textValue = textValue.slice(0, cursorIndex) + s + textValue.slice(cursorIndex);
+      cursorIndex += s.length;
+    }
+
+    function moveHome(): void {
+      const prevNl = textValue.lastIndexOf("\n", Math.max(0, cursorIndex - 1));
+      cursorIndex = prevNl === -1 ? 0 : prevNl + 1;
+    }
+
+    function moveEnd(): void {
+      const nextNl = textValue.indexOf("\n", cursorIndex);
+      cursorIndex = nextNl === -1 ? textValue.length : nextNl;
+    }
+
     function render() {
-      const text = buf.join("");
-      const visual = wrapVisualLines(text);
+      const { lines, cursorLine, cursorCol } = layoutWithCursor(textValue, cursorIndex);
+
       const out: string[] = [];
       out.push(bg(" ".repeat(width))); // pad above
-      for (let i = 0; i < visual.length; i++) {
-        const chunk = visual[i] ?? "";
+      const cursorBlock = chalk.bgWhite(" ");
+      for (let i = 0; i < lines.length; i++) {
+        const chunk = lines[i] ?? "";
         const prefix = i === 0 ? promptPrefix : indentPrefix;
-        const content = bg(chalk.white(chunk));
-        const padLen = Math.max(0, width - 2 - chunk.length);
-        out.push(prefix + content + bg(" ".repeat(padLen)));
+
+        if (i === cursorLine) {
+          const left = chunk.slice(0, cursorCol);
+          const right = chunk.slice(cursorCol);
+          const padLen = Math.max(0, width - 2 - left.length - right.length - 1);
+          out.push(
+            prefix +
+              bg(chalk.white(left)) +
+              cursorBlock +
+              bg(chalk.white(right)) +
+              bg(" ".repeat(padLen))
+          );
+        } else {
+          const padLen = Math.max(0, width - 2 - chunk.length);
+          out.push(prefix + bg(chalk.white(chunk)) + bg(" ".repeat(padLen)));
+        }
       }
       out.push(bg(" ".repeat(width))); // pad below
       logUpdate(out.join("\n"));
@@ -185,7 +273,10 @@ export async function readPrompt(): Promise<string> {
       return s;
     }
 
-    function handleCsiSequence(s: string, startIndex: number): { consumed: number } | null {
+    function handleCsiSequence(
+      s: string,
+      startIndex: number
+    ): { consumed: number; seq: string | null } | null {
       // Consume CSI sequences: ESC [ ... finalByte
       if (s[startIndex] !== "\u001b") return null;
       if (s[startIndex + 1] !== "[") return null;
@@ -194,19 +285,20 @@ export async function readPrompt(): Promise<string> {
         // Final byte is in range 0x40-0x7E, commonly letter or '~'
         const code = ch.charCodeAt(0);
         if (code >= 0x40 && code <= 0x7e) {
-          return { consumed: j - startIndex + 1 };
+          return { consumed: j - startIndex + 1, seq: s.slice(startIndex, j + 1) };
         }
       }
       // Incomplete CSI, keep for next chunk.
       pending = s.slice(startIndex);
-      return { consumed: s.length - startIndex };
+      return { consumed: s.length - startIndex, seq: null };
     }
 
     function submit() {
       stdin.off("data", onData);
       cleanup();
-      const value = buf.join("").replace(/\n$/, "");
-      buf.length = 0;
+      const value = textValue.replace(/\n$/, "");
+      textValue = "";
+      cursorIndex = 0;
       if (value.length > 0) {
         printSubmittedPrompt(value);
         console.log();
@@ -234,6 +326,27 @@ export async function readPrompt(): Promise<string> {
           if (ch === "\u001b") {
             const csi = handleCsiSequence(text, i);
             if (csi) {
+              // Interpret common cursor movement keys when not pasting.
+              if (!pasteMode && csi.seq) {
+                if (csi.seq === "\u001b[D") {
+                  // Left
+                  cursorIndex = Math.max(0, cursorIndex - 1);
+                } else if (csi.seq === "\u001b[C") {
+                  // Right
+                  cursorIndex = Math.min(textValue.length, cursorIndex + 1);
+                } else if (csi.seq === "\u001b[H" || csi.seq === "\u001b[1~" || csi.seq === "\u001b[7~") {
+                  // Home
+                  moveHome();
+                } else if (csi.seq === "\u001b[F" || csi.seq === "\u001b[4~" || csi.seq === "\u001b[8~") {
+                  // End
+                  moveEnd();
+                } else if (csi.seq === "\u001b[3~") {
+                  // Delete
+                  deleteAtCursor();
+                }
+                escArmed = false;
+              }
+
               i += csi.consumed - 1;
               continue;
             }
@@ -245,16 +358,14 @@ export async function readPrompt(): Promise<string> {
           // Backspace (DEL)
           if (ch === "\u007f") {
             escArmed = false;
-            const joined = buf.join("");
-            buf.length = 0;
-            buf.push(joined.slice(0, -1));
+            deleteBeforeCursor();
             continue;
           }
 
           // Enter / newline
           if (ch === "\r" || ch === "\n") {
             if (pasteMode || escArmed) {
-              buf.push("\n");
+              insertAtCursor("\n");
               escArmed = false;
               continue;
             }
@@ -263,7 +374,7 @@ export async function readPrompt(): Promise<string> {
           }
 
           // Regular character
-          buf.push(ch);
+          insertAtCursor(ch);
           escArmed = false;
         }
 
