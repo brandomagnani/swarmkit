@@ -8,7 +8,12 @@
   "dependencies": {
     "@swarmkit/e2b": "^0.1.25",
     "@swarmkit/sdk": "^0.1.25",
-    "dotenv": "^16.4.7"
+    "boxen": "^8.0.1",
+    "chalk": "^5.4.1",
+    "dotenv": "^16.4.7",
+    "log-update": "^6.1.0",
+    "marked": "^15.0.6",
+    "marked-terminal": "^7.3.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.18",

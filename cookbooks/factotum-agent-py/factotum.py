@@ -23,7 +23,7 @@ load_dotenv()  # Load .env file
 # ─────────────────────────────────────────────────────────────
 
 AGENT = AgentConfig(
-    type="codex",                              # claude, codex, gemini,
+    type="claude",                              # claude, codex, gemini,
     api_key=os.getenv("SWARMKIT_API_KEY"),
 )
 
