@@ -13,8 +13,25 @@ import { markedTerminal } from "marked-terminal";
 import boxen from "boxen";
 import { TextDecoder } from "node:util";
 
-// Configure marked for terminal output
-marked.use(markedTerminal() as marked.MarkedExtension);
+let configuredMarkdownWidth = 0;
+function configureMarkdownRenderer(): void {
+  const width = process.stdout.columns || 100;
+  if (width === configuredMarkdownWidth) return;
+  configuredMarkdownWidth = width;
+
+  // Match Rich's "natural" markdown feel:
+  // - respect terminal width
+  // - don't print `###` prefixes for headings
+  // - wrap table cells instead of overflowing
+  marked.use(
+    markedTerminal({
+      width,
+      showSectionPrefix: false,
+      reflowText: false,
+      tableOptions: { wordWrap: true },
+    }) as marked.MarkedExtension
+  );
+}
 
 // ─────────────────────────────────────────────────────────────
 // Theme colors (matching Python Rich theme)
@@ -49,6 +66,7 @@ export const console_ = {
 // ─────────────────────────────────────────────────────────────
 
 export async function readPrompt(): Promise<string> {
+  configureMarkdownRenderer();
   logUpdate.clear();
   logUpdate.done();
 
@@ -796,6 +814,7 @@ export class Renderer {
     this.stopLiveInternal(true);
 
     if (this.currentMessage.trim()) {
+      configureMarkdownRenderer();
       if (this.hasVisibleTools()) {
         console.log();
         this.lastPrintWasBlank = true;
