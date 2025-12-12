@@ -14,7 +14,8 @@ import { createE2BProvider } from "@swarmkit/e2b";
 
 // Create sandbox provider
 const sandbox = createE2BProvider({
-    apiKey: process.env.E2B_API_KEY!
+    apiKey: process.env.E2B_API_KEY!,
+    defaultTimeoutMs: 3_600_000,  // 1 hour (default), max sandbox lifetime
 });
 
 // Build SwarmKit instance

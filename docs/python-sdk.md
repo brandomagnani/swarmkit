@@ -15,7 +15,10 @@ import os
 from swarmkit import SwarmKit, AgentConfig, E2BProvider
 
 # Create sandbox provider
-sandbox = E2BProvider(api_key=os.getenv('E2B_API_KEY'))
+sandbox = E2BProvider(
+    api_key=os.getenv('E2B_API_KEY'),
+    timeout_ms=3_600_000,  # 1 hour (default), max sandbox lifetime
+)
 
 # Build SwarmKit instance
 swarmkit = SwarmKit(
