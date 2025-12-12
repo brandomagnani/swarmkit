@@ -83,6 +83,7 @@ export async function readPrompt(): Promise<string> {
 
     let escArmed = false;
     let pasteMode = false;
+    let pasteEndedThisChunk = false; // Delay pasteMode=false until after processing
     let pending = ""; // carry partial escape sequences across chunks
     const buf: string[] = [];
 
@@ -151,6 +152,7 @@ export async function readPrompt(): Promise<string> {
     function stripAndHandleEscapes(input: string): string {
       let s = pending + input;
       pending = "";
+      pasteEndedThisChunk = false;
 
       // Preserve trailing partial sequences that might be paste markers.
       const maxMarker = Math.max(PASTE_START.length, PASTE_END.length);
@@ -174,7 +176,8 @@ export async function readPrompt(): Promise<string> {
           continue;
         }
         if (iEnd !== -1) {
-          pasteMode = false;
+          // Don't set pasteMode=false yet - delay until after processing content
+          pasteEndedThisChunk = true;
           s = s.slice(0, iEnd) + s.slice(iEnd + PASTE_END.length);
         }
       }
@@ -262,6 +265,12 @@ export async function readPrompt(): Promise<string> {
           // Regular character
           buf.push(ch);
           escArmed = false;
+        }
+
+        // Now that we've processed all characters, reset pasteMode if paste ended
+        if (pasteEndedThisChunk) {
+          pasteMode = false;
+          pasteEndedThisChunk = false;
         }
 
         render();
