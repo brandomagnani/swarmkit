@@ -11,7 +11,7 @@ import logUpdate from "log-update";
 import { marked } from "marked";
 import { markedTerminal } from "marked-terminal";
 import boxen from "boxen";
-import readline from "readline";
+import readline from "node:readline";
 
 // Configure marked for terminal output
 marked.use(markedTerminal() as marked.MarkedExtension);
@@ -49,16 +49,156 @@ export const console_ = {
 // ─────────────────────────────────────────────────────────────
 
 export async function readPrompt(): Promise<string> {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+  // Ensure any previous live block is finalized.
+  logUpdate.clear();
+  logUpdate.done();
 
-  return new Promise((resolve) => {
-    rl.question(chalk.bold.green("> "), (answer) => {
-      rl.close();
-      resolve(answer.trim());
-    });
+  const bgHex = "#303030";
+  const prefixColor = "#00d75f";
+
+  const bg = chalk.bgHex(bgHex);
+  const promptPrefix = bg(chalk.hex(prefixColor).bold("> "));
+  const indentPrefix = bg("  ");
+
+  const width = process.stdout.columns || 100;
+  const rows = (process.stdout as any).rows || 24;
+  const maxInputLines = Math.max(1, rows - 5); // match python: keep some context above
+
+  const buffer: string[] = [];
+  let escArmed = false;
+
+  function wrapVisualLines(text: string): string[] {
+    const lines = text.split(/\r?\n/);
+    const visual: string[] = [];
+    const availFirst = Math.max(1, width - 2);
+    const avail = availFirst;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i] ?? "";
+      if (line.length === 0) {
+        visual.push("");
+        continue;
+      }
+      for (let j = 0; j < line.length; j += avail) {
+        visual.push(line.slice(j, j + avail));
+      }
+    }
+    return visual;
+  }
+
+  function render() {
+    const text = buffer.join("");
+    const visual = wrapVisualLines(text);
+    const clipped =
+      visual.length > maxInputLines ? visual.slice(visual.length - maxInputLines) : visual;
+
+    const out: string[] = [];
+    out.push(bg(" ".repeat(width))); // pad above
+
+    for (let i = 0; i < clipped.length; i++) {
+      const chunk = clipped[i] ?? "";
+      const prefix = i === 0 ? promptPrefix : indentPrefix;
+      const content = bg(chalk.white(chunk));
+      const padLen = Math.max(0, width - 2 - chunk.length);
+      out.push(prefix + content + bg(" ".repeat(padLen)));
+    }
+
+    out.push(bg(" ".repeat(width))); // pad below
+    logUpdate(out.join("\n"));
+  }
+
+  function printSubmittedPrompt(prompt: string) {
+    const lines = prompt.split(/\r?\n/);
+    for (const line of lines) {
+      const chunks = line.length > width
+        ? line.match(new RegExp(`.{1,${width}}`, "g")) ?? [line]
+        : [line];
+      for (const chunk of chunks) {
+        const padLen = Math.max(0, width - chunk.length);
+        // No '>' after submit (match python).
+        // Full-width background on every physical line.
+        console.log(bg(chunk + " ".repeat(padLen)));
+      }
+    }
+  }
+
+  return await new Promise<string>((resolve) => {
+    const stdin = process.stdin;
+    const wasRaw = (stdin as any).isRaw;
+
+    readline.emitKeypressEvents(stdin);
+    if (stdin.isTTY) stdin.setRawMode(true);
+    stdin.resume();
+
+    render();
+
+    const onKeypress = (str: string, key: any) => {
+      if (key?.ctrl && key?.name === "c") {
+        logUpdate.clear();
+        logUpdate.done();
+        if (stdin.isTTY) stdin.setRawMode(Boolean(wasRaw));
+        stdin.pause();
+        process.exit(0);
+      }
+
+      if (key?.name === "escape") {
+        escArmed = true;
+        return;
+      }
+
+      if (key?.name === "return" || key?.name === "enter") {
+        if (escArmed) {
+          buffer.push("\n");
+          escArmed = false;
+          render();
+          return;
+        }
+
+        // Submit.
+        stdin.off("keypress", onKeypress);
+        if (stdin.isTTY) stdin.setRawMode(Boolean(wasRaw));
+        stdin.pause();
+        logUpdate.clear();
+        logUpdate.done();
+
+        const value = buffer.join("").replace(/\r/g, "").replace(/\n$/, "");
+        buffer.length = 0;
+
+        if (value.length > 0) {
+          printSubmittedPrompt(value);
+          console.log(); // spacer
+        }
+
+        resolve(value);
+        return;
+      }
+
+      if (key?.name === "backspace") {
+        escArmed = false;
+        if (buffer.length > 0) {
+          const last = buffer[buffer.length - 1] ?? "";
+          if (last.length <= 1) buffer.pop();
+          else buffer[buffer.length - 1] = last.slice(0, -1);
+        }
+        render();
+        return;
+      }
+
+      // Ignore arrows and other control keys.
+      if (key?.name && ["up", "down", "left", "right", "home", "end", "pageup", "pagedown"].includes(key.name)) {
+        escArmed = false;
+        return;
+      }
+
+      if (typeof str === "string" && str.length > 0) {
+        // Paste may come in as a long string; keep it.
+        buffer.push(str);
+        escArmed = false;
+        render();
+      }
+    };
+
+    stdin.on("keypress", onKeypress);
   });
 }
 
