@@ -92,7 +92,6 @@ async function main() {
       break;
     }
 
-    console_.print();
     renderer.reset();
     renderer.startLive();
 

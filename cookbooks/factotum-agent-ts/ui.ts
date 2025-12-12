@@ -739,7 +739,7 @@ export class Renderer {
 
     if (showSpinner) {
       const frame = SPINNER_FRAMES[this.spinnerFrame % SPINNER_FRAMES.length];
-      const spinnerLine = `${theme.info(frame)} ${theme.muted("Working...")}`;
+      const spinnerLine = `${theme.info(frame)} ${theme.info("Working...")}`;
 
       if (lines.length > 0) {
         lines.push(""); // blank line before spinner
