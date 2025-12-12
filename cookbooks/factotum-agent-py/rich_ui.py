@@ -1,7 +1,9 @@
 """Rich UI renderer for SwarmKit content events - Claude Code style incremental output."""
 
-import sys
+from __future__ import annotations
+
 from rich.console import Console
+from rich.console import Group
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
@@ -32,12 +34,10 @@ class RichRenderer:
         self.tools = {}  # tool_id -> {info}
         self.tool_order = []  # ordered list of tool_ids
         self.show_reasoning = show_reasoning
-        self.spinner_live = None
+        self.status_live: Live | None = None
         self._last_was_tool = False
         self._last_plan_str = ""
         self._has_content = False
-        self._needs_spacing = False
-        self._can_update_tools = True  # False if plan/message printed after tools
 
     def _one_line(self, value: str, max_len: int = 120) -> str:
         if not isinstance(value, str):
@@ -48,6 +48,7 @@ class RichRenderer:
         return compact
 
     def reset(self):
+        self._stop_status_live(final=False)
         self.current_message = ""
         self.thought_buffer = ""
         self.tools = {}
@@ -55,8 +56,6 @@ class RichRenderer:
         self._last_was_tool = False
         self._last_plan_str = ""
         self._has_content = False
-        self._needs_spacing = False
-        self._can_update_tools = True
 
     def handle_event(self, event: dict):
         update = event.get("update", {})
@@ -88,51 +87,56 @@ class RichRenderer:
         title = update.get("title", "Tool")
         kind = update.get("kind", "other")
         raw_input = update.get("rawInput", {})
+        status = update.get("status") or "pending"
 
         # Flush message first
         self._flush_message()
 
-        # Skip if already printed
-        if tool_id in self.tools:
-            return
-
-        self.tools[tool_id] = {
+        # Upsert tool (some backends may emit tool_call multiple times per id)
+        if tool_id not in self.tools:
+            self.tool_order.append(tool_id)
+            self.tools[tool_id] = {}
+        self.tools[tool_id].update({
             'title': title,
             'kind': kind,
-            'status': 'pending',
-            'raw_input': raw_input
-        }
-        self.tool_order.append(tool_id)
+            'status': status,
+            'raw_input': raw_input,
+        })
 
         # Skip todo tools
         if title in ("write_todos", "TodoWrite") or "todo" in title.lower():
             return
 
-        self._stop_spinner()
-        self._print_tool(tool_id)
         self._last_was_tool = True
-        self._can_update_tools = True  # tools can be updated now
-        self._start_spinner()
+        self._refresh_status_live()
 
     def _handle_tool_update(self, update: dict):
         tool_id = update.get("toolCallId", "")
-        status = update.get("status", "")
+        status = update.get("status")
+        title = update.get("title")
 
+        # Create placeholder if updates arrive out of order
         if tool_id not in self.tools:
+            self.tool_order.append(tool_id)
+            self.tools[tool_id] = {
+                'title': title or "Tool",
+                'kind': "other",
+                'status': status or "pending",
+                'raw_input': {},
+            }
+
+        old_status = self.tools[tool_id].get('status')
+        if status is not None and old_status != status:
+            self.tools[tool_id]['status'] = status
+        if title:
+            self.tools[tool_id]['title'] = title
+
+        # Skip todo tools
+        effective_title = self.tools[tool_id].get('title', '')
+        if effective_title in ("write_todos", "TodoWrite") or "todo" in effective_title.lower():
             return
 
-        old_status = self.tools[tool_id]['status']
-        if old_status == status:
-            return
-
-        self.tools[tool_id]['status'] = status
-
-        # Update dot color in place
-        title = self.tools[tool_id]['title']
-        if title in ("write_todos", "TodoWrite") or "todo" in title.lower():
-            return
-
-        self._update_tool_in_place(tool_id)
+        self._refresh_status_live()
 
     def _handle_plan(self, update: dict):
         entries = update.get("entries", [])
@@ -154,8 +158,6 @@ class RichRenderer:
             return
         self._last_plan_str = plan_str
 
-        self._stop_spinner()
-
         # Blank line before plan if there's prior content
         if self._has_content:
             console.print()
@@ -172,15 +174,18 @@ class RichRenderer:
         console.print()  # blank line after plan
         self._last_was_tool = False
         self._has_content = True
-        self._needs_spacing = False  # already has blank line
-        self._can_update_tools = False  # can't update tools above plan
-        self._start_spinner()
+        self._refresh_status_live()
 
-    def _print_tool(self, tool_id: str):
+    def _should_display_tool(self, title: str) -> bool:
+        if title in ("write_todos", "TodoWrite") or "todo" in title.lower():
+            return False
+        return True
+
+    def _format_tool_line(self, tool_id: str) -> Text:
         tool = self.tools[tool_id]
-        title = tool['title']
-        kind = tool['kind']
-        status = tool['status']
+        title = tool.get('title', 'Tool')
+        kind = tool.get('kind', 'other')
+        status = tool.get('status', 'pending')
         raw_input = tool.get('raw_input', {}) or {}
 
         kind_labels = {
@@ -204,68 +209,10 @@ class RichRenderer:
             result.append(self._one_line(content), style="dim white")
             result.append(")", style="white")
 
-        console.print(result)
-        self._has_content = True
-        self._needs_spacing = True
-
-    def _update_tool_in_place(self, tool_id: str):
-        """Update a tool's dot color using ANSI cursor movement."""
-        if tool_id not in self.tool_order:
-            return
-
-        # Skip if plan/message was printed after tools (line count would be wrong)
-        if not self._can_update_tools:
-            return
-
-        # Find position: count visible tools after this one
-        tool_index = self.tool_order.index(tool_id)
-        visible_after = 0
-        for tid in self.tool_order[tool_index + 1:]:
-            t = self.tools.get(tid, {})
-            title = t.get('title', '')
-            if title not in ("write_todos", "TodoWrite") and "todo" not in title.lower():
-                visible_after += 1
-
-        lines_back = visible_after + 1  # +1 for spinner
-
-        self._stop_spinner()
-
-        # Build the tool line string
-        tool = self.tools[tool_id]
-        title = tool['title']
-        kind = tool['kind']
-        status = tool['status']
-        raw_input = tool.get('raw_input', {}) or {}
-
-        kind_labels = {
-            "read": "Read", "edit": "Write", "execute": "Bash",
-            "fetch": "Fetch", "search": "Search", "think": "Task", "switch_mode": "Mode",
-        }
-        content = self._get_tool_content(kind, raw_input, title)
-        content = self._one_line(content)
-
-        # Color codes
-        dot_color = "\033[32m" if status == 'completed' else "\033[31m" if status == 'failed' else "\033[36m"
-        reset = "\033[0m"
-        dim = "\033[2m"
-
-        label = kind_labels.get(kind, title)
-        line = f"{dot_color}● {reset}{label}({dim}{content}{reset})"
-
-        # Move up, clear line, print, move back down
-        sys.stdout.write(f"\033[{lines_back}A")  # Move up
-        sys.stdout.write("\033[2K")  # Clear line
-        sys.stdout.write(f"\r{line}\n")  # Print with newline
-        if lines_back > 1:
-            sys.stdout.write(f"\033[{lines_back - 1}B")  # Move down
-        sys.stdout.flush()
-
-        self._start_spinner()
+        return result
 
     def _flush_message(self):
         if self.current_message.strip():
-            self._stop_spinner()
-
             if self._last_was_tool:
                 console.print()
 
@@ -274,9 +221,7 @@ class RichRenderer:
             self.current_message = ""
             self._last_was_tool = False
             self._has_content = True
-            self._needs_spacing = False  # already has blank line
-            self._can_update_tools = False  # can't update tools above message
-            self._start_spinner()
+            self._refresh_status_live()
 
     def _get_tool_content(self, kind: str, raw_input: dict, title: str) -> str:
         raw_input = raw_input or {}
@@ -295,29 +240,60 @@ class RichRenderer:
                     raw_input.get("file_path") or raw_input.get("path") or
                     raw_input.get("instruction") or title)
 
-    def _start_spinner(self):
-        if self.spinner_live is None:
-            if self._needs_spacing:
-                console.print()  # blank line before spinner
-                self._needs_spacing = False
-            spinner_table = Table.grid(padding=(0, 1))
-            spinner_table.add_row(Spinner("dots", style="cyan"), Text("Working...", style="dim cyan"))
-            self.spinner_live = Live(spinner_table, console=console, refresh_per_second=10, transient=True)
-            self.spinner_live.start()
+    def _render_status(self, show_spinner: bool = True):
+        lines = []
+        for tool_id in self.tool_order:
+            tool = self.tools.get(tool_id, {}) or {}
+            title = tool.get('title', '') or ''
+            if not self._should_display_tool(title):
+                continue
+            lines.append(self._format_tool_line(tool_id))
 
-    def _stop_spinner(self):
-        if self.spinner_live:
-            self.spinner_live.stop()
-            self.spinner_live = None
+        if not show_spinner:
+            return Group(*lines) if lines else Text("")
+
+        spinner_table = Table.grid(padding=(0, 1))
+        spinner_table.add_row(Spinner("dots", style="cyan"), Text("Working...", style="dim cyan"))
+
+        if lines:
+            lines.append(Text(""))
+            lines.append(spinner_table)
+            return Group(*lines)
+
+        return spinner_table
+
+    def _start_status_live(self):
+        if self.status_live is not None:
+            return
+        self.status_live = Live(
+            self._render_status(show_spinner=True),
+            console=console,
+            refresh_per_second=12,
+            transient=False,
+        )
+        self.status_live.start()
+
+    def _refresh_status_live(self):
+        if self.status_live is None:
+            return
+        self.status_live.update(self._render_status(show_spinner=True), refresh=True)
+
+    def _stop_status_live(self, *, final: bool):
+        if self.status_live is None:
+            return
+        if final:
+            self.status_live.update(self._render_status(show_spinner=False), refresh=True)
+        self.status_live.stop()
+        self.status_live = None
 
     def start_live(self):
         console.print()
         console.print("[bold cyan]Factotum[/bold cyan]")
         console.print()
-        self._start_spinner()
+        self._start_status_live()
 
     def stop_live(self):
-        self._stop_spinner()
+        self._stop_status_live(final=True)
 
         if self.current_message.strip():
             if self._last_was_tool:
