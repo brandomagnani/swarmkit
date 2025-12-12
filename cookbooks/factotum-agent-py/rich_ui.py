@@ -1,5 +1,6 @@
 """Rich UI renderer for SwarmKit content events."""
 
+import time
 from rich.console import Console, Group
 from rich.live import Live
 from rich.markdown import Markdown
@@ -24,7 +25,7 @@ console = Console(theme=theme)
 class RichRenderer:
     """Renders ACP content events with Rich formatting."""
 
-    def __init__(self):
+    def __init__(self, show_reasoning: bool = False):
         self.events = []  # Ordered list: {'type': 'tool'|'message', ...}
         self.current_message = ""  # Accumulating message chunk
         self.thought_buffer = ""
@@ -32,6 +33,19 @@ class RichRenderer:
         self.tools = {}  # id -> {title, status} for updates
         self.live = None
         self.working = False
+        self.show_reasoning = show_reasoning
+        # Throttle explicit refreshes; Live also auto-refreshes.
+        self._last_refresh_s = 0.0
+        self._min_refresh_interval_s = 0.1  # ~10Hz
+
+    def _one_line(self, value: str, max_len: int = 160) -> str:
+        """Collapse whitespace/newlines and truncate for single-line tool display."""
+        if not isinstance(value, str):
+            value = str(value)
+        compact = " ".join(value.split())
+        if len(compact) > max_len:
+            return compact[: max_len - 3] + "..."
+        return compact
 
     def reset(self):
         self.events = []
@@ -101,8 +115,14 @@ class RichRenderer:
         self._refresh()
 
     def _refresh(self):
-        if self.live:
-            self.live.update(self._render())
+        # Avoid re-rendering on every event (quadratic cost with many tool calls).
+        if not self.live:
+            return
+        now = time.monotonic()
+        if now - self._last_refresh_s >= self._min_refresh_interval_s:
+            self._last_refresh_s = now
+            # Update renderable without forcing per-event renders.
+            self.live.update(self, refresh=True)
 
     def _render_tool(self, tool_id: str) -> Text:
         """Render a single tool status with kind-based label."""
@@ -167,6 +187,11 @@ class RichRenderer:
         # Strip backticks - not needed with Type() format
         if isinstance(content, str):
             content = content.strip("`")
+
+        if isinstance(content, str):
+            content = self._one_line(content)
+        else:
+            content = self._one_line(str(content))
 
         if label:
             # Strip redundant prefix (e.g., "Read /path" → "/path")
@@ -266,7 +291,7 @@ class RichRenderer:
             self.live = None
 
         # Show reasoning if any (after main panel)
-        if self.thought_buffer.strip():
+        if self.show_reasoning and self.thought_buffer.strip():
             console.print()
             console.print(Panel(
                 Text(self.thought_buffer, style="thought"),
