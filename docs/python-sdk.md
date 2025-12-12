@@ -217,33 +217,42 @@ swarmkit.on('content', lambda event: print(event['update']))
 | `user_message_chunk` | User message echo (Gemini) | `content.type`, `content.text` |
 | `tool_call` | Tool started | `toolCallId`, `title`, `kind`, `status`, `rawInput` |
 | `tool_call_update` | Tool finished | `toolCallId`, `status` |
-| `plan` | TodoWrite updates | `entries[]` with `id`, `content`, `status` |
+| `plan` | TodoWrite updates | `entries[]` with `content`, `status`, `priority` |
 
 All listeners are optional.
 
 #### Building a Real-Time UI with Callbacks
 
-When building interactive CLI applications with streaming, use a **stateful renderer class** with callbacks:
+When building interactive CLI applications with streaming, use a **stateful renderer class** with callbacks. The recommended pattern uses Rich's `Live` for tool status updates while printing messages directly:
 
 ```python
-from rich.console import Console
+from rich.console import Console, Group
 from rich.live import Live
-from rich.panel import Panel
+from rich.markdown import Markdown
+from rich.spinner import Spinner
+from rich.text import Text
+
+console = Console()
 
 class StreamRenderer:
     def __init__(self):
-        self.events = []          # Ordered list of events (preserves interleaving)
-        self.current_message = "" # Accumulating text chunks
-        self.tools = {}           # tool_id -> {title, status, kind, rawInput}
-        self.live = None
+        self.current_message = ""
+        self.thought_buffer = ""
+        self.tools = {}           # tool_id -> {title, status, kind, raw_input}
+        self.tool_order = []      # preserve tool ordering
+        self.plan_entries = []    # [{content, status, priority}, ...]
+        self.status_live = None
 
     def reset(self):
-        self.events = []
+        self._stop_status_live()
         self.current_message = ""
+        self.thought_buffer = ""
         self.tools = {}
+        self.tool_order = []
+        self.plan_entries = []
 
     def handle_event(self, event: dict):
-        """Main callback handler - register with swarmkit.on('content', ...)"""
+        """Main callback - register with swarmkit.on('content', ...)"""
         update = event.get("update", {})
         event_type = update.get("sessionUpdate")
 
@@ -251,52 +260,98 @@ class StreamRenderer:
             content = update.get("content", {})
             if content.get("type") == "text":
                 self.current_message += content.get("text", "")
-                self._refresh()
+
+        elif event_type == "agent_thought_chunk":
+            # Reasoning/thinking from Codex or Claude
+            content = update.get("content", {})
+            if content.get("type") == "text":
+                self.thought_buffer += content.get("text", "")
 
         elif event_type == "tool_call":
-            # IMPORTANT: Flush current message to preserve order
-            if self.current_message.strip():
-                self.events.append({'type': 'message', 'text': self.current_message})
-                self.current_message = ""
-
+            self._flush_message()  # Print message before tool
             tool_id = update.get("toolCallId", "")
+            if tool_id not in self.tools:
+                self.tool_order.append(tool_id)
             self.tools[tool_id] = {
                 'title': update.get("title", "Tool"),
-                'kind': update.get("kind", "other"),
+                'kind': update.get("kind", "other"),  # read, edit, execute, fetch, search
                 'status': update.get("status", "pending"),
-                'rawInput': update.get("rawInput", {}),
+                'raw_input': update.get("rawInput", {}),
             }
-            self.events.append({'type': 'tool', 'id': tool_id})
-            self._refresh()
+            self._refresh_status()
 
         elif event_type == "tool_call_update":
             tool_id = update.get("toolCallId", "")
-            if tool_id in self.tools:
-                self.tools[tool_id]['status'] = update.get("status", "completed")
-                self._refresh()
+            # Handle out-of-order: update may arrive before tool_call
+            if tool_id not in self.tools:
+                self.tool_order.append(tool_id)
+                self.tools[tool_id] = {
+                    'title': update.get("title", "Tool"),
+                    'kind': "other",
+                    'status': "pending",
+                    'raw_input': {},
+                }
+            self.tools[tool_id]['status'] = update.get("status", "completed")
+            self._refresh_status()
 
-    def _refresh(self):
-        if self.live:
-            self.live.update(self._render())
+        elif event_type == "plan":
+            # TodoWrite updates - list of {content, status, priority}
+            self._flush_message()
+            self.plan_entries = update.get("entries", [])
+            self._render_plan()
 
-    def _render(self):
-        # Build display from self.events and self.current_message
-        # ... render tools, messages, etc.
-        return Panel("...")
+    def _flush_message(self):
+        if self.current_message.strip():
+            console.print(Markdown(self.current_message))
+            console.print()
+            self.current_message = ""
 
-    def __rich__(self):
-        """Enable auto-refresh when passed to Live()"""
-        return self._render()
+    def _render_plan(self):
+        """Render plan/todo entries"""
+        if not self.plan_entries:
+            return
+        for entry in self.plan_entries:
+            status = entry.get("status", "pending")
+            content = entry.get("content", "")
+            icon = {"completed": "✓", "in_progress": "→", "pending": "○"}.get(status, "○")
+            style = {"completed": "green", "in_progress": "cyan", "pending": "dim"}.get(status, "dim")
+            console.print(f"[{style}]{icon} {content}[/{style}]")
+        console.print()
+
+    def _render_status(self):
+        """Render all tools as a Group - updates in place"""
+        lines = []
+        for tool_id in self.tool_order:
+            tool = self.tools[tool_id]
+            status = tool.get('status', 'pending')
+            dot_style = "green" if status == 'completed' else "red" if status == 'failed' else "cyan"
+            line = Text()
+            line.append("● ", style=dot_style)
+            line.append(f"{tool['title']}", style="white")
+            lines.append(line)
+        lines.append(Spinner("dots", style="cyan"))
+        return Group(*lines) if lines else Text("")
+
+    def _refresh_status(self):
+        if self.status_live:
+            self.status_live.update(self._render_status(), refresh=True)
+
+    def _stop_status_live(self):
+        if self.status_live:
+            self.status_live.stop()
+            self.status_live = None
 
     def start_live(self):
-        # Pass `self` to Live - enables __rich__() integration
-        self.live = Live(self, console=Console(), refresh_per_second=10)
-        self.live.start()
+        self.status_live = Live(self._render_status(), console=console, refresh_per_second=12)
+        self.status_live.start()
 
     def stop_live(self):
-        if self.live:
-            self.live.stop()
-            self.live = None
+        self._stop_status_live()
+        self._flush_message()
+        # Optionally display collected thoughts
+        if self.thought_buffer.strip():
+            console.print("[dim]Reasoning:[/dim]")
+            console.print(f"[dim italic]{self.thought_buffer}[/dim italic]")
 
 # Usage:
 renderer = StreamRenderer()
@@ -308,22 +363,15 @@ await swarmkit.run(prompt="Your task here")
 renderer.stop_live()
 ```
 
-**Key patterns for correct streaming UI:**
+**Key patterns:**
 
-1. **Register callbacks BEFORE calling `run()`** - Events start flowing immediately
-2. **Preserve event ordering** - Flush accumulated message text when a tool event arrives to maintain correct interleaving
-3. **Use `__rich__()` method** - When using Rich's `Live()`, pass `self` (not a static Panel) and implement `__rich__()` for proper auto-refresh
-4. **Track tools by ID** - Tools emit `tool_call` (start) and `tool_call_update` (end) with matching `toolCallId`
-5. **Handle both text and tool events** - Agents interleave thinking, tool calls, and responses
+1. **Handle all 5 event types** - `agent_message_chunk`, `agent_thought_chunk`, `tool_call`, `tool_call_update`, `plan`
+2. **Flush messages before tools/plan** - Preserves correct interleaving order
+3. **Track tools by ID** - `tool_call` (start) and `tool_call_update` (end) share `toolCallId`
+4. **Handle out-of-order updates** - `tool_call_update` may arrive before `tool_call`
+5. **Use `kind` for tool categorization** - `read`, `edit`, `execute`, `fetch`, `search`, `other`
 
-**Common mistakes to avoid:**
-
-| Mistake | Problem | Fix |
-|---------|---------|-----|
-| Not flushing message buffer on tool events | Messages appear out of order | Append current message to events list before adding tool |
-| Passing static Panel to `Live()` | Display doesn't update properly | Pass renderer `self` with `__rich__()` method |
-| Only tracking `message_buffer` without events list | Loses interleaved tool/message ordering | Maintain ordered `events` list |
-| Not calling `_refresh()` after state changes | UI appears frozen | Call refresh after every state mutation |
+> **Full production example:** See [`cookbooks/factotum-agent-py/ui.py`](../cookbooks/factotum-agent-py/ui.py) for styled formatting, tool content display, and advanced Live block management.
 
 ### 4.4 upload_context / upload_files
 
