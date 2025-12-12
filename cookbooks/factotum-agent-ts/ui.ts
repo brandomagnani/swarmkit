@@ -739,7 +739,8 @@ export class Renderer {
 
     if (showSpinner) {
       const frame = SPINNER_FRAMES[this.spinnerFrame % SPINNER_FRAMES.length];
-      const spinnerLine = `${theme.info(frame)} ${theme.info("Working...")}`;
+      // Spinner dot is bright cyan, "Working..." is dim cyan (matching Python Rich)
+      const spinnerLine = `${theme.info(frame)} ${chalk.dim.cyan("Working...")}`;
 
       if (lines.length > 0) {
         lines.push(""); // blank line before spinner
@@ -778,7 +779,9 @@ export class Renderer {
       this.spinnerInterval = null;
     }
 
-    logUpdate.clear();
+    // Clear and finalize - logUpdate.clear() alone doesn't work well with console.log()
+    logUpdate("");
+    logUpdate.done();
     this.isLive = false;
   }
 
@@ -790,16 +793,22 @@ export class Renderer {
       this.spinnerInterval = null;
     }
 
-    logUpdate.clear();
-    this.isLive = false;
-
     if (final) {
-      // Print final tool state (without spinner)
+      // Print final tool state (without spinner) and persist
       const lines = this.renderToolLines();
       if (lines.length > 0) {
-        console.log(lines.join("\n"));
+        logUpdate(lines.join("\n"));
+        logUpdate.done();
+      } else {
+        logUpdate("");
+        logUpdate.done();
       }
+    } else {
+      logUpdate("");
+      logUpdate.done();
     }
+
+    this.isLive = false;
   }
 
   startLive(): void {
