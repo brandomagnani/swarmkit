@@ -1,16 +1,15 @@
-# Factotum Agent (Python)
+# Factotum Agent (TypeScript)
 
 - An interactive chat with a sandboxed AI agent that can think, execute code, browse the web, read / edit files, and solve complex tasks.
+- Put any files to the `input/` folder that is automatically created upon running `npx tsx factotum.ts`: these files will be part of the agent context.
 - Ask for anything—any files the agent creates are automatically downloaded to your local `output/` folder.
 - Check traces at https://dashboard.swarmlink.ai/traces. Type `/quit` to exit.
 
 ## Setup
 
 ```bash
-cd cookbooks/factotum-agent-py
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+cd cookbooks/factotum-agent-ts
+npm install
 cp .env.example .env
 ```
 
@@ -19,7 +18,7 @@ cp .env.example .env
 ## Run
 
 ```bash
-python factotum.py
+npx tsx factotum.ts
 ```
 
 ## What it does

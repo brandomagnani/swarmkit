@@ -1,7 +1,7 @@
 ## SwarmKit Cookbooks
 
-- [Factotum Agent (Python)](./factotum-agent-py)
-- [Factotum Agent (TypeScript)](./factotum-agent-ts)
+- [Factotum Agent (Python)](./agent-python)
+- [Factotum Agent (TypeScript)](./agent-typescript)
 
 ## Get Started
 
