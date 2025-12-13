@@ -1,12 +1,12 @@
 #!/usr/bin/env npx tsx
 /**
- * Factotum Agent - An interactive chat with a sandboxed AI agent that can think, execute code,
+ * Swarm Agent - An interactive chat with a sandboxed AI agent that can think, execute code,
  * browse the web, read / edit files, and solve complex tasks.
  *
  * - Put files in `input/` folder - they're uploaded to the agent's context before each run
  * - Files the agent creates are automatically downloaded to your `output/` folder
  *
- * Run: npx tsx factotum.ts
+ * Run: npx tsx Swarm.ts
  */
 import { SwarmKit } from "@swarmkit/sdk";
 import { createE2BProvider } from "@swarmkit/e2b";
@@ -51,7 +51,7 @@ if (process.env.EXA_API_KEY) {
   };
 }
 
-const SYSTEM_PROMPT = `SYSTEM PROMPT: Your name is Factotum, a powerful autonomous AI agent.
+const SYSTEM_PROMPT = `SYSTEM PROMPT: Your name is Swarm, a powerful autonomous AI agent.
 You can execute code, browse the web, manage files, and solve complex tasks such as
 extracting data from complex documents, analyzing data, and producing reports, and more.
 When you are asked to extract data, do not use external toos, rely on your excellent multimodal
@@ -67,7 +67,7 @@ const agent = new SwarmKit()
   .withSandbox(SANDBOX)
   .withSystemPrompt(SYSTEM_PROMPT)
   .withMcpServers(MCP_SERVERS)
-  .withSessionTagPrefix("factotum-agent-ts");
+  .withSessionTagPrefix("Swarm-agent-ts");
 
 // ─────────────────────────────────────────────────────────────
 
@@ -77,7 +77,7 @@ async function main() {
 
   console_.print();
   printPanel(
-    `${chalk.bold.cyan("🤖 Factotum")}\n${chalk.dim("Autonomous AI Agent - Code, Browse, Files & More")}`,
+    `${chalk.bold.cyan("🤖 Swarm")}\n${chalk.dim("Autonomous AI Agent - Code, Browse, Files & More")}`,
     { borderColor: "cyan" }
   );
   console_.print();

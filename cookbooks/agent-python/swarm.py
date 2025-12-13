@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Factotum Agent - An interactive chat with a sandboxed AI agent that can think, execute code,
+Swarm Agent - An interactive chat with a sandboxed AI agent that can think, execute code,
 browse the web, read / edit files, and solve complex tasks.
 
 - Put files in `input/` folder - they're uploaded to the agent's context before each run
 - Files the agent creates are automatically downloaded to your `output/` folder
 
-Run: python factotum.py
+Run: python Swarm.py
 """
 import asyncio
 import os
@@ -55,7 +55,7 @@ if os.getenv("EXA_API_KEY"):                    # optional: web search
         "env": {"EXA_API_KEY": os.getenv("EXA_API_KEY")}
     }
 
-SYSTEM_PROMPT = """SYSTEM PROMPT: Your name is Factotum, a powerful autonomous AI agent.
+SYSTEM_PROMPT = """SYSTEM PROMPT: Your name is Swarm, a powerful autonomous AI agent.
 You can execute code, browse the web, manage files, and solve complex tasks such as 
 extracting data from complex documents, analyzing data, and producing reports, and more. 
 When you are asked to extract data, do not use external toos, rely on your excellent multimodal
@@ -68,7 +68,7 @@ agent = SwarmKit(
     sandbox=SANDBOX,
     system_prompt=SYSTEM_PROMPT,
     mcp_servers=MCP_SERVERS,
-    session_tag_prefix="factotum-agent-py",
+    session_tag_prefix="Swarm-agent-py",
 )
 
 # ─────────────────────────────────────────────────────────────
@@ -79,7 +79,7 @@ async def main():
 
     console.print()
     console.print(Panel.fit(
-        "[bold cyan]🤖 Factotum[/bold cyan]\n"
+        "[bold cyan]🤖 Swarm[/bold cyan]\n"
         "[dim]Autonomous AI Agent - Code, Browse, Files & More[/dim]",
         border_style="cyan",
     ))

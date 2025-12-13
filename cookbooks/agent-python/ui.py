@@ -1,6 +1,6 @@
 """Cookbook UI helpers (prompt + output renderer).
 
-Goal: keep `factotum.py` minimal. It should need only:
+Goal: keep `Swarm.py` minimal. It should need only:
 - `read_prompt()` for user input
 - `make_renderer()` for streaming content output
 """
@@ -435,7 +435,7 @@ class RichRenderer:
 
     def start_live(self):
         console.print()
-        console.print("[bold cyan]Factotum[/bold cyan]")
+        console.print("[bold cyan]Swarm[/bold cyan]")
         console.print()
         self._last_print_was_blank = True
         self._start_status_live()

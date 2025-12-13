@@ -1,9 +1,9 @@
 {
-  "name": "factotum-agent-ts",
+  "name": "Swarm-agent-ts",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "tsx factotum.ts"
+    "start": "tsx Swarm.ts"
   },
   "dependencies": {
     "@swarmkit/e2b": "^0.1.25",

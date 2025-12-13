@@ -1,14 +1,14 @@
-# Factotum Agent (TypeScript)
+# Swarm Agent (TypeScript)
 
 - A sandboxed terminal agent that can think, execute code, browse the web, read / edit files, and solve complex tasks.
-- Put any files to the `input/` folder that is automatically created upon running `npx tsx factotum.ts`: these files will be part of the agent context.
+- Put any files to the `input/` folder that is automatically created upon running `npx tsx Swarm.ts`: these files will be part of the agent context.
 - Ask for anything—any files the agent creates are automatically downloaded to your local `output/` folder.
 - Check traces at https://dashboard.swarmlink.ai/traces. Type `/quit` to exit.
 
 ## Setup
 
 ```bash
-cd cookbooks/factotum-agent-ts
+cd cookbooks/Swarm-agent-ts
 npm install
 cp .env.example .env
 ```
@@ -18,7 +18,7 @@ cp .env.example .env
 ## Run
 
 ```bash
-npx tsx factotum.ts
+npx tsx Swarm.ts
 ```
 
 ## What it does

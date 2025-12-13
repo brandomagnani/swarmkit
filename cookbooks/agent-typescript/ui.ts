@@ -1,7 +1,7 @@
 /**
  * Cookbook UI helpers (prompt + output renderer).
  *
- * Goal: keep `factotum.ts` minimal. It should need only:
+ * Goal: keep `Swarm.ts` minimal. It should need only:
  * - `readPrompt()` for user input
  * - `makeRenderer()` for streaming content output
  */
@@ -857,7 +857,7 @@ export class Renderer {
 
   startLive(): void {
     console.log();
-    console.log(chalk.bold.cyan("Factotum"));
+    console.log(chalk.bold.cyan("Swarm"));
     console.log();
     this.lastPrintWasBlank = true;
     this.startLiveInternal();
