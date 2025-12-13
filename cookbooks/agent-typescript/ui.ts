@@ -1,7 +1,7 @@
 /**
  * Cookbook UI helpers (prompt + output renderer).
  *
- * Goal: keep `Swarm.ts` minimal. It should need only:
+ * Goal: keep `swarm.ts` minimal. It should need only:
  * - `readPrompt()` for user input
  * - `makeRenderer()` for streaming content output
  */

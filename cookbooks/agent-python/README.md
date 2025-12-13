@@ -20,7 +20,7 @@ cp .env.example .env
 ## Run
 
 ```bash
-python Swarm.py
+python swarm.py
 ```
 
 ## What it does

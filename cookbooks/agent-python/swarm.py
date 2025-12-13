@@ -6,7 +6,7 @@ browse the web, read / edit files, and solve complex tasks.
 - Put files in `input/` folder - they're uploaded to the agent's context before each run
 - Files the agent creates are automatically downloaded to your `output/` folder
 
-Run: python Swarm.py
+Run: python swarm.py
 """
 import asyncio
 import os

@@ -6,7 +6,7 @@
  * - Put files in `input/` folder - they're uploaded to the agent's context before each run
  * - Files the agent creates are automatically downloaded to your `output/` folder
  *
- * Run: npx tsx Swarm.ts
+ * Run: npx tsx swarm.ts
  */
 import { SwarmKit } from "@swarmkit/sdk";
 import { createE2BProvider } from "@swarmkit/e2b";

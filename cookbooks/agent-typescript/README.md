@@ -18,7 +18,7 @@ cp .env.example .env
 ## Run
 
 ```bash
-npx tsx Swarm.ts
+npx tsx swarm.ts
 ```
 
 ## What it does

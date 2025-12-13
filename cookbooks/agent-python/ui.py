@@ -1,6 +1,6 @@
 """Cookbook UI helpers (prompt + output renderer).
 
-Goal: keep `Swarm.py` minimal. It should need only:
+Goal: keep `swarm.py` minimal. It should need only:
 - `read_prompt()` for user input
 - `make_renderer()` for streaming content output
 """
