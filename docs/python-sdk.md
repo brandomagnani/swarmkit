@@ -374,7 +374,7 @@ renderer.stop_live()
 4. **Handle out-of-order updates** - `tool_call_update` may arrive before `tool_call`
 5. **Use `kind` for tool categorization** - `read`, `edit`, `execute`, `fetch`, `search`, `other`
 
-> **Full production example:** See [`cookbooks/Swarm-agent-py/ui.py`](../cookbooks/Swarm-agent-py/ui.py) for styled formatting, tool content display, and advanced Live block management.
+> **Full production example:** See [`cookbooks/agent-python/ui.py`](../cookbooks/agent-python/ui.py) for styled formatting, tool content display, and advanced Live block management.
 
 ### 4.4 upload_context / upload_files
 

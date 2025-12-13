@@ -398,7 +398,7 @@ renderer.stopLive();
 4. **Handle out-of-order updates** - `tool_call_update` may arrive before `tool_call`
 5. **Use `kind` for tool categorization** - `read`, `edit`, `execute`, `fetch`, `search`, `other`
 
-> **Full production example:** See [`cookbooks/Swarm-agent-ts/ui.ts`](../cookbooks/Swarm-agent-ts/ui.ts) for styled formatting with chalk, markdown rendering, spinner animations, and advanced live output management.
+> **Full production example:** See [`cookbooks/agent-typescript/ui.ts`](../cookbooks/agent-typescript/ui.ts) for styled formatting with chalk, markdown rendering, spinner animations, and advanced live output management.
 
 ### 4.4 uploadContext / uploadFiles
 
