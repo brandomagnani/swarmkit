@@ -103,8 +103,11 @@ async function main() {
     // Download output files
     const outputFiles = await agent.getOutputFiles(true);
     saveLocalDir("output", outputFiles);
-    for (const name of Object.keys(outputFiles)) {
-      console_.printSuccess(`📄 Saved: output/${name}`);
+    if (Object.keys(outputFiles).length > 0) {
+      console_.print();
+      for (const name of Object.keys(outputFiles)) {
+        console_.printSuccess(`📄 Saved: output/${name}`);
+      }
     }
 
     console_.print();

@@ -106,8 +106,10 @@ async def main():
         # Download output files
         output_files = await agent.get_output_files(recursive=True)
         save_local_dir("output", output_files)
-        for name in output_files:
-            console.print(f"[success]📄 Saved: output/{name}[/success]")
+        if output_files:
+            console.print()
+            for name in output_files:
+                console.print(f"[success]📄 Saved: output/{name}[/success]")
 
         console.print()
 
