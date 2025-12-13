@@ -8,7 +8,7 @@
 
 import chalk from "chalk";
 import logUpdate from "log-update";
-import { marked } from "marked";
+import { marked, Renderer as MarkedRenderer } from "marked";
 import { markedTerminal } from "marked-terminal";
 import boxen from "boxen";
 import { TextDecoder } from "node:util";
@@ -23,6 +23,7 @@ function configureMarkdownRenderer(): void {
   // - respect terminal width
   // - don't print `###` prefixes for headings
   // - wrap table cells instead of overflowing
+  // - marked-terminal v7 uses chalk.bold/italic by default for strong/em
   marked.use(
     markedTerminal({
       width,
@@ -31,6 +32,43 @@ function configureMarkdownRenderer(): void {
       tableOptions: { wordWrap: true },
     }) as marked.MarkedExtension
   );
+
+  // Fix marked-terminal bug: inline formatting (bold/italic) not working in list items.
+  // The issue is that list items contain "text" tokens with nested inline tokens,
+  // but marked-terminal's text renderer just uses the raw text instead of parsing
+  // the nested tokens. This extension fixes that by properly rendering inline tokens.
+  marked.use({
+    renderer: {
+      text(token: { text?: string; tokens?: unknown[] } | string): string {
+        if (typeof token === "string") return token;
+        // If this text token has nested inline tokens, parse them properly
+        if (token.tokens && Array.isArray(token.tokens) && token.tokens.length > 0) {
+          // Use the parser to render inline tokens (bold, italic, code, etc.)
+          return (this as unknown as { parser: { parseInline: (tokens: unknown[]) => string } }).parser.parseInline(token.tokens);
+        }
+        return token.text ?? "";
+      },
+    } as Partial<MarkedRenderer>,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// Markdown rendering helper
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Render markdown to terminal-formatted string.
+ * Applies marked-terminal and fixes bullet points to use • instead of *.
+ */
+function renderMarkdown(content: string): string {
+  configureMarkdownRenderer();
+  let rendered = marked(content) as string;
+  // Replace asterisk bullets with proper bullet dots (matching Python Rich)
+  // Only match when followed by ANSI reset code [0m - this is the pattern
+  // marked-terminal uses for list items. Code blocks don't have this pattern,
+  // so they're safely preserved.
+  rendered = rendered.replace(/^(\s*)\* (\x1b\[0m)/gm, "$1• $2");
+  return rendered.trim();
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -674,8 +712,7 @@ export class Renderer {
       }
 
       // Render markdown
-      const rendered = marked(this.currentMessage) as string;
-      console.log(rendered.trim());
+      console.log(renderMarkdown(this.currentMessage));
       this.lastPrintWasBlank = false;
       console.log();
       this.lastPrintWasBlank = true;
@@ -823,13 +860,11 @@ export class Renderer {
     this.stopLiveInternal(true);
 
     if (this.currentMessage.trim()) {
-      configureMarkdownRenderer();
       if (this.hasVisibleTools()) {
         console.log();
         this.lastPrintWasBlank = true;
       }
-      const rendered = marked(this.currentMessage) as string;
-      console.log(rendered.trim());
+      console.log(renderMarkdown(this.currentMessage));
       this.lastPrintWasBlank = false;
     }
 
