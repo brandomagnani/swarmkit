@@ -10,9 +10,8 @@ Run: python swarm.py
 """
 import asyncio
 import os
-from pathlib import Path
 from dotenv import load_dotenv
-from swarmkit import SwarmKit, AgentConfig, E2BProvider
+from swarmkit import SwarmKit, AgentConfig, E2BProvider, read_local_dir, save_local_dir
 from ui import make_renderer, read_prompt, console
 from rich.panel import Panel
 
@@ -97,19 +96,18 @@ async def main():
         renderer.start_live()
 
         # Upload input files to agent's context
-        input_files = {f.name: f.read_bytes() for f in Path("input").iterdir() if f.is_file()}
+        input_files = read_local_dir("input")
         if input_files:
             await agent.upload_context(input_files)
 
         await agent.run(prompt=prompt)
         renderer.stop_live()
 
+        # Download output files
         output_files = await agent.get_output_files(recursive=True)
-        for name, content in output_files.items():
-            path = f"output/{name}"
-            with open(path, "wb") as out:
-                out.write(content if isinstance(content, bytes) else content.encode("utf-8"))
-            console.print(f"[success]📄 Saved: {path}[/success]")
+        save_local_dir("output", output_files)
+        for name in output_files:
+            console.print(f"[success]📄 Saved: output/{name}[/success]")
 
         console.print()
 

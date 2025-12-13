@@ -8,10 +8,9 @@
  *
  * Run: npx tsx swarm.ts
  */
-import { SwarmKit } from "@swarmkit/sdk";
+import { SwarmKit, readLocalDir, saveLocalDir } from "@swarmkit/sdk";
 import { createE2BProvider } from "@swarmkit/e2b";
-import { mkdirSync, writeFileSync, readdirSync, readFileSync } from "fs";
-import { join } from "path";
+import { mkdirSync } from "fs";
 import "dotenv/config";
 
 import { makeRenderer, readPrompt, console_, printPanel } from "./ui";
@@ -93,7 +92,7 @@ async function main() {
     renderer.startLive();
 
     // Upload input files to agent's context
-    const inputFiles = getInputFiles();
+    const inputFiles = readLocalDir("input");
     if (Object.keys(inputFiles).length > 0) {
       await agent.uploadContext(inputFiles);
     }
@@ -101,29 +100,15 @@ async function main() {
     await agent.run({ prompt });
     renderer.stopLive();
 
+    // Download output files
     const outputFiles = await agent.getOutputFiles(true);
-    for (const [name, content] of Object.entries(outputFiles)) {
-      const path = `output/${name}`;
-      writeFileSync(path, content);
-      console_.printSuccess(`📄 Saved: ${path}`);
+    saveLocalDir("output", outputFiles);
+    for (const name of Object.keys(outputFiles)) {
+      console_.printSuccess(`📄 Saved: output/${name}`);
     }
 
     console_.print();
   }
-}
-
-function getInputFiles(): Record<string, Buffer> {
-  const files: Record<string, Buffer> = {};
-  try {
-    const inputDir = "input";
-    for (const name of readdirSync(inputDir)) {
-      const filePath = join(inputDir, name);
-      files[name] = readFileSync(filePath);
-    }
-  } catch {
-    // input directory doesn't exist or is empty
-  }
-  return files;
 }
 
 async function shutdown() {
