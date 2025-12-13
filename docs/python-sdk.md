@@ -376,72 +376,47 @@ renderer.stop_live()
 
 > **Full production example:** See [`cookbooks/agent-python/ui.py`](../cookbooks/agent-python/ui.py) for styled formatting, tool content display, and advanced Live block management.
 
-### 4.4 upload_context / upload_files
+### 4.4 Upload: Local → Sandbox
 
-Upload files to the sandbox at runtime (immediate upload).
+**Format:** `{"destination": content}` — directories created automatically
+
+| Method | Destination |
+|--------|-------------|
+| `upload_context()` | `context/{path}` |
+| `upload_files()` | `{workingDir}/{path}` |
 
 ```python
-await swarmkit.upload_context({
-    'spec.json': json.dumps(spec),
-    'logo.png': logo_bytes,
-})
+# Single file
+await swarmkit.upload_context({'spec.json': json.dumps(data)})
 
+# Multiple files
 await swarmkit.upload_files({
-    'scripts/setup.sh': '#!/bin/bash\necho hi\n',
-    'data/input.csv': csv_data,
+    'scripts/setup.sh': '#!/bin/bash\necho hello',
+    'data/input.csv': csv_bytes,
 })
-```
 
-| Method | Destination | Default Path |
-|--------|-------------|--------------|
-| `upload_context()` | `{workingDir}/context/{path}` | `/home/user/workspace/context/` |
-| `upload_files()` | `{workingDir}/{path}` | `/home/user/workspace/` |
-
-**Format:** `{"destination": content}` — key is destination path in sandbox (directories created automatically), value is `str` or `bytes`.
-
-> **Note:** The constructor parameters `context` and `files` use the same format, but upload on first `run()` instead of immediately.
-
-**Helper:** `read_local_dir(path, recursive=False)` reads a local directory into dict format:
-
-```python
+# From local directory (helper)
 from swarmkit import read_local_dir
-
-# Setup (uploads on first run)
-swarmkit = SwarmKit(
-    ...,
-    context=read_local_dir('./input'),
-    files=read_local_dir('./data', recursive=True),
-)
-
-# Runtime (immediate upload)
-await swarmkit.upload_context(read_local_dir('./input'))
-await swarmkit.upload_files(read_local_dir('./data', recursive=True))
+await swarmkit.upload_context(read_local_dir('./input', recursive=True))
 ```
 
-### 4.5 get_output_files
+> **Setup alternative:** Constructor parameters `context` and `files` use the same format but upload on first `run()` instead of immediately.
 
-Fetch new files from `/output` after a run/command. Files created before the last operation are filtered out.
+### 4.5 Download: Sandbox → Local
 
-```python
-# Top-level files only (default)
-files = await swarmkit.get_output_files()
+**Flow:** `get_output_files()` → `save_local_dir()`
 
-# With subdirectories
-all_files = await swarmkit.get_output_files(recursive=True)
-```
-
-**Returns:** `dict[str, str | bytes]` — keys are relative paths from `output/`, values are file content (`str` for text, `bytes` for binary). Same format as upload methods.
-
-**Helper:** `save_local_dir(path, files)` writes a dict to a local directory, creating nested directories automatically:
+**Format:** Returns `{"path": content}` — same format as upload
 
 ```python
 from swarmkit import save_local_dir
 
-# Save all output files to local directory (handles nested paths)
+# Download from sandbox and save locally
 files = await swarmkit.get_output_files(recursive=True)
-save_local_dir('./downloads', files)
-# Creates: ./downloads/result.json, ./downloads/reports/summary.pdf, etc.
+save_local_dir('./output', files)
 ```
+
+Files created before the last `run()` or `execute_command()` are filtered out.
 
 ### 4.6 Session controls
 

@@ -400,69 +400,47 @@ renderer.stopLive();
 
 > **Full production example:** See [`cookbooks/agent-typescript/ui.ts`](../cookbooks/agent-typescript/ui.ts) for styled formatting with chalk, markdown rendering, spinner animations, and advanced live output management.
 
-### 4.4 uploadContext / uploadFiles
+### 4.4 Upload: Local → Sandbox
 
-Upload files to the sandbox at runtime (immediate upload).
+**Format:** `{ "destination": content }` — directories created automatically
+
+| Method | Destination |
+|--------|-------------|
+| `uploadContext()` | `context/{path}` |
+| `uploadFiles()` | `{workingDir}/{path}` |
 
 ```ts
-await swarmkit.uploadContext({
-  "spec.json": JSON.stringify(spec),
-  "logo.png": logoBuffer,
-});
+// Single file
+await swarmkit.uploadContext({ "spec.json": JSON.stringify(data) });
 
+// Multiple files
 await swarmkit.uploadFiles({
-  "scripts/setup.sh": "#!/bin/bash\necho hi\n",
-  "data/input.csv": csvData,
+  "scripts/setup.sh": "#!/bin/bash\necho hello",
+  "data/input.csv": csvBuffer,
 });
-```
 
-| Method | Destination | Default Path |
-|--------|-------------|--------------|
-| `uploadContext()` | `{workingDir}/context/{path}` | `/home/user/workspace/context/` |
-| `uploadFiles()` | `{workingDir}/{path}` | `/home/user/workspace/` |
-
-**Format:** `{ "destination": content }` — key is destination path in sandbox (directories created automatically), value is `string | Buffer | ArrayBuffer | Uint8Array`.
-
-> **Note:** The setup methods `withContext()` and `withFiles()` use the same format, but upload on first `run()` instead of immediately.
-
-**Helper:** `readLocalDir(path, recursive?)` reads a local directory into `FileMap` format:
-
-```ts
+// From local directory (helper)
 import { readLocalDir } from "@swarmkit/sdk";
-
-// Setup (uploads on first run)
-swarmkit.withContext(readLocalDir("./input"));
-swarmkit.withFiles(readLocalDir("./data", true));  // recursive
-
-// Runtime (immediate upload)
-await swarmkit.uploadContext(readLocalDir("./input"));
-await swarmkit.uploadFiles(readLocalDir("./data", true));
+await swarmkit.uploadContext(readLocalDir("./input", true));
 ```
 
-### 4.5 getOutputFiles
+> **Setup alternative:** `withContext()` and `withFiles()` use the same format but upload on first `run()` instead of immediately.
 
-Fetch new files from `/output` after a run/command. Files created before the last operation are filtered out.
+### 4.5 Download: Sandbox → Local
 
-```ts
-// Top-level files only (default)
-const files = await swarmkit.getOutputFiles();
+**Flow:** `getOutputFiles()` → `saveLocalDir()`
 
-// With subdirectories
-const allFiles = await swarmkit.getOutputFiles(true);
-```
-
-**Returns:** `FileMap` — keys are relative paths from `output/`, values are file content (`string` or `Buffer`). Same format as upload methods.
-
-**Helper:** `saveLocalDir(path, files)` writes a `FileMap` to a local directory, creating nested directories automatically:
+**Format:** Returns `{ "path": content }` — same format as upload
 
 ```ts
 import { saveLocalDir } from "@swarmkit/sdk";
 
-// Save all output files to local directory (handles nested paths)
-const files = await swarmkit.getOutputFiles(true);
-saveLocalDir('./downloads', files);
-// Creates: ./downloads/result.json, ./downloads/reports/summary.pdf, etc.
+// Download from sandbox and save locally
+const files = await swarmkit.getOutputFiles(true);  // recursive
+saveLocalDir("./output", files);
 ```
+
+Files created before the last `run()` or `executeCommand()` are filtered out.
 
 ### 4.6 Session controls
 
