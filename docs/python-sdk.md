@@ -436,7 +436,7 @@ for name, content in all_files.items():
     p.write_bytes(content if isinstance(content, bytes) else content.encode())
 ```
 
-**Returns:** `dict[str, str | bytes]` — keys are relative paths from `output/`, values are file content (`str` for text, `bytes` for binary).
+**Returns:** `dict[str, str | bytes]` — keys are relative paths from `output/`, values are file content (`str` for text, `bytes` for binary). Same format as upload methods.
 
 ### 4.6 Session controls
 

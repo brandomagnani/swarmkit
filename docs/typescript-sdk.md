@@ -459,7 +459,7 @@ for (const [name, content] of Object.entries(allFiles)) {
 }
 ```
 
-**Returns:** `FileMap` — keys are relative paths from `output/`, values are file content (`string` or `Buffer`).
+**Returns:** `FileMap` — keys are relative paths from `output/`, values are file content (`string` or `Buffer`). Same format as upload methods.
 
 ### 4.6 Session controls
 
