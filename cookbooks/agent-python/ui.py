@@ -143,7 +143,7 @@ async def read_prompt(*, fallback_console: Console | None = console) -> str:
     )
 
     hint = Window(
-        content=FormattedTextControl(HTML("<hint>  /q to exit  •  Esc+Enter for newline</hint>")),
+        content=FormattedTextControl(HTML("<hint>  /q to quit</hint>")),
         style="class:hint",
         height=1,
         dont_extend_height=True,

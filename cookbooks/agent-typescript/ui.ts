@@ -301,7 +301,7 @@ export async function readPrompt(): Promise<string> {
         }
       }
       out.push(bg(" ".repeat(width))); // pad below
-      out.push(chalk.dim("  /q to exit  •  Esc+Enter for newline"));
+      out.push(chalk.dim("  /q to quit"));
       logUpdate(out.join("\n"));
     }
 
