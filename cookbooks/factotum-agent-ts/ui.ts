@@ -115,16 +115,23 @@ export async function readPrompt(): Promise<string> {
   const bg = chalk.bgHex(bgHex);
 
   function printSubmittedPrompt(prompt: string) {
+    const hPad = 2; // horizontal padding (left and right)
+    const availWidth = Math.max(1, width - hPad * 2);
+    const leftPad = " ".repeat(hPad);
+    const fullPad = bg(" ".repeat(width));
+
+    console.log(fullPad); // pad above
     const lines = prompt.split(/\r?\n/);
     for (const line of lines) {
-      const chunks = line.length > width
-        ? line.match(new RegExp(`.{1,${width}}`, "g")) ?? [line]
+      const chunks = line.length > availWidth
+        ? line.match(new RegExp(`.{1,${availWidth}}`, "g")) ?? [line]
         : [line];
       for (const chunk of chunks) {
-        const padLen = Math.max(0, width - chunk.length);
-        console.log(bg(chunk + " ".repeat(padLen)));
+        const rightPadLen = Math.max(0, width - hPad - chunk.length - hPad);
+        console.log(bg(leftPad + chunk + " ".repeat(rightPadLen + hPad)));
       }
     }
+    console.log(fullPad); // pad below
   }
 
   // Raw-input prompt bar (non-fullscreen) to match Python prompt_toolkit UX.

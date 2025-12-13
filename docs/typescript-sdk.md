@@ -211,18 +211,194 @@ swarmkit.on("content", event => console.log(event.update));
 | `stdout` | Raw JSONL output |
 | `stderr` | Stderr chunks |
 
-**Content event types** (`event.update.sessionUpdate`):
+**Content event structure** (`event.update`):
 
-| Type | Description |
-|------|-------------|
-| `agent_message_chunk` | Text/image from agent |
-| `agent_thought_chunk` | Reasoning/thinking (Codex/Claude) |
-| `user_message_chunk` | User message echo (Gemini) |
-| `tool_call` | Tool started (status: `pending`/`in_progress`) |
-| `tool_call_update` | Tool finished (status: `completed`/`failed`) |
-| `plan` | TodoWrite updates |
+| `sessionUpdate` | Description | Key Fields |
+|-----------------|-------------|------------|
+| `agent_message_chunk` | Text/image from agent | `content.type`, `content.text` |
+| `agent_thought_chunk` | Reasoning/thinking (Codex/Claude) | `content.type`, `content.text` |
+| `user_message_chunk` | User message echo (Gemini) | `content.type`, `content.text` |
+| `tool_call` | Tool started | `toolCallId`, `title`, `kind`, `status`, `rawInput` |
+| `tool_call_update` | Tool finished | `toolCallId`, `status` |
+| `plan` | TodoWrite updates | `entries[]` with `content`, `status`, `priority` |
 
 All listeners are optional.
+
+#### Building a Real-Time UI with Callbacks
+
+When building interactive CLI applications with streaming, use a **stateful renderer class** with callbacks. The recommended pattern uses a live-updating status area for tool calls while printing messages directly:
+
+```ts
+import logUpdate from "log-update";
+
+interface ToolInfo {
+  title: string;
+  kind: string;
+  status: string;
+  rawInput: Record<string, unknown>;
+}
+
+interface PlanEntry {
+  status: string;
+  content: string;
+  priority?: number;
+}
+
+class StreamRenderer {
+  private currentMessage = "";
+  private thoughtBuffer = "";
+  private tools: Map<string, ToolInfo> = new Map();
+  private toolOrder: string[] = [];
+  private planEntries: PlanEntry[] = [];
+  private isLive = false;
+
+  reset(): void {
+    this.stopLive();
+    this.currentMessage = "";
+    this.thoughtBuffer = "";
+    this.tools.clear();
+    this.toolOrder = [];
+    this.planEntries = [];
+  }
+
+  handleEvent(event: { update?: Record<string, unknown> }): void {
+    const update = event.update ?? {};
+    const eventType = update.sessionUpdate as string | undefined;
+
+    if (eventType === "agent_message_chunk") {
+      const content = update.content as Record<string, unknown> | undefined;
+      if (content?.type === "text") {
+        this.currentMessage += (content.text as string) ?? "";
+      }
+
+    } else if (eventType === "agent_thought_chunk") {
+      // Reasoning/thinking from Codex or Claude
+      const content = update.content as Record<string, unknown> | undefined;
+      if (content?.type === "text") {
+        this.thoughtBuffer += (content.text as string) ?? "";
+      }
+
+    } else if (eventType === "tool_call") {
+      this.flushMessage(); // Print message before tool
+      const toolId = (update.toolCallId as string) ?? "";
+      if (!this.tools.has(toolId)) {
+        this.toolOrder.push(toolId);
+      }
+      this.tools.set(toolId, {
+        title: (update.title as string) ?? "Tool",
+        kind: (update.kind as string) ?? "other", // read, edit, execute, fetch, search
+        status: (update.status as string) ?? "pending",
+        rawInput: (update.rawInput as Record<string, unknown>) ?? {},
+      });
+      this.refreshStatus();
+
+    } else if (eventType === "tool_call_update") {
+      const toolId = (update.toolCallId as string) ?? "";
+      // Handle out-of-order: update may arrive before tool_call
+      if (!this.tools.has(toolId)) {
+        this.toolOrder.push(toolId);
+        this.tools.set(toolId, {
+          title: (update.title as string) ?? "Tool",
+          kind: "other",
+          status: "pending",
+          rawInput: {},
+        });
+      }
+      const tool = this.tools.get(toolId)!;
+      tool.status = (update.status as string) ?? "completed";
+      this.refreshStatus();
+
+    } else if (eventType === "plan") {
+      // TodoWrite updates - list of {content, status, priority}
+      this.flushMessage();
+      this.planEntries = (update.entries as PlanEntry[]) ?? [];
+      this.renderPlan();
+    }
+  }
+
+  private flushMessage(): void {
+    if (this.currentMessage.trim()) {
+      this.clearLive();
+      console.log(this.currentMessage.trim());
+      console.log();
+      this.currentMessage = "";
+      this.startLive();
+    }
+  }
+
+  private renderPlan(): void {
+    if (this.planEntries.length === 0) return;
+    this.clearLive();
+    for (const entry of this.planEntries) {
+      const status = entry.status ?? "pending";
+      const content = entry.content ?? "";
+      const icon = { completed: "✓", in_progress: "→", pending: "○" }[status] ?? "○";
+      console.log(`${icon} ${content}`);
+    }
+    console.log();
+    this.startLive();
+  }
+
+  private renderStatus(): string {
+    const lines: string[] = [];
+    for (const toolId of this.toolOrder) {
+      const tool = this.tools.get(toolId)!;
+      const dot = tool.status === "completed" ? "●" : tool.status === "failed" ? "●" : "●";
+      lines.push(`${dot} ${tool.title}`);
+    }
+    lines.push("⠋ Working...");
+    return lines.join("\n");
+  }
+
+  private refreshStatus(): void {
+    if (this.isLive) {
+      logUpdate(this.renderStatus());
+    }
+  }
+
+  private clearLive(): void {
+    if (this.isLive) {
+      logUpdate("");
+      logUpdate.done();
+      this.isLive = false;
+    }
+  }
+
+  startLive(): void {
+    this.isLive = true;
+    this.refreshStatus();
+  }
+
+  stopLive(): void {
+    this.clearLive();
+    this.flushMessage();
+    // Optionally display collected thoughts
+    if (this.thoughtBuffer.trim()) {
+      console.log("Reasoning:");
+      console.log(this.thoughtBuffer);
+    }
+  }
+}
+
+// Usage:
+const renderer = new StreamRenderer();
+swarmkit.on("content", (event) => renderer.handleEvent(event));
+
+renderer.reset();
+renderer.startLive();
+await swarmkit.run({ prompt: "Your task here" });
+renderer.stopLive();
+```
+
+**Key patterns:**
+
+1. **Handle all 5 event types** - `agent_message_chunk`, `agent_thought_chunk`, `tool_call`, `tool_call_update`, `plan`
+2. **Flush messages before tools/plan** - Preserves correct interleaving order
+3. **Track tools by ID** - `tool_call` (start) and `tool_call_update` (end) share `toolCallId`
+4. **Handle out-of-order updates** - `tool_call_update` may arrive before `tool_call`
+5. **Use `kind` for tool categorization** - `read`, `edit`, `execute`, `fetch`, `search`, `other`
+
+> **Full production example:** See [`cookbooks/factotum-agent-ts/ui.ts`](../cookbooks/factotum-agent-ts/ui.ts) for styled formatting with chalk, markdown rendering, spinner animations, and advanced live output management.
 
 ### 4.4 uploadContext / uploadFiles
 

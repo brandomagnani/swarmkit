@@ -34,6 +34,7 @@ console = Console(theme=theme)
 
 def _print_submitted_prompt(prompt: str, *, bg: str) -> None:
     width = getattr(console, "width", None) or 100
+    h_pad = 2  # horizontal padding (left and right)
     prompt_style = f"bold fg:#00d75f on {bg}"
     text_style = f"fg:#ffffff on {bg}"
     fill_style = f"on {bg}"
@@ -41,26 +42,33 @@ def _print_submitted_prompt(prompt: str, *, bg: str) -> None:
     def emit(prefix: str, chunk: str) -> None:
         # Render a single physical terminal line with full-width background.
         t = Text(style=fill_style)
+        t.append(" " * h_pad, style=fill_style)  # left pad
         t.append(prefix, style=prompt_style)
         t.append(chunk, style=text_style)
-        pad = max(0, width - len(prefix) - len(chunk))
-        if pad:
-            t.append(" " * pad, style=fill_style)
+        pad = max(0, width - h_pad - len(prefix) - len(chunk) - h_pad)
+        t.append(" " * (pad + h_pad), style=fill_style)  # right pad
+        console.print(t, overflow="crop", no_wrap=True)
+
+    def emit_pad() -> None:
+        # Emit an empty padding row with full-width background.
+        t = Text(" " * width, style=fill_style)
         console.print(t, overflow="crop", no_wrap=True)
 
     first_prefix = ""
     cont_prefix = ""
 
+    emit_pad()  # pad above
     for raw_line in prompt.splitlines() or [""]:
         remaining = raw_line
         prefix = first_prefix
         while True:
-            avail = max(1, width - len(prefix))
+            avail = max(1, width - h_pad * 2 - len(prefix))
             chunk, remaining = remaining[:avail], remaining[avail:]
             emit(prefix, chunk)
             if not remaining:
                 break
             prefix = cont_prefix
+    emit_pad()  # pad below
 
 
 async def read_prompt(*, fallback_console: Console | None = console) -> str:
