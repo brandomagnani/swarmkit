@@ -8,7 +8,7 @@
 ## Setup
 
 ```bash
-cd cookbooks/Swarm-agent-py
+cd cookbooks/agent-python
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt

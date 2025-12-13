@@ -8,7 +8,7 @@
 ## Setup
 
 ```bash
-cd cookbooks/Swarm-agent-ts
+cd cookbooks/agent-typescript
 npm install
 cp .env.example .env
 ```
