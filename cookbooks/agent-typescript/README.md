@@ -1,6 +1,6 @@
 # Factotum Agent (TypeScript)
 
-- An interactive chat with a sandboxed AI agent that can think, execute code, browse the web, read / edit files, and solve complex tasks.
+- A sandboxed terminal agent that can think, execute code, browse the web, read / edit files, and solve complex tasks.
 - Put any files to the `input/` folder that is automatically created upon running `npx tsx factotum.ts`: these files will be part of the agent context.
 - Ask for anything—any files the agent creates are automatically downloaded to your local `output/` folder.
 - Check traces at https://dashboard.swarmlink.ai/traces. Type `/quit` to exit.
