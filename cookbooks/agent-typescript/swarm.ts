@@ -51,17 +51,14 @@ if (process.env.EXA_API_KEY) {
   };
 }
 
-const SYSTEM_PROMPT = `SYSTEM PROMPT: Your name is Swarm, a powerful autonomous AI agent.
-You can execute code, browse the web, manage files, and solve complex tasks such as
-extracting data from complex documents, analyzing data, and producing reports, and more.
-When you are asked to extract data, do not use external toos, rely on your excellent multimodal
-reasoning capabilities to extract the data from the documents. You can read most file formats such
-as text, csv, json, pdf, images, and more.
+const SYSTEM_PROMPT = `Your name is Swarm, a powerful autonomous AI agent.
+You can execute code, browse the web, manage files, and solve complex tasks such as extracting
+data from complex documents, analyzing data, producing evidence based reports, and more.
 `;
 
 const agent = new SwarmKit()
   .withAgent({
-    type: "claude", // claude, codex, gemini
+    type: "codex", // claude, codex, gemini
     apiKey: process.env.SWARMKIT_API_KEY!,
   })
   .withSandbox(SANDBOX)
