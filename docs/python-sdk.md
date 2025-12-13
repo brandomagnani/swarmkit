@@ -45,8 +45,8 @@ print(result.stdout)
 
 # Get output files
 files = await swarmkit.get_output_files()
-for file in files:
-    print(f"{file.name} ({file.size} bytes)")
+for name, content in files.items():
+    print(name)
 
 # Clean up
 await swarmkit.kill()
@@ -397,26 +397,46 @@ await swarmkit.upload_files({
 | `upload_context()` | `{workingDir}/context/{path}` | `/home/user/workspace/context/` |
 | `upload_files()` | `{workingDir}/{path}` | `/home/user/workspace/` |
 
-**Format:** `{"path": content}` — key is relative path, value is `str` or `bytes`.
+**Format:** `{"destination": content}` — key is destination path in sandbox (directories created automatically), value is `str` or `bytes`.
 
 > **Note:** The constructor parameters `context` and `files` use the same format, but upload on first `run()` instead of immediately.
+
+**Helper:** `read_local_dir(path, recursive=False)` reads a local directory into dict format:
+
+```python
+from swarmkit import read_local_dir
+
+# Setup (uploads on first run)
+swarmkit = SwarmKit(
+    ...,
+    context=read_local_dir('./input'),
+    files=read_local_dir('./data', recursive=True),
+)
+
+# Runtime (immediate upload)
+await swarmkit.upload_context(read_local_dir('./input'))
+await swarmkit.upload_files(read_local_dir('./data', recursive=True))
+```
 
 ### 4.5 get_output_files
 
 Fetch new files from `/output` after a run/command. Files created before the last operation are filtered out.
 
 ```python
+# Top-level files only (default)
 files = await swarmkit.get_output_files()
-for file in files:
-    if isinstance(file.content, str):
-        print('text file:', file.path)
-    else:
-        # bytes
-        with open(f'./downloads/{file.name}', 'wb') as f:
-            f.write(file.content)
+for name, content in files.items():
+    Path(f'./downloads/{name}').write_bytes(content if isinstance(content, bytes) else content.encode())
+
+# With subdirectories - recreate nested structure
+all_files = await swarmkit.get_output_files(recursive=True)
+for name, content in all_files.items():
+    p = Path(f'./downloads/{name}')
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(content if isinstance(content, bytes) else content.encode())
 ```
 
-Each entry includes `name`, `path`, `content`, `size`, `modified_time`.
+**Returns:** `dict[str, str | bytes]` — keys are relative paths from `output/`, values are file content (`str` for text, `bytes` for binary).
 
 ### 4.6 Session controls
 

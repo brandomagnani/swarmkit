@@ -102,16 +102,10 @@ async function main() {
     renderer.stopLive();
 
     const outputFiles = await agent.getOutputFiles();
-    if (outputFiles.length > 0) {
-      console_.print(); // blank line before saved files
-      for (const f of outputFiles) {
-        const path = `output/${f.name}`;
-        const content = f.content instanceof ArrayBuffer
-          ? Buffer.from(f.content)
-          : Buffer.from(f.content as string, "utf-8");
-        writeFileSync(path, content);
-        console_.printSuccess(`📄 Saved: ${path}`);
-      }
+    for (const [name, content] of Object.entries(outputFiles)) {
+      const path = `output/${name}`;
+      writeFileSync(path, content);
+      console_.printSuccess(`📄 Saved: ${path}`);
     }
 
     console_.print();

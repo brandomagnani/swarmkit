@@ -44,8 +44,8 @@ console.log(result.stdout);
 
 // Get output files
 const files = await swarmkit.getOutputFiles();
-for (const file of files) {
-    console.log(`${file.name} (${file.size} bytes)`);
+for (const [name, content] of Object.entries(files)) {
+    console.log(name);
 }
 
 // Clean up
@@ -421,27 +421,45 @@ await swarmkit.uploadFiles({
 | `uploadContext()` | `{workingDir}/context/{path}` | `/home/user/workspace/context/` |
 | `uploadFiles()` | `{workingDir}/{path}` | `/home/user/workspace/` |
 
-**Format:** `{ "path": content }` — key is relative path, value is `string | Buffer | ArrayBuffer | Uint8Array`.
+**Format:** `{ "destination": content }` — key is destination path in sandbox (directories created automatically), value is `string | Buffer | ArrayBuffer | Uint8Array`.
 
 > **Note:** The setup methods `withContext()` and `withFiles()` use the same format, but upload on first `run()` instead of immediately.
 
-### 4.5 getOutputFiles
-
-Fetch new files from `/output` after a run/command.  Files created before the last operation are filtered out.
+**Helper:** `readLocalDir(path, recursive?)` reads a local directory into `FileMap` format:
 
 ```ts
+import { readLocalDir } from "@swarmkit/sdk";
+
+// Setup (uploads on first run)
+swarmkit.withContext(readLocalDir("./input"));
+swarmkit.withFiles(readLocalDir("./data", true));  // recursive
+
+// Runtime (immediate upload)
+await swarmkit.uploadContext(readLocalDir("./input"));
+await swarmkit.uploadFiles(readLocalDir("./data", true));
+```
+
+### 4.5 getOutputFiles
+
+Fetch new files from `/output` after a run/command. Files created before the last operation are filtered out.
+
+```ts
+// Top-level files only (default)
 const files = await swarmkit.getOutputFiles();
-for (const file of files) {
-  if (typeof file.content === "string") {
-    console.log("text file:", file.path);
-  } else {
-    // Buffer | ArrayBuffer | Uint8Array
-    await fs.promises.writeFile(localPath(file.name), Buffer.from(file.content as ArrayBuffer));
-  }
+for (const [name, content] of Object.entries(files)) {
+  await fs.promises.writeFile(`./downloads/${name}`, content);
+}
+
+// With subdirectories - recreate nested structure
+const allFiles = await swarmkit.getOutputFiles(true);
+for (const [name, content] of Object.entries(allFiles)) {
+  const filePath = `./downloads/${name}`;
+  await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.promises.writeFile(filePath, content);
 }
 ```
 
-Each entry includes `name`, `path`, `content`, `size`, `modifiedTime`.
+**Returns:** `FileMap` — keys are relative paths from `output/`, values are file content (`string` or `Buffer`).
 
 ### 4.6 Session controls
 

@@ -105,14 +105,11 @@ async def main():
         renderer.stop_live()
 
         output_files = await agent.get_output_files()
-        if output_files:
-            console.print()  # blank line before saved files
-            for f in output_files:
-                path = f"output/{f.name}"
-                content = f.content if isinstance(f.content, bytes) else f.content.encode("utf-8")
-                with open(path, "wb") as out:
-                    out.write(content)
-                console.print(f"[success]📄 Saved: {path}[/success]")
+        for name, content in output_files.items():
+            path = f"output/{name}"
+            with open(path, "wb") as out:
+                out.write(content if isinstance(content, bytes) else content.encode("utf-8"))
+            console.print(f"[success]📄 Saved: {path}[/success]")
 
         console.print()
 
