@@ -101,7 +101,7 @@ async function main() {
     await agent.run({ prompt });
     renderer.stopLive();
 
-    const outputFiles = await agent.getOutputFiles();
+    const outputFiles = await agent.getOutputFiles(true);
     for (const [name, content] of Object.entries(outputFiles)) {
       const path = `output/${name}`;
       writeFileSync(path, content);

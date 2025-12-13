@@ -104,7 +104,7 @@ async def main():
         await agent.run(prompt=prompt)
         renderer.stop_live()
 
-        output_files = await agent.get_output_files()
+        output_files = await agent.get_output_files(recursive=True)
         for name, content in output_files.items():
             path = f"output/{name}"
             with open(path, "wb") as out:
