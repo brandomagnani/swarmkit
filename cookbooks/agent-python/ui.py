@@ -97,6 +97,7 @@ async def read_prompt(*, fallback_console: Console | None = console) -> str:
         "inputbar": f"bg:{bg}",
         "prompt": f"bold fg:#00d75f bg:{bg}",
         "input": f"fg:#ffffff bg:{bg}",
+        "hint": "fg:#666666",
     })
 
     text_area = TextArea(
@@ -141,7 +142,14 @@ async def read_prompt(*, fallback_console: Console | None = console) -> str:
         dont_extend_height=True,
     )
 
-    input_bar = HSplit([pad, input_window, pad])
+    hint = Window(
+        content=FormattedTextControl(HTML("<hint>  /q to exit  •  Esc+Enter for newline</hint>")),
+        style="class:hint",
+        height=1,
+        dont_extend_height=True,
+    )
+
+    input_bar = HSplit([pad, input_window, pad, hint])
 
     app = Application(
         layout=Layout(input_bar),
