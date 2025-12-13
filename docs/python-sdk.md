@@ -425,18 +425,23 @@ Fetch new files from `/output` after a run/command. Files created before the las
 ```python
 # Top-level files only (default)
 files = await swarmkit.get_output_files()
-for name, content in files.items():
-    Path(f'./downloads/{name}').write_bytes(content if isinstance(content, bytes) else content.encode())
 
-# With subdirectories - recreate nested structure
+# With subdirectories
 all_files = await swarmkit.get_output_files(recursive=True)
-for name, content in all_files.items():
-    p = Path(f'./downloads/{name}')
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_bytes(content if isinstance(content, bytes) else content.encode())
 ```
 
 **Returns:** `dict[str, str | bytes]` — keys are relative paths from `output/`, values are file content (`str` for text, `bytes` for binary). Same format as upload methods.
+
+**Helper:** `save_local_dir(path, files)` writes a dict to a local directory, creating nested directories automatically:
+
+```python
+from swarmkit import save_local_dir
+
+# Save all output files to local directory (handles nested paths)
+files = await swarmkit.get_output_files(recursive=True)
+save_local_dir('./downloads', files)
+# Creates: ./downloads/result.json, ./downloads/reports/summary.pdf, etc.
+```
 
 ### 4.6 Session controls
 

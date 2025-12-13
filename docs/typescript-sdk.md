@@ -446,20 +446,23 @@ Fetch new files from `/output` after a run/command. Files created before the las
 ```ts
 // Top-level files only (default)
 const files = await swarmkit.getOutputFiles();
-for (const [name, content] of Object.entries(files)) {
-  await fs.promises.writeFile(`./downloads/${name}`, content);
-}
 
-// With subdirectories - recreate nested structure
+// With subdirectories
 const allFiles = await swarmkit.getOutputFiles(true);
-for (const [name, content] of Object.entries(allFiles)) {
-  const filePath = `./downloads/${name}`;
-  await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.promises.writeFile(filePath, content);
-}
 ```
 
 **Returns:** `FileMap` — keys are relative paths from `output/`, values are file content (`string` or `Buffer`). Same format as upload methods.
+
+**Helper:** `saveLocalDir(path, files)` writes a `FileMap` to a local directory, creating nested directories automatically:
+
+```ts
+import { saveLocalDir } from "@swarmkit/sdk";
+
+// Save all output files to local directory (handles nested paths)
+const files = await swarmkit.getOutputFiles(true);
+saveLocalDir('./downloads', files);
+// Creates: ./downloads/result.json, ./downloads/reports/summary.pdf, etc.
+```
 
 ### 4.6 Session controls
 

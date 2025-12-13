@@ -1,4 +1,4 @@
-swarmkit>=0.1.30
+swarmkit>=0.1.31
 python-dotenv
 rich
 prompt_toolkit>=3.0.0
