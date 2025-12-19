@@ -57,7 +57,7 @@ data from complex documents, analyzing data, producing evidence based reports, a
 
 const agent = new SwarmKit()
   .withAgent({
-    type: "codex", // claude, codex, gemini
+    type: "gemini", // claude, codex, gemini
     apiKey: process.env.SWARMKIT_API_KEY!,
   })
   .withSandbox(SANDBOX)
