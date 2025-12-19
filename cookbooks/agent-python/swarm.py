@@ -103,11 +103,11 @@ async def main():
         renderer.stop_live()
 
         # Download output files
-        output_files = await agent.get_output_files(recursive=True)
-        save_local_dir("output", output_files)
-        if output_files:
+        output = await agent.get_output_files(recursive=True)
+        if output.files:
+            save_local_dir("output", output.files)
             console.print()
-            for name in output_files:
+            for name in output.files:
                 console.print(f"[success]📄 Saved: output/{name}[/success]")
 
         console.print()

@@ -101,11 +101,11 @@ async function main() {
     renderer.stopLive();
 
     // Download output files
-    const outputFiles = await agent.getOutputFiles(true);
-    saveLocalDir("output", outputFiles);
-    if (Object.keys(outputFiles).length > 0) {
+    const output = await agent.getOutputFiles(true);
+    if (Object.keys(output.files).length > 0) {
+      saveLocalDir("output", output.files);
       console_.print();
-      for (const name of Object.keys(outputFiles)) {
+      for (const name of Object.keys(output.files)) {
         console_.printSuccess(`📄 Saved: output/${name}`);
       }
     }
