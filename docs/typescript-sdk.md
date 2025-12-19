@@ -126,7 +126,7 @@ All agents use a single SwarmKit API key from [dashboard.swarmlink.ai](https://d
 |----------|-----------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
 | `codex`  | `gpt-5.2`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`                            | • Codex Agent<br>• persistent memory<br>• `reasoningEffort`: `low`, `medium`, `high`, `xhigh` |
 | `claude` | `claude-opus-4-5-20251101` (`opus`), `claude-sonnet-4-5-20250929` (`sonnet`) | • Claude agent<br>• persistent memory<br>• `betas` (Sonnet 4.5 only): `["context-1m-2025-08-07"]` |
-| `gemini` | `gemini-3-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash`                 | • Gemini agent<br>• persistent memory                                                  |
+| `gemini` | `gemini-3-pro-preview`, `gemini-3-flash-preview`, `gemini-2.5-pro`, `gemini-2.5-flash`                 | • Gemini agent<br>• persistent memory                                                  |
 | `qwen`   | `qwen3-coder-plus`, `qwen3-vl-plus`, `qwen3-max-preview`                     | • Qwen agent<br>• persistent memory                                                    |
 
 ### 3.1 Claude betas (Sonnet 4.5 only)
