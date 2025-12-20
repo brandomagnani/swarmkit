@@ -44,8 +44,8 @@ result = await swarmkit.run(prompt='Create a hello world script')
 print(result.stdout)
 
 # Get output files
-files = await swarmkit.get_output_files()
-for name, content in files.items():
+output = await swarmkit.get_output_files()
+for name, content in output.files.items():
     print(name)
 
 # Clean up
@@ -65,7 +65,7 @@ swarmkit = SwarmKit(
     config=AgentConfig(
         type='codex',
         api_key=os.getenv('SWARMKIT_API_KEY'),
-        model='gpt-5.1-codex',               # (optional) Uses default if omitted
+        model='gpt-5.2-codex',               # (optional) Uses default if omitted
         reasoning_effort='medium',           # (optional) 'low' | 'medium' | 'high' | 'xhigh' - Only Codex agents
     ),
 
@@ -106,13 +106,29 @@ swarmkit = SwarmKit(
             'env': {'EXA_API_KEY': os.getenv('EXA_API_KEY')}
         }
     },
+
+    # (optional) Schema for structured output (agent writes result.json, validated on get_output_files())
+    # Accepts Pydantic models or JSON Schema dicts
+    schema=MyPydanticModel,
+
+    # Or with JSON Schema:
+    # schema={
+    #     'type': 'object',
+    #     'properties': {
+    #         'summary': {'type': 'string'},
+    #         'score': {'type': 'number'},
+    #     },
+    #     'required': ['summary', 'score'],
+    # },
 )
 ```
 
 **Note:**
+- Configuration parameters can be combined in any order.
 - The sandbox is created on the first `run()` or `execute_command()` call (see below).
 - Context files, workspace files, MCP servers, and system prompt are set up once on the first call.
 - Using `sandbox_id` parameter to reconnect skips setup since the sandbox already exists.
+- `schema` accepts both Pydantic model classes and JSON Schema dicts.
 
 ---
 
@@ -122,9 +138,9 @@ All agents use a single SwarmKit API key from [dashboard.swarmlink.ai](https://d
 
 | Type     | Recommended Models                                                          | Notes                                                                                  |
 |----------|-----------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
-| `codex`  | `gpt-5.2`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`                            | • Codex Agent<br>• persistent memory<br>• `reasoning_effort`: `low`, `medium`, `high`, `xhigh` |
+| `codex`  | `gpt-5.2`, `gpt-5.2-codex`, `gpt-5.1-codex-mini`                            | • Codex Agent<br>• persistent memory<br>• `reasoning_effort`: `low`, `medium`, `high`, `xhigh` |
 | `claude` | `claude-opus-4-5-20251101` (`opus`), `claude-sonnet-4-5-20250929` (`sonnet`) | • Claude agent<br>• persistent memory<br>• `betas` (Sonnet 4.5 only): `["context-1m-2025-08-07"]` |
-| `gemini` | `gemini-3-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash`                 | • Gemini agent<br>• persistent memory                                                  |
+| `gemini` | `gemini-3-pro-preview`, `gemini-3-flash-preview`, `gemini-2.5-pro`, `gemini-2.5-flash` | • Gemini agent<br>• persistent memory                                                  |
 | `qwen`   | `qwen3-coder-plus`, `qwen3-vl-plus`, `qwen3-max-preview`                     | • Qwen agent<br>• persistent memory                                                    |
 
 ### 3.1 Claude betas (Sonnet 4.5 only)
@@ -145,11 +161,11 @@ swarmkit = SwarmKit(
 
 ## 4. Runtime Methods
 
-All runtime calls are `async` and return an `ExecuteResult`:
+All runtime calls are `async` and return an `AgentResponse`:
 
 ```python
 @dataclass
-class ExecuteResult:
+class AgentResponse:
     sandbox_id: str
     exit_code: int
     stdout: str
@@ -406,15 +422,44 @@ await swarmkit.upload_context(read_local_dir('./input', recursive=True))
 
 **Flow:** `get_output_files()` → `save_local_dir()`
 
-**Format:** Returns `{"path": content}` — same format as upload
+```python
+# Return type
+@dataclass
+class OutputResult:
+    files: dict          # All files from output/ folder
+    data: Any | None     # Parsed result.json (if schema was set via schema=)
+    error: str | None    # Validation error message (if schema validation failed)
+    raw_data: str | None # Raw result.json content when parse/validation failed (for debugging)
+```
 
 ```python
-from swarmkit import save_local_dir
+from pydantic import BaseModel
+from swarmkit import SwarmKit, save_local_dir
 
-# Download from sandbox and save locally
-files = await swarmkit.get_output_files(recursive=True)
-save_local_dir('./output', files)
+class ResultSchema(BaseModel):
+    summary: str
+    score: float
+
+swarmkit = SwarmKit(
+    config=AgentConfig(...),
+    sandbox=E2BProvider(...),
+    schema=ResultSchema,  # Agent will be prompted to write result.json
+)
+
+await swarmkit.run(prompt='Analyze and score the document')
+
+output = await swarmkit.get_output_files(recursive=True)  # recursive=True for nested dirs
+
+# Access all fields
+save_local_dir('./output', output.files)  # Save files locally
+print(output.data)                         # ResultSchema(summary='...', score=85.0)
+print(output.error)                        # None (or validation error message)
 ```
+
+- **`files`** — dict of all files from `output/` folder
+- **`data`** — Parsed `result.json` validated against schema (None if no schema or validation failed). For Pydantic schemas, returns a model instance.
+- **`error`** — Validation error message if schema validation failed (None otherwise)
+- **`raw_data`** — Raw result.json content when parse/validation failed (for debugging)
 
 Files created before the last `run()` or `execute_command()` are filtered out.
 
@@ -466,7 +511,10 @@ Files passed to `context` are uploaded to `context/`. Files passed to `files` ar
 SwarmKit also writes a default system prompt:
 
 ```
+## FILESYSTEM INSTRUCTIONS
+
 You are running in a sandbox environment.
+
 Present working directory: /home/user/workspace/
 
 IMPORTANT - Directory structure:
@@ -476,7 +524,7 @@ IMPORTANT - Directory structure:
 ├── temp/      # Scratch space
 └── output/    # Final deliverables
 
-IMPORTANT - Always save deliverables to output/. The user only receives this folder.
+## OUTPUT RESULTS (DELIVERABLES) MUST BE SAVED to `output/` as files.
 ```
 
 Any string passed to `system_prompt` is appended after this default.
@@ -489,7 +537,18 @@ Ideal for coding applications (when working with repositories).
 SwarmKit(..., workspace_mode='swe')
 ```
 
-SWE mode skips directory scaffolding and does **not** prepend the workspace instructions above—useful when targeting an existing repository layout. All other features (`system_prompt`, `context`, `files`, etc.) continue to work normally.
+SWE mode is the same as knowledge mode but includes an additional `repo/` folder for code repositories:
+
+```
+/home/user/workspace/
+├── repo/      # Code repository
+├── context/   # Input files (read-only) provided by the user
+├── scripts/   # Your code goes here
+├── temp/      # Scratch space
+└── output/    # Final deliverables
+```
+
+The workspace prompt is automatically written with the `repo/` folder included. All other features (`system_prompt`, `context`, `files`, etc.) work the same as knowledge mode.
 
 
 ---
@@ -505,15 +564,15 @@ swarmkit = SwarmKit(
 )
 
 await swarmkit.run(prompt='Analyze data.csv')
-files = await swarmkit.get_output_files()
+output = await swarmkit.get_output_files()
 
 # Still same session, automatically maintains context / history
 await swarmkit.run(prompt='Now create visualization')
-files2 = await swarmkit.get_output_files()
+output2 = await swarmkit.get_output_files()
 
 # Still same session, automatically maintains context / history
 await swarmkit.run(prompt='Export to PDF')
-files3 = await swarmkit.get_output_files()
+output3 = await swarmkit.get_output_files()
 
 await swarmkit.kill()  # When done
 ```
@@ -523,7 +582,7 @@ await swarmkit.kill()  # When done
 ```python
 async with swarmkit:
     result = await swarmkit.run(prompt='...')
-    files = await swarmkit.get_output_files()
+    output = await swarmkit.get_output_files()
 # Calls kill() automatically via __aexit__()
 ```
 
