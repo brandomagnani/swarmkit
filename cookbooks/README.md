@@ -1,7 +1,12 @@
 ## SwarmKit Cookbooks
 
-- [Swarm Agent (Python)](./agent-python)
-- [Swarm Agent (TypeScript)](./agent-typescript)
+### Python
+- [CLI Agent](./python/cli-agent) - Multi-turn sandboxed agent
+- [Agent Builder](./python/agent-builder) - Web app that builds agents
+- [Browser Use](./python/browser-use) - Browser automation
+
+### TypeScript
+- [CLI Agent](./typescript/cli-agent) - Multi-turn sandboxed agent
 
 ## Get Started
 
