@@ -54,6 +54,27 @@ await swarmkit.kill();
 
 - **Tracing:** Every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces)—no extra setup needed. Optionally use `withSessionTagPrefix()` to label your agent session for easy filtering.
 
+### 1.1 Environment Variables
+
+With `SWARMKIT_API_KEY` and `E2B_API_KEY` set, you can skip explicit configuration:
+
+```ts
+import "dotenv/config";  // If using .env file (npm install dotenv)
+import { SwarmKit } from "@swarmkit/sdk";
+
+// Minimal — auto-resolves from environment
+const swarmkit = new SwarmKit();  // type defaults to "claude"
+
+await swarmkit.run({ prompt: "Hello" });
+```
+
+| Variable | Description |
+|----------|-------------|
+| `SWARMKIT_API_KEY` | API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) |
+| `E2B_API_KEY` | Sandbox key from [e2b.dev](https://e2b.dev) |
+
+Agent type defaults to `claude`. Override with `.withAgent({ type: "codex" })`.
+
 ---
 
 ## 2. Full Configuration
@@ -763,6 +784,15 @@ const swarm = new Swarm({
 ```
 
 > **Defaults**: `agent`, `timeoutMs`, `mcpServers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
+
+**Minimal setup** — with `SWARMKIT_API_KEY` and `E2B_API_KEY` set (see [1.1 Environment Variables](#11-environment-variables)):
+
+```ts
+import "dotenv/config";  // If using .env file
+import { Swarm } from "@swarmkit/sdk";
+
+const swarm = new Swarm();  // Auto-resolves agent (claude) and sandbox from env
+```
 
 **RetryConfig** — auto-retry on error with exponential backoff:
 ```ts
