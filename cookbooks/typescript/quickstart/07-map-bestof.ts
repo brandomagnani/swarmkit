@@ -32,6 +32,7 @@ const results = await swarm.map({
         n: 3,
         judgeCriteria: "Most accurate sentiment classification with well-reasoned explanation",
     },
+    // Auto-retry on error
     retry: {
         maxAttempts: 2,
     },

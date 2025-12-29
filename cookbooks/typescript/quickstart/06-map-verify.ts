@@ -28,15 +28,15 @@ const results = await swarm.map({
         Include a title, key points, and word count.
     `,
     schema: SummarySchema,
-    // Auto-retry on error with exponential backoff
-    retry: {
-        maxAttempts: 3,
-        backoffMs: 1000,
-    },
     // LLM judge verifies output, retries with feedback if failed
     verify: {
         criteria: "Summary must include at least 3 key points and accurate word count",
         maxAttempts: 2,
+    },
+    // Auto-retry on error with exponential backoff
+    retry: {
+        maxAttempts: 3,
+        backoffMs: 1000,
     },
 });
 

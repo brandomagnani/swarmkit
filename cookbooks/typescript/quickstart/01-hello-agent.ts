@@ -24,12 +24,11 @@ if (process.env.EXA_API_KEY) {
 await agent.run({
     prompt: `
         Research the latest developments in AI agents.
-        Write a brief report summarizing the top 3 findings.
-        Save the report to output/
+        Generate a brief report summarizing the top 3 findings.
     `,
 });
 
-// Retrieve files from sandbox output/ folder
+// Retrieve report files from sandbox output/ folder
 const output = await agent.getOutputFiles();
 console.log(Object.keys(output.files));
 
