@@ -5,6 +5,7 @@
 - [Agent Builder](./python/agent-builder) - Web app that builds agents
 
 ### TypeScript
+- [Quickstart](./typescript/quickstart) - Minimal examples (8 scripts)
 - [CLI Agent](./typescript/cli-agent) - Multi-turn sandboxed agent
 
 ## Get Started
