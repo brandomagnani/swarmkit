@@ -1324,3 +1324,79 @@ const swarm = new Swarm({
 - Within a phase: Items run in parallel (up to concurrency limit)
 
 ---
+
+## 7. Pipeline
+
+Fluent API for chaining Swarm operations with built-in timing and events.
+
+```ts
+import { Pipeline } from "@swarmkit/sdk";
+
+const pipeline = new Pipeline(swarm)
+  .map({ name: "analyze", prompt: "Analyze this document", schema: AnalysisSchema })
+  .filter({ name: "critical", prompt: "Rate severity", schema: SeveritySchema, condition: d => d.severity === "critical" })
+  .reduce({ name: "report", prompt: "Create summary report" });
+
+// Reusable - run with different data
+const result1 = await pipeline.run(batch1);
+const result2 = await pipeline.run(batch2);
+```
+
+**Key features:**
+- Immutable — each method returns a new Pipeline
+- Reusable — define once, run with different items
+- `name` — step names for observability (appears in events)
+- `emit` — filter-only: `"success"` (default), `"filtered"`, or `"all"` to control what passes to next step
+
+### Events
+
+```ts
+const pipeline = new Pipeline(swarm)
+  .map({ prompt: "..." })
+  .reduce({ prompt: "..." })
+  .on("stepStart", e => console.log(`Step ${e.index} started with ${e.itemCount} items`))
+  .on("stepComplete", e => console.log(`Step ${e.index} done in ${e.durationMs}ms`))
+  .on("stepError", e => console.error(`Step ${e.index} failed:`, e.error));
+
+// Or object style
+pipeline.on({
+  onStepStart: e => console.log(`Starting ${e.name}`),
+  onStepComplete: e => console.log(`${e.name}: ${e.successCount} success, ${e.errorCount} errors`),
+});
+```
+
+| Event | Fields |
+|-------|--------|
+| `stepStart` | `type`, `index`, `name?`, `itemCount` |
+| `stepComplete` | `type`, `index`, `name?`, `durationMs`, `successCount`, `errorCount`, `filteredCount` |
+| `stepError` | `type`, `index`, `name?`, `error` |
+| `itemRetry` | `stepIndex`, `stepName?`, `itemIndex`, `attempt`, `error` |
+| `workerComplete` | `stepIndex`, `stepName?`, `itemIndex`, `attempt`, `status` |
+| `verifierComplete` | `stepIndex`, `stepName?`, `itemIndex`, `attempt`, `passed`, `feedback?` |
+| `candidateComplete` | `stepIndex`, `stepName?`, `itemIndex`, `candidateIndex`, `status` |
+| `judgeComplete` | `stepIndex`, `stepName?`, `itemIndex`, `winnerIndex`, `reasoning` |
+
+### Result
+
+```ts
+interface PipelineResult<T> {
+  runId: string;
+  steps: StepResult[];        // { type, index, durationMs, results }
+  output: SwarmResult<T>[] | ReduceResult<T>;
+  totalDurationMs: number;
+}
+```
+
+### Terminal Pipeline
+
+After `.reduce()`, no more steps can be added:
+
+```ts
+const terminal = new Pipeline(swarm)
+  .map({ prompt: "..." })
+  .reduce({ prompt: "..." });  // Returns TerminalPipeline
+
+terminal.map({ prompt: "..." });  // Throws: "Cannot add steps after reduce"
+```
+
+---
