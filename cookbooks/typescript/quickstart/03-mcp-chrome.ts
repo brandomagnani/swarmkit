@@ -11,12 +11,14 @@ const agent = new SwarmKit()
         "chrome-devtools": {
             command: "npx",
             args: [
-                "-y",
                 "chrome-devtools-mcp@latest",
+                "--headless=true",
+                "--isolated=true",
                 "--chromeArg=--no-sandbox",
                 "--chromeArg=--disable-setuid-sandbox",
                 "--chromeArg=--disable-dev-shm-usage",
             ],
+            env: {},
         },
     });
 
