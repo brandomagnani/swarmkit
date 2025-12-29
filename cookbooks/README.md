@@ -1,6 +1,7 @@
 ## SwarmKit Cookbooks
 
 ### Python
+- [Quickstart](./python/quickstart) - Minimal examples (8 scripts)
 - [CLI Agent](./python/cli-agent) - Multi-turn sandboxed agent
 - [Agent Builder](./python/agent-builder) - Web app that builds agents
 
