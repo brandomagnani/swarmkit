@@ -82,7 +82,7 @@ Agent type defaults to `claude`. Override with `.withAgent({ type: "codex" })`.
 ```ts
 const swarmkit = new SwarmKit()
 
-    // (required) Agent type and API key
+    // Agent type and API key (optional if SWARMKIT_API_KEY set, defaults to claude)
     .withAgent({
         type: "codex",
         apiKey: process.env.SWARMKIT_API_KEY!,
@@ -90,7 +90,7 @@ const swarmkit = new SwarmKit()
         reasoningEffort: "medium",            // (optional) "low" | "medium" | "high" | "xhigh" - Only Codex agents
     })
 
-    // (required) Sandbox provider for execution
+    // Sandbox provider (optional if E2B_API_KEY set)
     .withSandbox(sandbox)
 
     // (optional) Custom working directory, default: /home/user/workspace
@@ -1360,24 +1360,11 @@ const swarm = new Swarm({
 Fluent wrapper over Swarm for chaining operations. **All Swarm features work in Pipeline steps** — schema, bestOf, verify, retry, agent, mcpServers, dynamic prompts.
 
 ```ts
+import "dotenv/config";
 import { Swarm, Pipeline } from "@swarmkit/sdk";
 
-// Swarm = infrastructure with defaults
-const swarm = new Swarm({
-    agent: {
-        type: "claude",
-        apiKey: process.env.SWARMKIT_API_KEY!,
-    },
-    sandbox,
-    concurrency: 4,
-    retry: {                              // Default retry for all steps
-        maxAttempts: 3,
-        backoffMs: 1000,
-    },
-    mcpServers: { ... },                  // Default MCP servers for all steps
-});
+const swarm = new Swarm();  // See Swarm Abstractions for full config
 
-// Pipeline wraps Swarm — inherits all defaults
 const pipeline = new Pipeline(swarm)
     .map({
         name: "analyze",
