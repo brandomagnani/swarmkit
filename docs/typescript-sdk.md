@@ -134,6 +134,11 @@ const swarmkit = new SwarmKit()
 - Using `.withSession()` to reconnect skips setup since the sandbox already exists.
 - `withSchema()` accepts both Zod schemas and JSON Schema objects.
 
+**McpServerConfig** — MCP server connection (STDIO or HTTP/SSE):
+```ts
+{ command?: string, args?: string[], env?: Record<string, string>, url?: string }  // STDIO: command+args, HTTP: url
+```
+
 ---
 
 ## 3. Agents
@@ -759,6 +764,16 @@ const swarm = new Swarm({
 
 > **Defaults**: `agent`, `timeoutMs`, `mcpServers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
 
+**RetryConfig** — auto-retry on error with exponential backoff:
+```ts
+{ maxAttempts?: number, backoffMs?: number, backoffMultiplier?: number, retryOn?: (r) => boolean, onItemRetry?: (idx, attempt, error) => void }
+```
+
+**VerifyConfig** — LLM-as-judge verifies output, retries with feedback if failed:
+```ts
+{ criteria: string, maxAttempts?: number, verifierAgent?: AgentOverride, onWorkerComplete?: (idx, attempt, status) => void, onVerifierComplete?: (idx, attempt, passed, feedback?) => void }
+```
+
 ## 1. Input Types
 
 Swarm runs in **knowledge mode** by default—files are uploaded to `context/` in the sandbox.
@@ -877,13 +892,14 @@ Run N agents on the same `item` in parallel, then a judge picks the best. `Agent
 ```
 
 ```ts
-// Signature (schema accepts Zod or JSON Schema object)
+// Signature
 swarm.bestOf<T>({
     item: FileMap | SwarmResult,
     prompt: string,
-    config: BestOfConfig,          // { n, judgeCriteria, taskAgents?, judgeAgent?, mcpServers?, judgeMcpServers? }
+    config: BestOfConfig,               // { n?, judgeCriteria, taskAgents?, judgeAgent?, onCandidateComplete?, onJudgeComplete? }
     schema?: z.ZodType<T> | JsonSchema,
     systemPrompt?: string,
+    retry?: RetryConfig,                // Per-candidate retry (judge uses default)
     timeoutMs?: number,
 }): Promise<BestOfResult<T>>
 ```
@@ -897,6 +913,8 @@ const result = await swarm.bestOf({
     config: {
         n: 3,
         judgeCriteria: "Most accurate and well-explained solution",
+        onCandidateComplete: (idx, candIdx, status) => console.log(`Candidate ${candIdx}: ${status}`),
+        onJudgeComplete: (idx, winnerIdx, reasoning) => console.log(`Winner: ${winnerIdx}`),
     },
 });
 
@@ -954,8 +972,10 @@ swarm.map<T>({
     schema?: z.ZodType<T> | JsonSchema,
     systemPrompt?: string,
     agent?: AgentOverride,
-    bestOf?: BestOfConfig,
-    mcpServers?: Record<string, McpServerConfig>,  // Override swarm default
+    bestOf?: BestOfConfig,              // N candidates + judge (mutually exclusive with verify)
+    verify?: VerifyConfig,              // LLM-as-judge quality check with retry loop
+    retry?: RetryConfig,                // Auto-retry on error with backoff
+    mcpServers?: Record<string, McpServerConfig>,
     timeoutMs?: number,
 }): Promise<SwarmResultList<T>>
 ```
@@ -1078,7 +1098,9 @@ swarm.filter<T>({
     condition: (data: T) => boolean,    // Local function applies threshold
     systemPrompt?: string,
     agent?: AgentOverride,
-    mcpServers?: Record<string, McpServerConfig>,  // Override swarm default
+    verify?: VerifyConfig,              // LLM-as-judge quality check with retry loop
+    retry?: RetryConfig,                // Auto-retry on error with backoff
+    mcpServers?: Record<string, McpServerConfig>,
     timeoutMs?: number,
 }): Promise<SwarmResultList<T>>
 ```
@@ -1137,7 +1159,9 @@ swarm.reduce<T>({
     schema?: z.ZodType<T> | JsonSchema,
     systemPrompt?: string,
     agent?: AgentOverride,
-    mcpServers?: Record<string, McpServerConfig>,  // Override swarm default
+    verify?: VerifyConfig,              // LLM-as-judge quality check with retry loop
+    retry?: RetryConfig,                // Auto-retry on error with backoff
+    mcpServers?: Record<string, McpServerConfig>,
     timeoutMs?: number,
 }): Promise<ReduceResult<T>>
 ```
@@ -1184,6 +1208,7 @@ interface SwarmResult<T> {
         judgeMeta: JudgeMeta;   // { runId, operation, tag, sandboxId, candidateCount }
         candidates: SwarmResult<T>[];
     };
+    verify?: VerifyInfo; // Present when verify option was used
 }
 
 // SwarmResultList<T> - from map, filter (extends Array)
@@ -1199,6 +1224,15 @@ interface ReduceResult<T> {
     meta: ReduceMeta;   // { runId, operation, tag, sandboxId, inputCount, inputIndices }
     error?: string;
     rawData?: string;   // Raw result.json when parse/validation failed (for debugging)
+    verify?: VerifyInfo; // Present when verify option was used
+}
+
+// VerifyInfo - verification outcome
+interface VerifyInfo {
+    passed: boolean;        // Final verification status
+    reasoning: string;      // Verifier's reasoning
+    verifyMeta: VerifyMeta; // { runId, operation, tag, sandboxId, attempts }
+    attempts: number;       // Total attempts made
 }
 
 // BestOfResult<T> - from bestOf
