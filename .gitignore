@@ -28,3 +28,4 @@ package-lock.json
 dev-utils/
 cookbooks/browser-use-py/
 docs/typescript-sdk-functional.md
+docs/typescript-sdk-old.md

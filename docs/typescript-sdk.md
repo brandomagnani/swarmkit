@@ -43,8 +43,8 @@ const result = await swarmkit.run({
 console.log(result.stdout);
 
 // Get output files
-const files = await swarmkit.getOutputFiles();
-for (const [name, content] of Object.entries(files)) {
+const output = await swarmkit.getOutputFiles();
+for (const [name, content] of Object.entries(output.files)) {
     console.log(name);
 }
 
@@ -65,7 +65,7 @@ const swarmkit = new SwarmKit()
     .withAgent({
         type: "codex",
         apiKey: process.env.SWARMKIT_API_KEY!,
-        model: "gpt-5.1-codex",               // (optional) Uses default if omitted
+        model: "gpt-5.2-codex",               // (optional) Uses default if omitted
         reasoningEffort: "medium",            // (optional) "low" | "medium" | "high" | "xhigh" - Only Codex agents
     })
 
@@ -107,7 +107,24 @@ const swarmkit = new SwarmKit()
             args: ["-y", "mcp-remote", "https://mcp.exa.ai/mcp"],
             env: { EXA_API_KEY: process.env.EXA_API_KEY! }
         }
-    });
+    })
+
+    // (optional) Schema for structured output (agent writes result.json, validated on getOutputFiles())
+    // Accepts Zod schemas or JSON Schema objects
+    .withSchema(z.object({
+        summary: z.string(),
+        score: z.number(),
+    }));
+
+    // Or with JSON Schema:
+    // .withSchema({
+    //     type: "object",
+    //     properties: {
+    //         summary: { type: "string" },
+    //         score: { type: "number" },
+    //     },
+    //     required: ["summary", "score"],
+    // });
 ```
 
 **Note:**
@@ -115,6 +132,7 @@ const swarmkit = new SwarmKit()
 - The sandbox is created on the first `run()` or `executeCommand()` call (see below).
 - Context files, workspace files, MCP servers, and system prompt are set up once on the first call.
 - Using `.withSession()` to reconnect skips setup since the sandbox already exists.
+- `withSchema()` accepts both Zod schemas and JSON Schema objects.
 
 ---
 
@@ -124,7 +142,7 @@ All agents use a single SwarmKit API key from [dashboard.swarmlink.ai](https://d
 
 | Type     | Recommended Models                                                          | Notes                                                                                  |
 |----------|-----------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
-| `codex`  | `gpt-5.2`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`                            | • Codex Agent<br>• persistent memory<br>• `reasoningEffort`: `low`, `medium`, `high`, `xhigh` |
+| `codex`  | `gpt-5.2`, `gpt-5.2-codex`, `gpt-5.1-codex-max`, `gpt-5.1-mini`             | • Codex Agent<br>• persistent memory<br>• `reasoningEffort`: `low`, `medium`, `high`, `xhigh` |
 | `claude` | `claude-opus-4-5-20251101` (`opus`), `claude-sonnet-4-5-20250929` (`sonnet`) | • Claude agent<br>• persistent memory<br>• `betas` (Sonnet 4.5 only): `["context-1m-2025-08-07"]` |
 | `gemini` | `gemini-3-pro-preview`, `gemini-3-flash-preview`, `gemini-2.5-pro`, `gemini-2.5-flash`                 | • Gemini agent<br>• persistent memory                                                  |
 | `qwen`   | `qwen3-coder-plus`, `qwen3-vl-plus`, `qwen3-max-preview`                     | • Qwen agent<br>• persistent memory                                                    |
@@ -218,8 +236,8 @@ swarmkit.on("content", event => console.log(event.update));
 | `agent_message_chunk` | Text/image from agent | `content.type`, `content.text` |
 | `agent_thought_chunk` | Reasoning/thinking (Codex/Claude) | `content.type`, `content.text` |
 | `user_message_chunk` | User message echo (Gemini) | `content.type`, `content.text` |
-| `tool_call` | Tool started | `toolCallId`, `title`, `kind`, `status`, `rawInput` |
-| `tool_call_update` | Tool finished | `toolCallId`, `status` |
+| `tool_call` | Tool started | `toolCallId`, `title`, `kind`, `status`, `rawInput?`, `content?`, `locations?` |
+| `tool_call_update` | Tool finished | `toolCallId`, `status?`, `title?`, `content?`, `locations?` |
 | `plan` | TodoWrite updates | `entries[]` with `content`, `status`, `priority` |
 
 All listeners are optional.
@@ -241,7 +259,7 @@ interface ToolInfo {
 interface PlanEntry {
   status: string;
   content: string;
-  priority?: number;
+  priority?: string;  // "high" | "medium" | "low"
 }
 
 class StreamRenderer {
@@ -286,7 +304,7 @@ class StreamRenderer {
       }
       this.tools.set(toolId, {
         title: (update.title as string) ?? "Tool",
-        kind: (update.kind as string) ?? "other", // read, edit, execute, fetch, search
+        kind: (update.kind as string) ?? "other", // read, edit, search, execute, think, fetch, switch_mode, other
         status: (update.status as string) ?? "pending",
         rawInput: (update.rawInput as Record<string, unknown>) ?? {},
       });
@@ -396,7 +414,7 @@ renderer.stopLive();
 2. **Flush messages before tools/plan** - Preserves correct interleaving order
 3. **Track tools by ID** - `tool_call` (start) and `tool_call_update` (end) share `toolCallId`
 4. **Handle out-of-order updates** - `tool_call_update` may arrive before `tool_call`
-5. **Use `kind` for tool categorization** - `read`, `edit`, `execute`, `fetch`, `search`, `other`
+5. **Use `kind` for tool categorization** - `read`, `edit`, `search`, `execute`, `think`, `fetch`, `switch_mode`, `other`
 
 > **Full production example:** See [`cookbooks/agent-typescript/ui.ts`](../cookbooks/agent-typescript/ui.ts) for styled formatting with chalk, markdown rendering, spinner animations, and advanced live output management.
 
@@ -430,15 +448,43 @@ await swarmkit.uploadContext(readLocalDir("./input", true));
 
 **Flow:** `getOutputFiles()` → `saveLocalDir()`
 
-**Format:** Returns `{ "path": content }` — same format as upload
+```ts
+// Return type
+interface OutputResult<T = unknown> {
+    files: FileMap;      // All files from output/ folder
+    data: T | null;      // Parsed result.json (if schema was set via withSchema())
+    error?: string;      // Validation error message (if schema validation failed)
+    rawData?: string;    // Raw result.json content when parse/validation failed (for debugging)
+}
+```
 
 ```ts
+import { z } from "zod";
 import { saveLocalDir } from "@swarmkit/sdk";
 
-// Download from sandbox and save locally
-const files = await swarmkit.getOutputFiles(true);  // recursive
-saveLocalDir("./output", files);
+const ResultSchema = z.object({
+    summary: z.string(),
+    score: z.number(),
+});
+
+const swarmkit = new SwarmKit()
+    .withAgent({...})
+    .withSandbox(sandbox)
+    .withSchema(ResultSchema);  // Agent will be prompted to write result.json
+
+await swarmkit.run({ prompt: "Analyze and score the document" });
+
+const output = await swarmkit.getOutputFiles(true);  // recursive=true for nested dirs
+
+// Access all three fields
+saveLocalDir("./output", output.files);  // Save files locally
+console.log(output.data);                 // { summary: "...", score: 85 }
+console.log(output.error);                // undefined (or validation error message)
 ```
+
+- **`files`** — `FileMap` of all files from `output/` folder
+- **`data`** — Parsed `result.json` validated against schema (null if no schema or validation failed)
+- **`error`** — Validation error message if schema validation failed (undefined otherwise)
 
 Files created before the last `run()` or `executeCommand()` are filtered out.
 
@@ -490,6 +536,8 @@ Files passed to `withContext()` are uploaded to `context/`. Files passed to `wit
 SwarmKit also writes a default system prompt:
 
 ```
+## FILESYSTEM INSTRUCTIONS
+
 You are running in a sandbox environment.
 Present working directory: /home/user/workspace/
 
@@ -500,7 +548,7 @@ IMPORTANT - Directory structure:
 ├── temp/      # Scratch space
 └── output/    # Final deliverables
 
-IMPORTANT - Always save deliverables to output/. The user only receives this folder.
+## OUTPUT RESULTS (DELIVERABLES) MUST BE SAVED to `output/` as files.
 ```
 
 Any string passed to `withSystemPrompt()` is appended after this default.
@@ -513,7 +561,18 @@ Ideal for coding applications (when working with repositories).
 swarmkit.withWorkspaceMode("swe");
 ```
 
-SWE mode skips directory scaffolding and does **not** prepend the workspace instructions above—useful when targeting an existing repository layout.  All other features (`withSystemPrompt`, `withContext`, `withFiles`, etc.) continue to work normally.
+SWE mode is the same as knowledge mode but includes an additional `repo/` folder for code repositories:
+
+```
+/home/user/workspace/
+├── repo/      # Code repository
+├── context/   # Input files (read-only) provided by the user
+├── scripts/   # Your code goes here
+├── temp/      # Scratch space
+└── output/    # Final deliverables
+```
+
+The workspace prompt is automatically written with the `repo/` folder included. All other features (`withSystemPrompt`, `withContext`, `withFiles`, etc.) work the same as knowledge mode.
 
 
 ---
@@ -528,15 +587,15 @@ const swarmkit = new SwarmKit()
   .withSandbox(sandbox);
 
 await swarmkit.run({ prompt: 'Analyze data.csv' });
-const files = await swarmkit.getOutputFiles();
+const output1 = await swarmkit.getOutputFiles();
 
 // Still same session, automatically maintains context / history
-await swarmkit.run({ prompt: 'Now create visualization' });  
-const files2 = await swarmkit.getOutputFiles();
+await swarmkit.run({ prompt: 'Now create visualization' });
+const output2 = await swarmkit.getOutputFiles();
 
 // Still same session, automatically maintains context / history
-await swarmkit.run({ prompt: 'Export to PDF' });  
-const files3 = await swarmkit.getOutputFiles();
+await swarmkit.run({ prompt: 'Export to PDF' });
+const output3 = await swarmkit.getOutputFiles();
 
 await swarmkit.kill();  // When done
 ```
@@ -661,5 +720,566 @@ console.log(swarmkit.getSessionTimestamp()); // Timestamp for second log file
 
 Use the tag together with the sandbox id to correlate logs with files saved in
 `/output/`.
+
+---
+
+# Swarm Abstractions
+
+Functional programming for AI agents: `map`, `filter`, `reduce`, `bestOf`.
+
+```ts
+import { Swarm } from "@swarmkit/sdk";
+import { createE2BProvider } from "@swarmkit/e2b";
+import { z } from "zod";  // Or use plain JSON Schema objects instead
+
+const sandbox = createE2BProvider({
+    apiKey: process.env.E2B_API_KEY!,
+});
+
+const agent = {
+    type: "claude",
+    apiKey: process.env.SWARMKIT_API_KEY!,
+};
+
+const swarm = new Swarm({
+    agent,
+    sandbox,
+    concurrency: 4,        // Max parallel sandboxes (default: 4)
+    timeoutMs: 3_600_000,  // Per-worker timeout (default: 1 hour)
+    tag: "my-pipeline",    // Tag prefix for observability
+    workspaceMode: "knowledge",  // (optional) "knowledge" (default) or "swe"
+    mcpServers: {...},     // (optional) MCP servers for all workers
+});
+```
+
+## 1. Input Types
+
+Swarm runs in **knowledge mode** by default—files are uploaded to `context/` in the sandbox.
+
+**FileMap structure:**
+
+```ts
+// FileMap: Record<path, content>
+//   - path: string              → file path in context/ folder
+//   - content: string | Uint8Array  → file content
+
+type FileMap = Record<string, string | Uint8Array>;
+```
+
+---
+
+**Case 1: One file per worker**
+
+```ts
+// 3 workers, each gets 1 file
+const items: FileMap[] = [
+    { "report.txt": "Q1 revenue..." },      // → Worker 0: context/report.txt
+    { "report.txt": "Q2 revenue..." },      // → Worker 1: context/report.txt
+    { "report.txt": "Q3 revenue..." },      // → Worker 2: context/report.txt
+];
+
+const results = await swarm.map({
+    items,
+    prompt: "Summarize this report",
+});
+```
+
+---
+
+**Case 2: Multiple files per worker**
+
+```ts
+// 3 workers, each gets 2 files
+const items: FileMap[] = [
+    {                                       // → Worker 0:
+        "doc1.pdf": fs.readFileSync("./doc1.pdf"),  //   context/doc1.pdf
+        "doc2.pdf": fs.readFileSync("./doc2.pdf"),  //   context/doc2.pdf
+    },
+    {                                       // → Worker 1:
+        "doc3.pdf": fs.readFileSync("./doc3.pdf"),  //   context/doc3.pdf
+        "doc4.pdf": fs.readFileSync("./doc4.pdf"),  //   context/doc4.pdf
+    },
+    {                                       // → Worker 2:
+        "doc5.pdf": fs.readFileSync("./doc5.pdf"),  //   context/doc5.pdf
+        "doc6.pdf": fs.readFileSync("./doc6.pdf"),  //   context/doc6.pdf
+    },
+];
+
+const results = await swarm.map({
+    items,
+    prompt: "Compare these two documents",
+});
+```
+
+---
+
+**Case 3: Entire folder per worker**
+
+```ts
+import { readLocalDir } from "@swarmkit/sdk";
+
+// readLocalDir(path, recursive) → returns FileMap with all files
+const items: FileMap[] = [
+    readLocalDir("./project-a", true),      // → Worker 0: all files from project-a (recursive)
+    readLocalDir("./project-b", true),      // → Worker 1: all files from project-b (recursive)
+    readLocalDir("./project-c", true),      // → Worker 2: all files from project-c (recursive)
+];
+
+const results = await swarm.map({
+    items,
+    prompt: "Review this codebase",
+});
+```
+
+## 2. Abstractions
+
+Two types of operations:
+
+| Operation | Type | Description | Passes On |
+|-----------|------|-------------|-----------|
+| `bestOf` | transform + select | `input` → `output` (best of N candidates) | winner output |
+| `map` | transform | `input` → `output` (agent produces new data) | agent output |
+| `filter` | gate | `input` → `input` (agent evaluates, condition decides) | original input + status (`success` \| `filtered`) |
+| `reduce` | transform | `inputs` → `output` (agent synthesizes) | agent output |
+
+**Transforms** produce new output files. **Filter** passes through original input files unchanged.
+
+### 2.1 bestOf
+
+Run N agents on the same `item` in parallel, then a judge picks the best. `Agent[i]` outputs `candidates[i]`, judge selects `winner`.
+
+```
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│    Sandbox 0    │ │    Sandbox 1    │ │    Sandbox 2    │
+│    Agent 0      │ │    Agent 1      │ │    Agent 2      │
+│                 │ │                 │ │                 │
+│  context/       │ │  context/       │ │  context/       │
+│    item         │ │    item         │ │    item         │
+│  output/        │ │  output/        │ │  output/        │
+│    candidates[0]│ │    candidates[1]│ │    candidates[2]│
+└───────┬─────────┘ └───────┬─────────┘ └───────┬─────────┘
+        │                   │                   │
+        └───────────────────┼───────────────────┘
+                            ▼
+                    ┌───────────────┐
+                    │     Judge     │
+                    └───────┬───────┘
+                            │
+                            ▼
+                         winner
+```
+
+```ts
+// Signature (schema accepts Zod or JSON Schema object)
+swarm.bestOf<T>({
+    item: FileMap | SwarmResult,
+    prompt: string,
+    config: BestOfConfig,          // { n, judgeCriteria, taskAgents?, judgeAgent?, mcpServers?, judgeMcpServers? }
+    schema?: z.ZodType<T> | JsonSchema,
+    systemPrompt?: string,
+    timeoutMs?: number,
+}): Promise<BestOfResult<T>>
+```
+
+```ts
+const input = { "task.txt": "Complex problem..." };
+
+const result = await swarm.bestOf({
+    item: input,
+    prompt: "Solve this problem",
+    config: {
+        n: 3,
+        judgeCriteria: "Most accurate and well-explained solution",
+    },
+});
+
+console.log(result.winner);         // Best SwarmResult
+console.log(result.winnerIndex);    // 0, 1, or 2
+console.log(result.judgeReasoning); // Why this was chosen
+console.log(result.candidates);     // All candidate results
+```
+
+Use different agents per candidate:
+
+```ts
+const claudeAgent = { type: "claude", model: "opus" };
+const codexAgent = { type: "codex", model: "gpt-5.2-codex" };
+const geminiAgent = { type: "gemini", model: "gemini-3-flash" };
+
+const result = await swarm.bestOf({
+    item: input,
+    prompt: "Solve this",
+    config: {
+        taskAgents: [claudeAgent, codexAgent, geminiAgent],
+        judgeCriteria: "Best solution quality",
+        judgeAgent: claudeAgent,
+        mcpServers: {...},        // (optional) MCP servers for candidates
+        judgeMcpServers: {...},   // (optional) MCP servers for judge
+    },
+});
+```
+
+### 2.2 map
+
+Process items in parallel. `Agent[i]` sees `items[i]` and outputs `results[i]` (which includes `result.json` if `schema` provided).
+
+```
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│    Sandbox 0    │ │    Sandbox 1    │ │    Sandbox 2    │
+│    Agent 0      │ │    Agent 1      │ │    Agent 2      │
+│                 │ │                 │ │                 │
+│  context/       │ │  context/       │ │  context/       │
+│    items[0]     │ │    items[1]     │ │    items[2]     │
+│  output/        │ │  output/        │ │  output/        │
+│    results[0]   │ │    results[1]   │ │    results[2]   │
+└───────┬─────────┘ └───────┬─────────┘ └───────┬─────────┘
+        │                   │                   │
+        └───────────────────┼───────────────────┘
+                            ▼
+              [results[0], results[1], results[2]]
+```
+
+```ts
+// Signature (schema accepts Zod or JSON Schema object)
+swarm.map<T>({
+    items: FileMap[] | SwarmResult[],
+    prompt: string | ((files: FileMap, index: number) => string),
+    schema?: z.ZodType<T> | JsonSchema,
+    systemPrompt?: string,
+    agent?: AgentOverride,
+    bestOf?: BestOfConfig,
+    mcpServers?: Record<string, McpServerConfig>,  // Override swarm default
+    timeoutMs?: number,
+}): Promise<SwarmResultList<T>>
+```
+
+```ts
+// Basic
+const results = await swarm.map({
+    items: documents,
+    prompt: "Summarize this document",
+});
+```
+
+When `schema` is provided, a structured output prompt is automatically embedded—instructing the agent to write `output/result.json` matching the schema.
+
+```ts
+// With Zod schema
+const SummarySchema = z.object({
+    title: z.string(),
+    keyPoints: z.array(z.string()),
+});
+
+const results = await swarm.map({
+    items: documents,
+    prompt: "Extract summary",
+    schema: SummarySchema,
+});
+
+// Or with JSON Schema
+const SummaryJsonSchema = {
+    type: "object",
+    properties: {
+        title: { type: "string" },
+        keyPoints: { type: "array", items: { type: "string" } },
+    },
+    required: ["title", "keyPoints"],
+};
+
+const results = await swarm.map({
+    items: documents,
+    prompt: "Extract summary",
+    schema: SummaryJsonSchema,
+});
+
+// With dynamic prompt
+const results = await swarm.map({
+    items: documents,
+    prompt: (files, index) => `Analyze document ${index + 1}: focus on revenue`,
+});
+
+// Access results
+for (const r of results) {
+    if (r.status === "success") {
+        console.log(r.data);   // Parsed schema or FileMap
+        console.log(r.files);  // Output files from agent
+    }
+}
+```
+
+### 2.3 map with bestOf
+
+Combine map parallelism with bestOf quality:
+
+```ts
+const AnalysisSchema = z.object({
+    findings: z.array(z.string()),
+    confidence: z.number(),
+});
+
+// Each item gets N candidates, judge picks best per item
+const results = await swarm.map({
+    items: documents,
+    prompt: "Analyze thoroughly",
+    schema: AnalysisSchema,
+    bestOf: {
+        n: 3,
+        judgeCriteria: "Most comprehensive analysis",
+        // taskAgents?: AgentOverride[],     // Different agent per candidate
+        // judgeAgent?: AgentOverride,       // Override judge agent
+        // mcpServers?: {...},               // MCP servers for candidates
+        // judgeMcpServers?: {...},          // MCP servers for judge
+    },
+});
+
+// Results contain only winners (one per input item)
+```
+
+### 2.4 filter
+
+Two-step evaluation (`schema` and `condition` are required):
+1. `Agent[i]` sees `items[i]`, assesses it, outputs `result.json` matching `schema`
+2. SDK parses `result.json` → `data`, your `condition(data)` applies the threshold
+3. Passing items forward their original input files, not agent output
+
+```
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│    Sandbox 0    │ │    Sandbox 1    │ │    Sandbox 2    │
+│    Agent 0      │ │    Agent 1      │ │    Agent 2      │
+│                 │ │                 │ │                 │
+│  context/       │ │  context/       │ │  context/       │
+│    items[0]     │ │    items[1]     │ │    items[2]     │
+│  output/        │ │  output/        │ │  output/        │
+│    result.json  │ │    result.json  │ │    result.json  │
+└───────┬─────────┘ └───────┬─────────┘ └───────┬─────────┘
+        │                   │                   │
+        └───────────────────┼───────────────────┘
+                            ▼
+                   condition(data)
+                      ✓    ✗    ✓
+                      │         │
+                      ▼         ▼
+                [items[0], items[2]]
+```
+
+```ts
+// Signature (schema accepts Zod or JSON Schema object)
+swarm.filter<T>({
+    items: FileMap[] | SwarmResult[],
+    prompt: string,           // Describe what to assess (agent outputs result.json)
+    schema: z.ZodType<T> | JsonSchema,  // Required - defines evaluation output structure
+    condition: (data: T) => boolean,    // Local function applies threshold
+    systemPrompt?: string,
+    agent?: AgentOverride,
+    mcpServers?: Record<string, McpServerConfig>,  // Override swarm default
+    timeoutMs?: number,
+}): Promise<SwarmResultList<T>>
+```
+
+```ts
+const EvalSchema = z.object({
+    severity: z.enum(["critical", "warning", "info"]),
+    score: z.number(),
+});
+
+const results = await swarm.filter({
+    items: documents,
+    prompt: "Assess the severity of issues in this document",  // Agent evaluates
+    schema: EvalSchema,
+    condition: (data) => data.severity === "critical",  // Code applies threshold
+});
+
+// Three possible statuses:
+results.success;   // Passed condition
+results.filtered;  // Evaluated but didn't pass
+results.error;     // Agent error
+
+// Chain to next step
+await swarm.reduce({
+    items: results.success,
+    prompt: "Summarize critical issues",
+});
+```
+
+### 2.5 reduce
+
+Synthesize many items into one. A single agent sees all `items` as `item_0/`, `item_1/`, etc. and outputs a unified `result` (which includes `result.json` if `schema` provided).
+
+```
+        ┌─────────────────────────┐
+        │         Sandbox         │
+        │         Agent           │
+        │                         │
+        │  context/               │
+        │    item_0/items[0]      │
+        │    item_1/items[1]      │
+        │    item_2/items[2]      │
+        │  output/                │
+        │    result               │
+        └────────────┬────────────┘
+                     │
+                     ▼
+                  result
+```
+
+```ts
+// Signature (schema accepts Zod or JSON Schema object)
+swarm.reduce<T>({
+    items: FileMap[] | SwarmResult[],
+    prompt: string,
+    schema?: z.ZodType<T> | JsonSchema,
+    systemPrompt?: string,
+    agent?: AgentOverride,
+    mcpServers?: Record<string, McpServerConfig>,  // Override swarm default
+    timeoutMs?: number,
+}): Promise<ReduceResult<T>>
+```
+
+```ts
+// Agent sees: item_0/, item_1/, item_2/, etc.
+const report = await swarm.reduce({
+    items: results.success,
+    prompt: "Create a unified report from all analyses",
+});
+
+if (report.status === "success") {
+    console.log(report.files);  // Final output files
+    console.log(report.data);   // Parsed schema if provided
+}
+
+// With schema
+const ReportSchema = z.object({
+    summary: z.string(),
+    recommendations: z.array(z.string()),
+});
+
+const report = await swarm.reduce({
+    items,
+    prompt: "Create report",
+    schema: ReportSchema,
+});
+```
+
+## 3. Result Types
+
+```ts
+// SwarmResult<T> - from map, filter, bestOf candidates
+interface SwarmResult<T> {
+    status: "success" | "filtered" | "error";
+    data: T | null;      // Parsed schema, or null on error
+    files: FileMap;      // Output files (map/bestOf) or input files (filter)
+    meta: IndexedMeta;   // { runId, operation, tag, sandboxId, index }
+    error?: string;      // Error message if status === "error"
+    rawData?: string;    // Raw result.json when parse/validation failed (for debugging)
+    bestOf?: {           // Present when map used bestOf option
+        winnerIndex: number;
+        judgeReasoning: string;
+        judgeMeta: JudgeMeta;   // { runId, operation, tag, sandboxId, candidateCount }
+        candidates: SwarmResult<T>[];
+    };
+}
+
+// SwarmResultList<T> - from map, filter (extends Array)
+results.success;   // SwarmResult[] with status "success"
+results.filtered;  // SwarmResult[] with status "filtered"
+results.error;     // SwarmResult[] with status "error"
+
+// ReduceResult<T> - from reduce
+interface ReduceResult<T> {
+    status: "success" | "error";
+    data: T | null;
+    files: FileMap;
+    meta: ReduceMeta;   // { runId, operation, tag, sandboxId, inputCount, inputIndices }
+    error?: string;
+    rawData?: string;   // Raw result.json when parse/validation failed (for debugging)
+}
+
+// BestOfResult<T> - from bestOf
+interface BestOfResult<T> {
+    winner: SwarmResult<T>;
+    winnerIndex: number;
+    judgeReasoning: string;
+    judgeMeta: JudgeMeta;
+    candidates: SwarmResult<T>[];
+}
+```
+
+## 4. Chaining Operations
+
+```ts
+const AnalysisSchema = z.object({ summary: z.string() });
+const SeveritySchema = z.object({ severity: z.enum(["critical", "warning", "info"]) });
+
+// Full pipeline: map → filter → reduce
+const analyzed = await swarm.map({
+    items: documents,
+    prompt: "Analyze",
+    schema: AnalysisSchema,
+});
+
+const critical = await swarm.filter({
+    items: analyzed.success,
+    prompt: "Evaluate severity",
+    schema: SeveritySchema,
+    condition: (d) => d.severity === "critical",
+});
+
+const report = await swarm.reduce({
+    items: critical.success,
+    prompt: "Create summary report",
+});
+
+// Combine success and filtered
+const allEvaluated = [...critical.success, ...critical.filtered];
+await swarm.reduce({
+    items: allEvaluated,
+    prompt: "Summarize all evaluated items",
+});
+```
+
+## 5. AgentOverride
+
+Override the default agent for any operation (apiKey inherited from Swarm config):
+
+```ts
+interface AgentOverride {
+    type: "claude" | "codex" | "gemini" | "qwen";
+    model?: string;
+    reasoningEffort?: "low" | "medium" | "high" | "xhigh";  // Codex only
+    betas?: string[];  // Claude only
+}
+```
+
+```ts
+const codexAgent: AgentOverride = {
+    type: "codex",
+    reasoningEffort: "high",
+};
+
+const results = await swarm.map({
+    items,
+    prompt: "Analyze",
+    agent: codexAgent,
+});
+```
+
+## 6. Concurrency
+
+Global semaphore limits parallel sandboxes across all operations.
+
+```ts
+const swarm = new Swarm({
+    agent,
+    sandbox,
+    concurrency: 4,  // Max 4 sandboxes at once (default: 4)
+});
+
+// map(10) with bestOf(5) = 60 agent calls, but only 4 run at any time
+```
+
+**Ordering guarantees:**
+- `bestOf`: Judge runs only after all candidates complete
+- `map` → `filter` → `reduce`: Each phase completes before next starts
+- Within a phase: Items run in parallel (up to concurrency limit)
 
 ---
