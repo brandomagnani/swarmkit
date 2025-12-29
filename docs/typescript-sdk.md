@@ -742,15 +742,22 @@ const agent = {
 };
 
 const swarm = new Swarm({
-    agent,
-    sandbox,
-    concurrency: 4,        // Max parallel sandboxes (default: 4)
-    timeoutMs: 3_600_000,  // Per-worker timeout (default: 1 hour)
-    tag: "my-pipeline",    // Tag prefix for observability
-    workspaceMode: "knowledge",  // (optional) "knowledge" (default) or "swe"
-    mcpServers: {...},     // (optional) MCP servers for all workers
+    agent,                       // Default agent for all operations
+    sandbox,                     // Sandbox provider
+    concurrency: 4,              // Max parallel sandboxes (default: 4)
+    timeoutMs: 3_600_000,        // Default timeout per worker (default: 1 hour)
+    tag: "my-pipeline",          // Tag prefix for observability
+    workspaceMode: "knowledge",  // "knowledge" (default) or "swe"
+    mcpServers: {...},           // Default MCP servers for all workers
+    retry: {                     // Default retry config for all operations
+        maxAttempts: 3,
+        backoffMs: 1000,
+        backoffMultiplier: 2,
+    },
 });
 ```
+
+> **Defaults**: `agent`, `timeoutMs`, `mcpServers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
 
 ## 1. Input Types
 
