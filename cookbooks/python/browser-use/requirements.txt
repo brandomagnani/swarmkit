@@ -1,3 +1,0 @@
-swarmkit
-python-dotenv
-rich
