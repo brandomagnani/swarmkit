@@ -84,7 +84,7 @@ const swarmkit = new SwarmKit()
 
     // Agent configuration (optional if SWARMKIT_API_KEY set, defaults to claude)
     .withAgent({
-        type: "codex",                        // "claude" | "codex" | "gemini" | "qwen"
+        type: "codex",                        // "claude" | "codex" | "gemini" | "qwen" - defaults to "claude"
         model: "gpt-5.2-codex",               // (optional) Uses default if omitted
         reasoningEffort: "medium",            // (optional) "low" | "medium" | "high" | "xhigh" - Codex only
         // betas: ["context-1m-2025-08-07"],  // (optional) Claude Sonnet only
