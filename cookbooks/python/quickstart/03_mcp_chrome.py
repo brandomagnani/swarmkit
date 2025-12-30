@@ -31,8 +31,7 @@ async def main():
         prompt="""
             Use Chrome DevTools to:
             1. Navigate to https://news.ycombinator.com
-            2. Take a screenshot
-            3. Save it to output/
+            2. Take a screenshot and save it to a file
         """
     )
 

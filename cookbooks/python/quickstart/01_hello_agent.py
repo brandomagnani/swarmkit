@@ -30,8 +30,7 @@ async def main():
     await agent.run(
         prompt="""
             Research the latest developments in AI agents.
-            Write a brief report summarizing the top 3 findings.
-            Save the report to output/
+            Generate a brief report summarizing the top 3 findings.
         """
     )
 
