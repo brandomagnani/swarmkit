@@ -27,5 +27,6 @@ dist/
 package-lock.json
 dev-utils/
 cookbooks/browser-use-py/
+cookbooks/python/agent-builder/
 docs/typescript-sdk-functional.md
 docs/typescript-sdk-old.md
