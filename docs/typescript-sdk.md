@@ -22,7 +22,7 @@ const sandbox = createE2BProvider({
 const swarmkit = new SwarmKit()
     .withAgent({
         type: "codex",
-        apiKey: process.env.SWARMKIT_API_KEY!
+        apiKey: process.env.SWARMKIT_API_KEY!,
     })
     .withSandbox(sandbox)
     .withSessionTagPrefix("my-app") // optional tag for the agent session
@@ -82,12 +82,13 @@ Agent type defaults to `claude`. Override with `.withAgent({ type: "codex" })`.
 ```ts
 const swarmkit = new SwarmKit()
 
-    // Agent type and API key (optional if SWARMKIT_API_KEY set, defaults to claude)
+    // Agent configuration (optional if SWARMKIT_API_KEY set, defaults to claude)
     .withAgent({
-        type: "codex",
-        apiKey: process.env.SWARMKIT_API_KEY!,
+        type: "codex",                        // "claude" | "codex" | "gemini" | "qwen"
         model: "gpt-5.2-codex",               // (optional) Uses default if omitted
-        reasoningEffort: "medium",            // (optional) "low" | "medium" | "high" | "xhigh" - Only Codex agents
+        reasoningEffort: "medium",            // (optional) "low" | "medium" | "high" | "xhigh" - Codex only
+        // betas: ["context-1m-2025-08-07"],  // (optional) Claude Sonnet 4.5 only
+        apiKey: process.env.SWARMKIT_API_KEY!, // (optional) Auto-resolves from env
     })
 
     // Sandbox provider (optional if E2B_API_KEY set)
@@ -166,26 +167,33 @@ const swarmkit = new SwarmKit()
 
 All agents use a single SwarmKit API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/).
 
-| Type     | Recommended Models                                                          | Notes                                                                                  |
-|----------|-----------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
-| `codex`  | `gpt-5.2`, `gpt-5.2-codex`, `gpt-5.1-codex-max`, `gpt-5.1-mini`             | • Codex Agent<br>• persistent memory<br>• `reasoningEffort`: `low`, `medium`, `high`, `xhigh` |
-| `claude` | `claude-opus-4-5-20251101` (`opus`), `claude-sonnet-4-5-20250929` (`sonnet`) | • Claude agent<br>• persistent memory<br>• `betas` (Sonnet 4.5 only): `["context-1m-2025-08-07"]` |
-| `gemini` | `gemini-3-pro-preview`, `gemini-3-flash-preview`, `gemini-2.5-pro`, `gemini-2.5-flash`                 | • Gemini agent<br>• persistent memory                                                  |
-| `qwen`   | `qwen3-coder-plus`, `qwen3-vl-plus`, `qwen3-max-preview`                     | • Qwen agent<br>• persistent memory                                                    |
+| type       | model                                                                                                                                       | model default             | reasoningEffort                                            | betas                                           |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|------------------------------------------------------------|-------------------------------------------------|
+| `"claude"` | `"opus"`<br>`"sonnet"`<br>`"haiku"`                                                                                                         | `"opus"`                  | —                                                          | `["context-1m-2025-08-07"]` (Sonnet 4.5 only)   |
+| `"codex"`  | `"gpt-5.2"`<br>`"gpt-5.2-codex"`<br>`"gpt-5.1-codex-max"`<br>`"gpt-5.1-mini"`                                                               | `"gpt-5.2"`               | `"low"`<br>`"medium"`<br>`"high"`<br>`"xhigh"`             | —                                               |
+| `"gemini"` | `"gemini-3-pro-preview"`<br>`"gemini-3-flash-preview"`<br>`"gemini-2.5-pro"`<br>`"gemini-2.5-flash"`<br>`"gemini-2.5-flash-lite"`           | `"gemini-3-flash-preview"` | —                                                          | —                                               |
+| `"qwen"`   | `"qwen3-coder-plus"`<br>`"qwen3-vl-plus"`                                                                                                   | `"qwen3-coder-plus"`      | —                                                          | —                                               |
 
-### 3.1 Claude betas (Sonnet 4.5 only)
-
-The `betas` field is only used by the Claude agent, and `context-1m-2025-08-07` only applies to **Claude Sonnet 4.5** (not Opus/Haiku).
+<br>
 
 ```ts
-const swarmkit = new SwarmKit()
-  .withAgent({
-    type: "claude",
-    apiKey: process.env.SWARMKIT_API_KEY!,
-    model: "sonnet",
-    betas: ["context-1m-2025-08-07"],
-  })
-  .withSandbox(sandbox);
+// claude
+.withAgent({ type: "claude" })
+.withAgent({ type: "claude", model: "opus" })
+.withAgent({ type: "claude", model: "sonnet", betas: ["context-1m-2025-08-07"] })
+
+// codex
+.withAgent({ type: "codex" })
+.withAgent({ type: "codex", model: "gpt-5.2-codex" })
+.withAgent({ type: "codex", reasoningEffort: "high" })
+
+// gemini
+.withAgent({ type: "gemini" })
+.withAgent({ type: "gemini", model: "gemini-3-pro-preview" })
+
+// qwen
+.withAgent({ type: "qwen" })
+.withAgent({ type: "qwen", model: "qwen3-coder-plus" })
 ```
 
 ## 4. Runtime Methods
@@ -762,10 +770,7 @@ const sandbox = createE2BProvider({
     apiKey: process.env.E2B_API_KEY!,
 });
 
-const agent = {
-    type: "claude",
-    apiKey: process.env.SWARMKIT_API_KEY!,
-};
+const agent = { type: "claude" };
 
 const swarm = new Swarm({
     agent,                       // Default agent for all operations
