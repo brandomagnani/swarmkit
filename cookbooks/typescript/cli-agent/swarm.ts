@@ -1,6 +1,6 @@
 #!/usr/bin/env npx tsx
 /**
- * Swarm Agent - An interactive chat with a sandboxed AI agent that can think, execute code,
+ * Swarm CLI Agent - A sandboxed CLI agent that can think, execute code,
  * browse the web, read / edit files, and solve complex tasks.
  *
  * - Put files in `input/` folder - they're uploaded to the agent's context before each run

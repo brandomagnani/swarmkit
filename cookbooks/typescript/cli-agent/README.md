@@ -1,6 +1,6 @@
-# Swarm Agent (TypeScript)
+# Swarm CLI Agent
 
-- A sandboxed terminal agent that can think, execute code, browse the web, automate browsers (Chrome DevTools), read / edit files, and solve complex tasks.
+A sandboxed CLI agent that can think, execute code, browse the web, automate browsers (Chrome DevTools), read / edit files, and solve complex tasks.
 - Put any files to the `input/` folder that is automatically created upon running `npx tsx Swarm.ts`: these files will be part of the agent context.
 - Ask for anything—any files the agent creates are automatically downloaded to your local `output/` folder.
 - Check traces at https://dashboard.swarmlink.ai/traces. Type `/quit` to exit.

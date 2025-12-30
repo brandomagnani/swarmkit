@@ -2,12 +2,12 @@
 
 ### Python
 - [Quickstart](./python/quickstart) - Minimal examples (8 scripts)
-- [CLI Agent](./python/cli-agent) - Multi-turn sandboxed agent
+- [CLI Agent](./python/cli-agent) - Sandboxed CLI agent with browser automation
 - [Agent Builder](./python/agent-builder) - Web app that builds agents
 
 ### TypeScript
 - [Quickstart](./typescript/quickstart) - Minimal examples (8 scripts)
-- [CLI Agent](./typescript/cli-agent) - Multi-turn sandboxed agent
+- [CLI Agent](./typescript/cli-agent) - Sandboxed CLI agent with browser automation
 
 ## Get Started
 
