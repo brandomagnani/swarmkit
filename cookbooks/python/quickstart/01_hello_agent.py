@@ -1,9 +1,8 @@
 """
 01 - Hello Agent
-Sandboxed AI agent with optional web search.
+Sandboxed AI agent.
 """
 import asyncio
-import os
 from dotenv import load_dotenv
 from swarmkit import SwarmKit
 
@@ -13,20 +12,6 @@ async def main():
     # Auto-resolves SWARMKIT_API_KEY and E2B_API_KEY from environment
     agent = SwarmKit()
 
-    # Optional: Exa web search (set EXA_API_KEY to enable)
-    if os.getenv("EXA_API_KEY"):
-        agent = SwarmKit(
-            mcp_servers={
-                "exa": {
-                    "command": "npx",
-                    "args": ["-y", "mcp-remote", "https://mcp.exa.ai/mcp"],
-                    "env": {"EXA_API_KEY": os.getenv("EXA_API_KEY")},
-                },
-            }
-        )
-
-    # With Exa: searches web and generates report
-    # Without Exa: generates report from agent's knowledge
     await agent.run(
         prompt="""
             Research the latest developments in AI agents.
