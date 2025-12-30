@@ -87,7 +87,7 @@ const swarmkit = new SwarmKit()
         type: "codex",                        // "claude" | "codex" | "gemini" | "qwen"
         model: "gpt-5.2-codex",               // (optional) Uses default if omitted
         reasoningEffort: "medium",            // (optional) "low" | "medium" | "high" | "xhigh" - Codex only
-        // betas: ["context-1m-2025-08-07"],  // (optional) Claude Sonnet 4.5 only
+        // betas: ["context-1m-2025-08-07"],  // (optional) Claude Sonnet only
         apiKey: process.env.SWARMKIT_API_KEY!, // (optional) Auto-resolves from env
     })
 
@@ -169,7 +169,7 @@ All agents use a single SwarmKit API key from [dashboard.swarmlink.ai](https://d
 
 | type       | model                                                                                                                                       | model default             | reasoningEffort                                            | betas                                           |
 |------------|---------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|------------------------------------------------------------|-------------------------------------------------|
-| `"claude"` | `"opus"`<br>`"sonnet"`<br>`"haiku"`                                                                                                         | `"opus"`                  | —                                                          | `["context-1m-2025-08-07"]` (Sonnet 4.5 only)   |
+| `"claude"` | `"opus"`<br>`"sonnet"`<br>`"haiku"`                                                                                                         | `"opus"`                  | —                                                          | `["context-1m-2025-08-07"]` (Sonnet only)   |
 | `"codex"`  | `"gpt-5.2"`<br>`"gpt-5.2-codex"`<br>`"gpt-5.1-codex-max"`<br>`"gpt-5.1-mini"`                                                               | `"gpt-5.2"`               | `"low"`<br>`"medium"`<br>`"high"`<br>`"xhigh"`             | —                                               |
 | `"gemini"` | `"gemini-3-pro-preview"`<br>`"gemini-3-flash-preview"`<br>`"gemini-2.5-pro"`<br>`"gemini-2.5-flash"`<br>`"gemini-2.5-flash-lite"`           | `"gemini-3-flash-preview"` | —                                                          | —                                               |
 | `"qwen"`   | `"qwen3-coder-plus"`<br>`"qwen3-vl-plus"`                                                                                                   | `"qwen3-coder-plus"`      | —                                                          | —                                               |
