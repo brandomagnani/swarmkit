@@ -52,7 +52,6 @@ data from complex documents, analyzing data, producing evidence based reports, a
 const agent = new SwarmKit()
   .withAgent({
     type: "gemini", // claude, codex, gemini
-    apiKey: process.env.SWARMKIT_API_KEY!,
   })
   .withSystemPrompt(SYSTEM_PROMPT)
   .withMcpServers(MCP_SERVERS)

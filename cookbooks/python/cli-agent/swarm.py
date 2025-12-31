@@ -23,7 +23,6 @@ load_dotenv()  # Load .env file
 
 AGENT = AgentConfig(
     type="gemini",                              # claude, codex, gemini
-    api_key=os.getenv("SWARMKIT_API_KEY"),
 )
 
 MCP_SERVERS = {}
