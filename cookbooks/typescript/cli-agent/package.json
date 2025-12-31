@@ -6,7 +6,6 @@
     "start": "tsx Swarm.ts"
   },
   "dependencies": {
-    "@swarmkit/e2b": "^0.1.33",
     "@swarmkit/sdk": "^0.1.33",
     "boxen": "^8.0.1",
     "chalk": "^5.4.1",

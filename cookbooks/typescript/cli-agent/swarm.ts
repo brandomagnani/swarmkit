@@ -9,7 +9,6 @@
  * Run: npx tsx swarm.ts
  */
 import { SwarmKit, readLocalDir, saveLocalDir } from "@swarmkit/sdk";
-import { createE2BProvider } from "@swarmkit/e2b";
 import { mkdirSync } from "fs";
 import "dotenv/config";
 
@@ -19,11 +18,6 @@ import chalk from "chalk";
 // ─────────────────────────────────────────────────────────────
 // SwarmKit Instance Configuration
 // ─────────────────────────────────────────────────────────────
-
-const SANDBOX = createE2BProvider({
-  apiKey: process.env.E2B_API_KEY!,
-  defaultTimeoutMs: 3_600_000, // optional: 1 hour default
-});
 
 const MCP_SERVERS: Record<string, { command: string; args: string[]; env: Record<string, string> }> = {};
 
@@ -60,7 +54,6 @@ const agent = new SwarmKit()
     type: "gemini", // claude, codex, gemini
     apiKey: process.env.SWARMKIT_API_KEY!,
   })
-  .withSandbox(SANDBOX)
   .withSystemPrompt(SYSTEM_PROMPT)
   .withMcpServers(MCP_SERVERS)
   .withSessionTagPrefix("Swarm-agent-ts");

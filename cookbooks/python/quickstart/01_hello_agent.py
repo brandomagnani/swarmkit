@@ -9,7 +9,7 @@ from swarmkit import SwarmKit
 load_dotenv()
 
 async def main():
-    # Auto-resolves SWARMKIT_API_KEY and E2B_API_KEY from environment
+    # Auto-resolves SWARMKIT_API_KEY from environment
     agent = SwarmKit()
 
     await agent.run(

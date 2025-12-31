@@ -15,7 +15,7 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-- Edit `.env` with your API keys: `SWARMKIT_API_KEY` ([dashboard.swarmlink.ai](https://dashboard.swarmlink.ai)), `E2B_API_KEY` ([e2b.dev](https://e2b.dev/sign-in)), `EXA_API_KEY` ([exa.ai](https://exa.ai), optional)
+- Edit `.env` with your API key: `SWARMKIT_API_KEY` ([dashboard.swarmlink.ai](https://dashboard.swarmlink.ai)), `EXA_API_KEY` ([exa.ai](https://exa.ai), optional)
 
 ## Run
 

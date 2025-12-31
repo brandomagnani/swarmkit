@@ -5,7 +5,7 @@
 import "dotenv/config";
 import { SwarmKit } from "@swarmkit/sdk";
 
-// Auto-resolves SWARMKIT_API_KEY and E2B_API_KEY from environment
+// Auto-resolves SWARMKIT_API_KEY from environment
 const agent = new SwarmKit();
 
 await agent.run({

@@ -12,13 +12,7 @@ Run terminal-based AI agents in secure sandboxes with built-in observability.
 
 ```python
 import os
-from swarmkit import SwarmKit, AgentConfig, E2BProvider
-
-# Create sandbox provider
-sandbox = E2BProvider(
-    api_key=os.getenv('E2B_API_KEY'),
-    timeout_ms=3_600_000,  # 1 hour (default), max sandbox lifetime
-)
+from swarmkit import SwarmKit, AgentConfig
 
 # Build SwarmKit instance
 swarmkit = SwarmKit(
@@ -26,7 +20,6 @@ swarmkit = SwarmKit(
         type='codex',
         api_key=os.getenv('SWARMKIT_API_KEY'),
     ),
-    sandbox=sandbox,
     session_tag_prefix='my-agent',  # optional tag for the agent session
     system_prompt='You are a helpful coding assistant.',
     mcp_servers={
@@ -56,7 +49,7 @@ await swarmkit.kill()
 
 ### 1.1 Environment Variables
 
-With `SWARMKIT_API_KEY` and `E2B_API_KEY` set, you can skip explicit configuration:
+With `SWARMKIT_API_KEY` set, you can skip explicit configuration:
 
 ```python
 from dotenv import load_dotenv
@@ -73,7 +66,6 @@ await swarmkit.run(prompt="Hello")
 | Variable | Description |
 |----------|-------------|
 | `SWARMKIT_API_KEY` | API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) |
-| `E2B_API_KEY` | Sandbox key from [e2b.dev](https://e2b.dev) |
 
 Agent type defaults to `claude`. Override with `config=AgentConfig(type="codex")`.
 
@@ -93,8 +85,7 @@ swarmkit = SwarmKit(
         api_key=os.getenv('SWARMKIT_API_KEY'), # (optional) Auto-resolves from env
     ),
 
-    # Sandbox provider (optional if E2B_API_KEY set)
-    sandbox=E2BProvider(api_key=os.getenv('E2B_API_KEY')),
+    # Sandbox provider (auto-resolved from SWARMKIT_API_KEY)
 
     # (optional) Custom working directory, default: /home/user/workspace
     working_directory='/home/user/workspace',
@@ -477,7 +468,6 @@ class ResultSchema(BaseModel):
 
 swarmkit = SwarmKit(
     config=AgentConfig(...),
-    sandbox=E2BProvider(...),
     schema=ResultSchema,  # Agent will be prompted to write result.json
 )
 
@@ -595,7 +585,6 @@ The workspace prompt is automatically written with the `repo/` folder included. 
 ```python
 swarmkit = SwarmKit(
     config=AgentConfig(...),
-    sandbox=E2BProvider(...)
 )
 
 await swarmkit.run(prompt='Analyze data.csv')
@@ -626,7 +615,6 @@ async with swarmkit:
 ```python
 swarmkit = SwarmKit(
     config=AgentConfig(...),
-    sandbox=E2BProvider(...)
 )
 
 await swarmkit.run(prompt='Start analysis')
@@ -644,7 +632,6 @@ await swarmkit.kill()  # Kill the Sandbox when done
 # Script 1: Save session for later
 swarmkit = SwarmKit(
     config=AgentConfig(...),
-    sandbox=E2BProvider(...)
 )
 
 await swarmkit.run(prompt='Start analysis')
@@ -660,7 +647,6 @@ with open('session.txt') as f:
 
 swarmkit2 = SwarmKit(
     config=AgentConfig(...),
-    sandbox=E2BProvider(...),
     sandbox_id=saved_id  # Reconnect
 )
 
@@ -672,7 +658,6 @@ await swarmkit2.run(prompt='Continue analysis')  # Session continues from Script
 ```python
 swarmkit = SwarmKit(
     config=AgentConfig(...),
-    sandbox=E2BProvider(...)
 )
 
 # Work with first sandbox
@@ -723,7 +708,6 @@ Attach your own prefix to make logs easy to search:
 ```python
 swarmkit = SwarmKit(
     config=AgentConfig(...),
-    sandbox=E2BProvider(...),
     session_tag_prefix='my-project'
 )
 
@@ -756,16 +740,13 @@ Use the tag together with the sandbox id to correlate logs with files saved in
 Functional programming for AI agents: `map`, `filter`, `reduce`, `best_of`.
 
 ```python
-from swarmkit import Swarm, SwarmConfig, AgentConfig, E2BProvider
+from swarmkit import Swarm, SwarmConfig, AgentConfig
 from pydantic import BaseModel  # Or use plain JSON Schema dicts instead
-
-sandbox = E2BProvider(api_key=os.getenv('E2B_API_KEY'))
 
 agent = AgentConfig(type='claude')
 
 swarm = Swarm(SwarmConfig(
     agent=agent,                     # Default agent for all operations
-    sandbox=sandbox,                 # Sandbox provider
     concurrency=4,                   # Max parallel sandboxes (default: 4)
     timeout_ms=3_600_000,            # Default timeout per worker (default: 1 hour)
     tag='my-pipeline',               # Tag prefix for observability
@@ -781,7 +762,7 @@ swarm = Swarm(SwarmConfig(
 
 > **Defaults**: `agent`, `timeout_ms`, `mcp_servers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `best_of`). Pass these options to individual operations to override.
 
-**Minimal setup** — with `SWARMKIT_API_KEY` and `E2B_API_KEY` set (see [1.1 Environment Variables](#11-environment-variables)):
+**Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Environment Variables](#11-environment-variables)):
 
 ```python
 from dotenv import load_dotenv
@@ -1356,7 +1337,6 @@ Global semaphore limits parallel sandboxes across all operations.
 ```python
 swarm = Swarm(SwarmConfig(
     agent=agent,
-    sandbox=sandbox,
     concurrency=4,  # Max 4 sandboxes at once (default: 4)
 ))
 

@@ -13,7 +13,6 @@
     },
     "dependencies": {
         "@swarmkit/sdk": "latest",
-        "@swarmkit/e2b": "latest",
         "dotenv": "^16.0.0",
         "zod": "^3.23.0"
     },

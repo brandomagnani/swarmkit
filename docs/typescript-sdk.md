@@ -10,13 +10,6 @@ Run terminal-based AI agents in secure sandboxes with built-in observability.
 
 ```ts
 import { SwarmKit } from "@swarmkit/sdk";
-import { createE2BProvider } from "@swarmkit/e2b";
-
-// Create sandbox provider
-const sandbox = createE2BProvider({
-    apiKey: process.env.E2B_API_KEY!,
-    defaultTimeoutMs: 3_600_000,  // 1 hour (default), max sandbox lifetime
-});
 
 // Build SwarmKit instance
 const swarmkit = new SwarmKit()
@@ -24,7 +17,6 @@ const swarmkit = new SwarmKit()
         type: "codex",
         apiKey: process.env.SWARMKIT_API_KEY!,
     })
-    .withSandbox(sandbox)
     .withSessionTagPrefix("my-app") // optional tag for the agent session
     .withSystemPrompt("You are a helpful coding assistant.")
     .withMcpServers({
@@ -56,7 +48,7 @@ await swarmkit.kill();
 
 ### 1.1 Environment Variables
 
-With `SWARMKIT_API_KEY` and `E2B_API_KEY` set, you can skip explicit configuration:
+With `SWARMKIT_API_KEY` set, you can skip explicit configuration:
 
 ```ts
 import "dotenv/config";  // If using .env file (npm install dotenv)
@@ -71,7 +63,6 @@ await swarmkit.run({ prompt: "Hello" });
 | Variable | Description |
 |----------|-------------|
 | `SWARMKIT_API_KEY` | API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) |
-| `E2B_API_KEY` | Sandbox key from [e2b.dev](https://e2b.dev) |
 
 Agent type defaults to `claude`. Override with `.withAgent({ type: "codex" })`.
 
@@ -91,8 +82,7 @@ const swarmkit = new SwarmKit()
         apiKey: process.env.SWARMKIT_API_KEY!, // (optional) Auto-resolves from env
     })
 
-    // Sandbox provider (optional if E2B_API_KEY set)
-    .withSandbox(sandbox)
+    // Sandbox provider (auto-resolved from SWARMKIT_API_KEY)
 
     // (optional) Custom working directory, default: /home/user/workspace
     .withWorkingDirectory("/home/user/workspace")
@@ -503,7 +493,6 @@ const ResultSchema = z.object({
 
 const swarmkit = new SwarmKit()
     .withAgent({...})
-    .withSandbox(sandbox)
     .withSchema(ResultSchema);  // Agent will be prompted to write result.json
 
 await swarmkit.run({ prompt: "Analyze and score the document" });
@@ -617,8 +606,7 @@ The workspace prompt is automatically written with the `repo/` folder included. 
 
 ```ts
 const swarmkit = new SwarmKit()
-  .withAgent({...})
-  .withSandbox(sandbox);
+  .withAgent({...});
 
 await swarmkit.run({ prompt: 'Analyze data.csv' });
 const output1 = await swarmkit.getOutputFiles();
@@ -638,8 +626,7 @@ await swarmkit.kill();  // When done
 
 ```ts
 const swarmkit = new SwarmKit()
-  .withAgent({...})
-  .withSandbox(sandbox);
+  .withAgent({...});
 
 await swarmkit.run({ prompt: 'Start analysis' });
 await swarmkit.pause();  // Suspend billing, keep state
@@ -655,8 +642,7 @@ await swarmkit.kill();  // Kill the Sandbox when done
 ```ts
 // Script 1: Save session for later
 const swarmkit = new SwarmKit()
-  .withAgent({...})
-  .withSandbox(sandbox);
+  .withAgent({...});
 
 await swarmkit.run({ prompt: 'Start analysis' });
 
@@ -669,7 +655,6 @@ const savedId = fs.readFileSync('session.txt', 'utf-8');
 
 const swarmkit2 = new SwarmKit()
   .withAgent({...})
-  .withSandbox(sandbox)
   .withSession(savedId);  // Reconnect
 
 await swarmkit2.run({ prompt: 'Continue analysis' });  // Session continues from Script 1
@@ -679,8 +664,7 @@ await swarmkit2.run({ prompt: 'Continue analysis' });  // Session continues from
 
 ```ts
 const swarmkit = new SwarmKit()
-  .withAgent({...})
-  .withSandbox(sandbox);
+  .withAgent({...});
 
 // Work with first sandbox
 await swarmkit.run({ prompt: 'Analyze dataset A' });
@@ -730,7 +714,6 @@ Attach your own prefix to make logs easy to search:
 ```ts
 const swarmkit = new SwarmKit()
   .withAgent({...})
-  .withSandbox(sandbox)
   .withSessionTagPrefix("my-project");
 
 await swarmkit.run({ prompt: "Kick off analysis" });
@@ -763,18 +746,12 @@ Functional programming for AI agents: `map`, `filter`, `reduce`, `bestOf`.
 
 ```ts
 import { Swarm } from "@swarmkit/sdk";
-import { createE2BProvider } from "@swarmkit/e2b";
 import { z } from "zod";  // Or use plain JSON Schema objects instead
-
-const sandbox = createE2BProvider({
-    apiKey: process.env.E2B_API_KEY!,
-});
 
 const agent = { type: "claude" };
 
 const swarm = new Swarm({
     agent,                       // Default agent for all operations
-    sandbox,                     // Sandbox provider
     concurrency: 4,              // Max parallel sandboxes (default: 4)
     timeoutMs: 3_600_000,        // Default timeout per worker (default: 1 hour)
     tag: "my-pipeline",          // Tag prefix for observability
@@ -790,7 +767,7 @@ const swarm = new Swarm({
 
 > **Defaults**: `agent`, `timeoutMs`, `mcpServers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
 
-**Minimal setup** — with `SWARMKIT_API_KEY` and `E2B_API_KEY` set (see [1.1 Environment Variables](#11-environment-variables)):
+**Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Environment Variables](#11-environment-variables)):
 
 ```ts
 import "dotenv/config";  // If using .env file

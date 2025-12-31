@@ -11,7 +11,7 @@ Run: python swarm.py
 import asyncio
 import os
 from dotenv import load_dotenv
-from swarmkit import SwarmKit, AgentConfig, E2BProvider, read_local_dir, save_local_dir
+from swarmkit import SwarmKit, AgentConfig, read_local_dir, save_local_dir
 from ui import make_renderer, read_prompt, console
 from rich.panel import Panel
 
@@ -22,13 +22,8 @@ load_dotenv()  # Load .env file
 # ─────────────────────────────────────────────────────────────
 
 AGENT = AgentConfig(
-    type="gemini",                              # claude, codex, gemini,
+    type="gemini",                              # claude, codex, gemini
     api_key=os.getenv("SWARMKIT_API_KEY"),
-)
-
-SANDBOX = E2BProvider(
-    api_key=os.getenv("E2B_API_KEY"),
-    timeout_ms=3_600_000,                       # optional: 1 hour default
 )
 
 MCP_SERVERS = {}
@@ -61,7 +56,6 @@ data from complex documents, analyzing data, producing evidence based reports, a
 
 agent = SwarmKit(
     config=AGENT,
-    sandbox=SANDBOX,
     system_prompt=SYSTEM_PROMPT,
     mcp_servers=MCP_SERVERS,
     session_tag_prefix="Swarm-agent-py",
