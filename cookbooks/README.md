@@ -6,7 +6,7 @@ Embed autonomous AI agents into any application — in a few lines of code.
 - Agent response streaming
 - Structured output
 - MCP servers & multi-agent orchestration
-- Swarm abstractions for parallel workloads
+- Swarm abstractions for massively parallel workloads
 - Built-in observability
 
 Much more coming...
