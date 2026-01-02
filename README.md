@@ -28,15 +28,15 @@ SwarmKit lets you run and orchestrate terminal-based AI agents in secure sandbox
 - [Python SDK](./docs/python-sdk.md)
 - [Cookbooks](./cookbooks)
 
-## Reporting Bugs
-
-We welcome your feedback. File a [GitHub issue](https://github.com/brandomagnani/swarmkit/issues) to report bugs or request features.
-
 ## Support + Talk with Founders
 
 - [Community Discord](https://discord.gg/Q36D8dGyNF)
 - [Schedule Demo](https://cal.com/brando-magnani/swarmkit-1-1-onboarding-chat)
 - Email: [brandomagnani@swarmlink.ai](mailto:brandomagnani@swarmlink.ai)
+
+## Reporting Bugs
+
+We welcome your feedback. File a [GitHub issue](https://github.com/brandomagnani/swarmkit/issues) to report bugs or request features.
 
 ## License
 
