@@ -1,4 +1,15 @@
-## SwarmKit Cookbooks
+# SwarmKit
+
+Embed autonomous AI agents into any application — in a few lines of code.
+
+- Secure cloud sandboxes with persistent filesystem
+- Agent response streaming
+- Structured output
+- MCP servers & multi-agent orchestration
+- Swarm abstractions for parallel workloads
+- Built-in observability
+
+## Cookbooks
 
 ### Python
 - [Quickstart](./python/quickstart) - Minimal examples (8 scripts)

@@ -1,4 +1,15 @@
-## SwarmKit Documentation
+# SwarmKit
+
+Embed autonomous AI agents into any application — in a few lines of code.
+
+- Secure cloud sandboxes with persistent filesystem
+- Agent response streaming
+- Structured output
+- MCP servers & multi-agent orchestration
+- Swarm abstractions for parallel workloads
+- Built-in observability
+
+## Documentation
 
 - [TypeScript SDK](../docs/typescript-sdk.md)
 - [Python SDK](../docs/python-sdk.md)
