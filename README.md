@@ -32,12 +32,9 @@ SwarmKit lets you run and orchestrate terminal-based AI agents in secure sandbox
 
 We welcome your feedback. File a [GitHub issue](https://github.com/brandomagnani/swarmkit/issues) to report bugs or request features.
 
-## Connect on Discord
+## Support + Talk with Founders
 
-Join the [SwarmKit Developers Discord](https://discord.gg/Q36D8dGyNF) to connect with other developers using SwarmKit. Get help, share feedback, and discuss your projects with the community.
-
-## Talk with the Founder
-
+- [Community Discord](https://discord.gg/Q36D8dGyNF)
 - [Schedule Demo](https://cal.com/brando-magnani/swarmkit-1-1-onboarding-chat)
 - Email: [brandomagnani@swarmlink.ai](mailto:brandomagnani@swarmlink.ai)
 
