@@ -8,6 +8,7 @@ Embed autonomous AI agents into any application — in a few lines of code.
 - MCP servers & multi-agent orchestration
 - Swarm abstractions for parallel workloads
 - Built-in observability
+- Much more coming...
 
 ## Cookbooks
 
