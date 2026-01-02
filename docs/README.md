@@ -32,6 +32,11 @@ We welcome your feedback. File a [GitHub issue](https://github.com/brandomagnani
 
 Join the [SwarmKit Developers Discord](https://discord.gg/Q36D8dGyNF) to connect with other developers using SwarmKit. Get help, share feedback, and discuss your projects with the community.
 
+## Talk with the Founder
+
+- [Schedule Demo](https://cal.com/brando-magnani/swarmkit-1-1-onboarding-chat)
+- Email: [brandomagnani@swarmlink.ai](mailto:brandomagnani@swarmlink.ai)
+
 ## License
 
 See the [LICENSE](../LICENSE) file for full terms and conditions.
