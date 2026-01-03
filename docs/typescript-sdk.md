@@ -1211,13 +1211,13 @@ interface SwarmResult<T> {
     status: "success" | "filtered" | "error";
     data: T | null;      // Parsed schema, or null on error
     files: FileMap;      // Output files (map/bestOf) or input files (filter)
-    meta: IndexedMeta;   // { runId, operation, tag, sandboxId, index }
+    meta: IndexedMeta;   // { operationId, operation, tag, sandboxId, itemIndex }
     error?: string;      // Error message if status === "error"
     rawData?: string;    // Raw result.json when parse/validation failed (for debugging)
     bestOf?: {           // Present when map used bestOf option
         winnerIndex: number;
         judgeReasoning: string;
-        judgeMeta: JudgeMeta;   // { runId, operation, tag, sandboxId, candidateCount }
+        judgeMeta: JudgeMeta;   // { operationId, operation, tag, sandboxId, candidateCount }
         candidates: SwarmResult<T>[];
     };
     verify?: VerifyInfo; // Present when verify option was used
@@ -1233,7 +1233,7 @@ interface ReduceResult<T> {
     status: "success" | "error";
     data: T | null;
     files: FileMap;
-    meta: ReduceMeta;   // { runId, operation, tag, sandboxId, inputCount, inputIndices }
+    meta: ReduceMeta;   // { operationId, operation, tag, sandboxId, inputCount, inputIndices }
     error?: string;
     rawData?: string;   // Raw result.json when parse/validation failed (for debugging)
     verify?: VerifyInfo; // Present when verify option was used
@@ -1243,7 +1243,7 @@ interface ReduceResult<T> {
 interface VerifyInfo {
     passed: boolean;        // Final verification status
     reasoning: string;      // Verifier's reasoning
-    verifyMeta: VerifyMeta; // { runId, operation, tag, sandboxId, attempts }
+    verifyMeta: VerifyMeta; // { operationId, operation, tag, sandboxId, attempts }
     attempts: number;       // Total attempts made
 }
 
@@ -1503,7 +1503,7 @@ pipeline.on({
 
 ```ts
 interface PipelineResult<T> {
-  runId: string;
+  pipelineRunId: string;
   steps: StepResult[];        // { type, index, durationMs, results }
   output: SwarmResult<T>[] | ReduceResult<T>;
   totalDurationMs: number;
