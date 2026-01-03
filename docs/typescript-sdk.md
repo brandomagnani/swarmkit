@@ -909,6 +909,7 @@ swarm.bestOf<T>({
     item: FileMap | SwarmResult,
     prompt: string,
     config: BestOfConfig,               // { n?, judgeCriteria, taskAgents?, judgeAgent?, onCandidateComplete?, onJudgeComplete? }
+    name?: string,                      // Operation name for observability (appears in meta.operationName)
     schema?: z.ZodType<T> | JsonSchema,
     systemPrompt?: string,
     retry?: RetryConfig,                // Per-candidate retry (judge uses default)
@@ -981,6 +982,7 @@ Process items in parallel. `Agent[i]` sees `items[i]` and outputs `results[i]` (
 swarm.map<T>({
     items: FileMap[] | SwarmResult[],
     prompt: string | ((files: FileMap, index: number) => string),
+    name?: string,                      // Operation name for observability (appears in meta.operationName)
     schema?: z.ZodType<T> | JsonSchema,
     systemPrompt?: string,
     agent?: AgentOverride,
@@ -1106,6 +1108,7 @@ Two-step evaluation (`schema` and `condition` are required):
 swarm.filter<T>({
     items: FileMap[] | SwarmResult[],
     prompt: string,           // Describe what to assess (agent outputs result.json)
+    name?: string,                      // Operation name for observability (appears in meta.operationName)
     schema: z.ZodType<T> | JsonSchema,  // Required - defines evaluation output structure
     condition: (data: T) => boolean,    // Local function applies threshold
     systemPrompt?: string,
@@ -1168,6 +1171,7 @@ Synthesize many items into one. A single agent sees all `items` as `item_0/`, `i
 swarm.reduce<T>({
     items: FileMap[] | SwarmResult[],
     prompt: string,
+    name?: string,                      // Operation name for observability (appears in meta.operationName)
     schema?: z.ZodType<T> | JsonSchema,
     systemPrompt?: string,
     agent?: AgentOverride,
@@ -1252,7 +1256,7 @@ interface BestOfResult<T> {
     winner: SwarmResult<T>;
     winnerIndex: number;
     judgeReasoning: string;
-    judgeMeta: JudgeMeta;
+    judgeMeta: JudgeMeta;   // { operationId, operation, tag, sandboxId, candidateCount }
     candidates: SwarmResult<T>[];
 }
 ```

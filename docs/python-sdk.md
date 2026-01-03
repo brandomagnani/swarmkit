@@ -923,6 +923,7 @@ await swarm.best_of(
         on_candidate_complete=lambda idx, cand_idx, status: ...,
         on_judge_complete=lambda idx, winner_idx, reasoning: ...,
     ),
+    name=str,                               # Operation name for observability (appears in meta.operation_name)
     schema=PydanticModel | dict,            # Optional
     system_prompt=str,                      # Optional
     retry=RetryConfig(...),                 # Per-candidate retry (judge uses default)
@@ -995,6 +996,7 @@ Process items in parallel. `Agent[i]` sees `items[i]` and outputs `results[i]` (
 await swarm.map(
     items=list[FileMap] | list[SwarmResult],
     prompt=str | Callable[[FileMap, int], str],
+    name=str,                               # Operation name for observability (appears in meta.operation_name)
     schema=PydanticModel | dict,            # Optional
     system_prompt=str,                      # Optional
     agent=AgentConfig,                      # Optional override
@@ -1116,6 +1118,7 @@ Two-step evaluation (`schema` and `condition` are required):
 await swarm.filter(
     items=list[FileMap] | list[SwarmResult],
     prompt=str,                             # Describe what to assess (agent outputs result.json)
+    name=str,                               # Operation name for observability (appears in meta.operation_name)
     schema=PydanticModel | dict,            # Required - defines evaluation output structure
     condition=Callable[[Any], bool],        # Local function applies threshold
     system_prompt=str,                      # Optional
@@ -1177,6 +1180,7 @@ Synthesize many items into one. A single agent sees all `items` as `item_0/`, `i
 await swarm.reduce(
     items=list[FileMap] | list[SwarmResult],
     prompt=str,
+    name=str,                               # Operation name for observability (appears in meta.operation_name)
     schema=PydanticModel | dict,            # Optional
     system_prompt=str,                      # Optional
     agent=AgentConfig,                      # Optional override
@@ -1219,7 +1223,7 @@ class SwarmResult:
     status: Literal['success', 'filtered', 'error']
     data: Any | None        # Parsed schema, or None on error
     files: FileMap          # Output files (map/best_of) or input files (filter)
-    meta: IndexedMeta       # run_id, operation, tag, sandbox_id, index
+    meta: IndexedMeta       # operation_id, operation, tag, sandbox_id, item_index
     error: str | None       # Error message if status == 'error'
     raw_data: str | None    # Raw result.json when parse/validation failed
     best_of: BestOfInfo | None  # Present when map used best_of option
@@ -1236,7 +1240,7 @@ class ReduceResult:
     status: Literal['success', 'error']
     data: Any | None
     files: FileMap
-    meta: ReduceMeta        # run_id, operation, tag, sandbox_id, input_count, input_indices
+    meta: ReduceMeta        # operation_id, operation, tag, sandbox_id, input_count, input_indices
     error: str | None
     raw_data: str | None
     verify: VerifyInfo | None
@@ -1246,7 +1250,7 @@ class VerifyInfo:
     """Verification outcome."""
     passed: bool            # Final verification status
     reasoning: str          # Verifier's reasoning
-    verify_meta: VerifyMeta # run_id, operation, tag, sandbox_id, attempts
+    verify_meta: VerifyMeta # operation_id, operation, tag, sandbox_id, attempts
     attempts: int           # Total attempts made
 
 @dataclass
@@ -1254,7 +1258,7 @@ class BestOfInfo:
     """Present when map used best_of option."""
     winner_index: int
     judge_reasoning: str
-    judge_meta: JudgeMeta   # run_id, operation, tag, sandbox_id, candidate_count
+    judge_meta: JudgeMeta   # operation_id, operation, tag, sandbox_id, candidate_count
     candidates: list[SwarmResult]
 
 @dataclass
@@ -1263,7 +1267,7 @@ class BestOfResult:
     winner: SwarmResult
     winner_index: int
     judge_reasoning: str
-    judge_meta: JudgeMeta
+    judge_meta: JudgeMeta   # operation_id, operation, tag, sandbox_id, candidate_count
     candidates: list[SwarmResult]
 ```
 
@@ -1514,7 +1518,7 @@ pipeline.on(PipelineEvents(
 ```python
 @dataclass
 class PipelineResult:
-    run_id: str
+    pipeline_run_id: str
     steps: list[StepResult]   # type, index, duration_ms, results
     output: list[SwarmResult] | ReduceResult
     total_duration_ms: int
