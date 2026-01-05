@@ -59,7 +59,7 @@ Sign up at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/) and get you
 - Agent execution traces, observability and analytics
 - Centralized billing across all providers
 - Mix any model with any CLI agent
-- $10 free credits, no CC required
+- $10 FREE CREDITS, no CC required
 
 Then check out the [documentation](https://github.com/brandomagnani/swarmkit/tree/main/docs) and [cookbooks](https://github.com/brandomagnani/swarmkit/tree/main/cookbooks)!
 
