@@ -37,7 +37,7 @@ ANTHROPIC_API_KEY=sk-ant-...         # or CLAUDE_CODE_OAUTH_TOKEN (Claude Max), 
 E2B_API_KEY=e2b_...                  # sandbox provider, get at https://e2b.dev
 ```
 
-Or get SwarmKit API key at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) (see 3. below):
+Or get your SwarmKit API key at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) ([see 3. below](#swarmkit-gateway)):
 ```bash
 # .env - Gateway
 SWARMKIT_API_KEY=sk-...
@@ -58,6 +58,8 @@ swarmkit = SwarmKit()
 await swarmkit.run(prompt="Create hello.txt with 'Hello World'")
 output = await swarmkit.get_output_files()  # output.files
 ```
+
+<a id="swarmkit-gateway"></a>
 
 **3. Unlock full power with SwarmKit API key:**
 
