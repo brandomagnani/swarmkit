@@ -47,36 +47,64 @@ await swarmkit.kill()
 
 - **Tracing:** Every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces)—no extra setup needed. Optionally use `session_tag_prefix` to label your agent session for easy filtering.
 
-### 1.1 Authentication
+## 1.1 Authentication
 
-Two modes: **Gateway** (recommended) or **Direct** (BYOK).
+| | Gateway | Direct (BYOK) |
+|---|---------|---------------|
+| Setup | `SWARMKIT_API_KEY` | Model provider keys + E2B sandbox keys |
+| Observability | [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) | `~/.swarmkit/observability/` |
+| Billing | Swarmlink | Your provider accounts |
 
-| type | model | default | reasoning_effort | betas | provider_api_key env |
-|------|-------|---------|------------------|-------|---------------------|
-| `'claude'` | `'opus'` `'sonnet'` `'haiku'` | `'opus'` | — | `['context-1m-2025-08-07']` (Sonnet) | `ANTHROPIC_API_KEY` |
-| `'codex'` | `'gpt-5.2'` `'gpt-5.2-codex'` `'gpt-5.1-codex-max'` `'gpt-5.1-mini'` | `'gpt-5.2'` | `'low'` `'medium'` `'high'` `'xhigh'` | — | `OPENAI_API_KEY` |
-| `'gemini'` | `'gemini-3-pro-preview'` `'gemini-3-flash-preview'` `'gemini-2.5-pro'` `'gemini-2.5-flash'` `'gemini-2.5-flash-lite'` | `'gemini-3-flash-preview'` | — | — | `GEMINI_API_KEY` |
-| `'qwen'` | `'qwen3-coder-plus'` `'qwen3-vl-plus'` | `'qwen3-coder-plus'` | — | — | `OPENAI_API_KEY` |
+---
 
-**Gateway Mode** — Set `SWARMKIT_API_KEY` from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai). Handles all provider routing and sandbox provisioning automatically.
+### Gateway Mode
 
-```python
-from dotenv import load_dotenv
-load_dotenv()  # If using .env file (pip install python-dotenv)
+Get API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai).
 
-from swarmkit import SwarmKit
-
-swarmkit = SwarmKit()  # Auto-resolves from env, defaults to claude
-await swarmkit.run(prompt='Hello')
+```bash
+# .env
+SWARMKIT_API_KEY=sk-...
+E2B_API_KEY=e2b_...
 ```
-
-**Direct Mode (BYOK)** — Use your own provider API keys. Requires `E2B_API_KEY` for sandbox.
 
 ```python
 import os
 from swarmkit import SwarmKit, AgentConfig, E2BProvider
 
-sandbox = E2BProvider(api_key=os.getenv('E2B_API_KEY'))
+sandbox = E2BProvider(
+    api_key=os.getenv('E2B_API_KEY'),
+)
+
+swarmkit = SwarmKit(
+    config=AgentConfig(
+        type='claude',
+        api_key=os.getenv('SWARMKIT_API_KEY'),
+    ),
+    sandbox=sandbox,
+)
+
+await swarmkit.run(prompt='Hello')
+```
+
+---
+
+### Direct Mode (BYOK)
+
+Use your own provider keys. Requires E2B for sandbox.
+
+```bash
+# .env
+ANTHROPIC_API_KEY=sk-...
+E2B_API_KEY=e2b_...
+```
+
+```python
+import os
+from swarmkit import SwarmKit, AgentConfig, E2BProvider
+
+sandbox = E2BProvider(
+    api_key=os.getenv('E2B_API_KEY'),
+)
 
 swarmkit = SwarmKit(
     config=AgentConfig(
@@ -87,13 +115,138 @@ swarmkit = SwarmKit(
 )
 ```
 
-**Resolution priority:**
-- Agent: `provider_api_key` → `api_key` → provider env var → `SWARMKIT_API_KEY`
-- Sandbox: `E2B_API_KEY` → `SWARMKIT_API_KEY`
+---
+
+### Use SwarmKit with your Claude Max subscription
+
+```bash
+# Run in terminal, follow login steps → receive token:
+claude --setup-token
+
+# ✓ Long-lived authentication token created successfully!
+# Your OAuth token (valid for 1 year): sk-ant-...
+```
+
+```bash
+# .env
+CLAUDE_CODE_OAUTH_TOKEN=sk-ant-...
+E2B_API_KEY=e2b_...
+```
+
+```python
+import os
+from swarmkit import SwarmKit, AgentConfig, E2BProvider
+
+sandbox = E2BProvider(
+    api_key=os.getenv('E2B_API_KEY'),
+)
+
+swarmkit = SwarmKit(
+    config=AgentConfig(
+        type='claude',
+        oauth_token=os.getenv('CLAUDE_CODE_OAUTH_TOKEN'),
+    ),
+    sandbox=sandbox,
+)
+```
+
+---
+
+### Auto-resolve from Environment
+
+Set env vars and the SDK picks them up automatically—no need to pass explicitly. See Agent Reference below for env var names.
+
+### Agent Reference
+
+| type | models | default | env var (BYOK) |
+|------|--------|---------|----------------|
+| `'claude'` | `'opus'` `'sonnet'` `'haiku'` | `'opus'` | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` |
+| `'codex'` | `'gpt-5.2'` `'gpt-5.2-codex'` `'gpt-5.1-codex-max'` `'gpt-5.1-mini'` | `'gpt-5.2'` | `OPENAI_API_KEY` |
+| `'gemini'` | `'gemini-3-pro-preview'` `'gemini-3-flash-preview'` `'gemini-2.5-pro'` `'gemini-2.5-flash'` `'gemini-2.5-flash-lite'` | `'gemini-3-flash-preview'` | `GEMINI_API_KEY` |
+| `'qwen'` | `'qwen3-coder-plus'` `'qwen3-vl-plus'` | `'qwen3-coder-plus'` | `OPENAI_API_KEY` |
+
+Agent-specific options: `reasoning_effort` (Codex: `'low'` `'medium'` `'high'` `'xhigh'`), `betas` (Claude Sonnet: `['context-1m-2025-08-07']`)
+
+### Agent Examples
+
+```bash
+# .env - set env vars for auto-pickup
+ANTHROPIC_API_KEY=sk-...   # claude
+OPENAI_API_KEY=sk-...      # codex, qwen
+GEMINI_API_KEY=...         # gemini
+E2B_API_KEY=e2b_...        # sandbox
+```
+
+```python
+# claude (auto-picks ANTHROPIC_API_KEY + E2B_API_KEY)
+swarmkit = SwarmKit(
+    config=AgentConfig(type='claude'),
+)
+
+swarmkit = SwarmKit(
+    config=AgentConfig(type='claude', model='opus'),
+)
+
+swarmkit = SwarmKit(
+    config=AgentConfig(
+        type='claude',
+        model='sonnet',
+        betas=['context-1m-2025-08-07'],
+    ),
+)
+```
+
+```python
+# codex (auto-picks OPENAI_API_KEY + E2B_API_KEY)
+swarmkit = SwarmKit(
+    config=AgentConfig(type='codex'),
+)
+
+swarmkit = SwarmKit(
+    config=AgentConfig(type='codex', model='gpt-5.2-codex'),
+)
+
+swarmkit = SwarmKit(
+    config=AgentConfig(type='codex', reasoning_effort='high'),
+)
+```
+
+```python
+# gemini (auto-picks GEMINI_API_KEY + E2B_API_KEY)
+swarmkit = SwarmKit(
+    config=AgentConfig(type='gemini'),
+)
+
+swarmkit = SwarmKit(
+    config=AgentConfig(type='gemini', model='gemini-3-pro-preview'),
+)
+```
+
+```python
+# qwen (auto-picks OPENAI_API_KEY + E2B_API_KEY)
+swarmkit = SwarmKit(
+    config=AgentConfig(type='qwen'),
+)
+
+swarmkit = SwarmKit(
+    config=AgentConfig(type='qwen', model='qwen3-coder-plus'),
+)
+```
 
 ---
 
 ## 2. Full Configuration
+
+```python
+import os
+from swarmkit import SwarmKit, AgentConfig, E2BProvider
+
+# Sandbox provider (auto-resolved from E2B_API_KEY, or explicit)
+sandbox = E2BProvider(
+    api_key=os.getenv('E2B_API_KEY'),   # (optional) Auto-resolves from E2B_API_KEY env var
+    default_timeout_ms=3600000,          # (optional) Default sandbox timeout (default: 1 hour)
+)
+```
 
 ```python
 swarmkit = SwarmKit(
@@ -104,10 +257,13 @@ swarmkit = SwarmKit(
         model='gpt-5.2-codex',               # (optional) Uses default if omitted
         reasoning_effort='medium',           # (optional) 'low' | 'medium' | 'high' | 'xhigh' - Codex only
         # betas=['context-1m-2025-08-07'],   # (optional) Claude Sonnet only
-        api_key=os.getenv('SWARMKIT_API_KEY'), # (optional) Auto-resolves from env
+        api_key=os.getenv('SWARMKIT_API_KEY'), # (optional) Gateway mode - auto-resolves from env
+        # provider_api_key=os.getenv('ANTHROPIC_API_KEY'), # (optional) Direct mode (BYOK)
+        # oauth_token=os.getenv('CLAUDE_CODE_OAUTH_TOKEN'), # (optional) Claude Max subscription
     ),
 
-    # Sandbox provider (auto-resolved from SWARMKIT_API_KEY)
+    # Sandbox provider (auto-resolved from E2B_API_KEY, or use sandbox from above)
+    sandbox=sandbox,
 
     # (optional) Custom working directory, default: /home/user/workspace
     working_directory='/home/user/workspace',
@@ -174,29 +330,7 @@ swarmkit = SwarmKit(
 
 ---
 
-## 3. Agent Examples
-
-```python
-# claude
-AgentConfig(type='claude')
-AgentConfig(type='claude', model='opus')
-AgentConfig(type='claude', model='sonnet', betas=['context-1m-2025-08-07'])
-
-# codex
-AgentConfig(type='codex')
-AgentConfig(type='codex', model='gpt-5.2-codex')
-AgentConfig(type='codex', reasoning_effort='high')
-
-# gemini
-AgentConfig(type='gemini')
-AgentConfig(type='gemini', model='gemini-3-pro-preview')
-
-# qwen
-AgentConfig(type='qwen')
-AgentConfig(type='qwen', model='qwen3-coder-plus')
-```
-
-## 4. Runtime Methods
+## 3. Runtime Methods
 
 All runtime calls are `async` and return an `AgentResponse`:
 
@@ -209,7 +343,7 @@ class AgentResponse:
     stderr: str
 ```
 
-### 4.1 run
+### 3.1 run
 
 Runs the agent with a given prompt.
 
@@ -229,7 +363,7 @@ print(result.stdout)
 
 - Calling `run()` multiple times maintains the agent context / history.
 
-### 4.2 execute_command
+### 3.2 execute_command
 
 Runs a direct shell command in the sandbox working directory.
 
@@ -243,7 +377,7 @@ result = await swarmkit.execute_command(
 ```
 - The command automatically executes in the directory set by `working_directory` (default: `/home/user/workspace`).
 
-### 4.3 Streaming events
+### 3.3 Streaming events
 
 Both `run()` and `execute_command()` stream output in real-time:
 
@@ -429,7 +563,7 @@ renderer.stop_live()
 
 > **Full production example:** See [`cookbooks/agent-python/ui.py`](../cookbooks/agent-python/ui.py) for styled formatting, tool content display, and advanced Live block management.
 
-### 4.4 Upload: Local → Sandbox
+### 3.4 Upload: Local → Sandbox
 
 **Format:** `{"destination": content}` — directories created automatically
 
@@ -455,7 +589,7 @@ await swarmkit.upload_context(read_local_dir('./input', recursive=True))
 
 > **Setup alternative:** Constructor parameters `context` and `files` use the same format but upload on first `run()` instead of immediately.
 
-### 4.5 Download: Sandbox → Local
+### 3.5 Download: Sandbox → Local
 
 **Flow:** `get_output_files()` → `save_local_dir()`
 
@@ -499,7 +633,7 @@ print(output.error)                        # None (or validation error message)
 
 Files created before the last `run()` or `execute_command()` are filtered out.
 
-### 4.6 Session controls
+### 3.6 Session controls
 
 ```python
 session_id = await swarmkit.get_session()  # Returns sandbox ID (str) or None
@@ -514,7 +648,7 @@ await swarmkit.set_session('existing-sandbox-id')  # Sets sandbox ID; reconnecti
 
 `sandbox_id` constructor parameter is equivalent to `set_session()` - use it during initialization to reconnect to an existing sandbox.
 
-### 4.7 get_host
+### 3.7 get_host
 
 Expose a forwarded port:
 
@@ -524,9 +658,9 @@ print(f'Workspace service available at {url}')
 ```
 ---
 
-## 5. Workspace setup and Modes
+## 4. Workspace setup and Modes
 
-### 5.1 Knowledge Mode (default)
+### 4.1 Knowledge Mode (default)
 
 Ideal for knowledge work applications.
 ```python
@@ -566,7 +700,7 @@ IMPORTANT - Directory structure:
 Any string passed to `system_prompt` is appended after this default.
 
 
-### 5.2 SWE Mode
+### 4.2 SWE Mode
 
 Ideal for coding applications (when working with repositories).
 ```python
@@ -589,7 +723,7 @@ The workspace prompt is automatically written with the `repo/` folder included. 
 
 ---
 
-## 6. Cleaning up and session management
+## 5. Cleaning up and session management
 
 **Multi-turn conversations** (most common):
 
@@ -686,7 +820,7 @@ await swarmkit.run(prompt='Compare results')  # Back to sandbox A
 
 ---
 
-## 7. Observability
+## 6. Observability
 
 Full execution traces—including tool calls, file operations (read/write/edit), text responses, and reasoning chunks—are logged to your SwarmKit dashboard at **https://dashboard.swarmlink.ai/traces** for debugging and replay.
 
