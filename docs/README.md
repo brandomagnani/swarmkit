@@ -30,12 +30,17 @@ pip install swarmkit         # Python
 
 **2. Run your first agent:**
 
+Bring your own keys:
 ```bash
-# .env
-ANTHROPIC_API_KEY=sk-ant-...         # or anthropic, or
-CLAUDE_CODE_OAUTH_TOKEN=...          # Claude Max subscription, or
-OPENAI_API_KEY=sk-...                # Codex / Qwen, or
-GEMINI_API_KEY=...                   # Gemini
+# .env - Direct (BYOK)
+ANTHROPIC_API_KEY=sk-ant-...         # or CLAUDE_CODE_OAUTH_TOKEN (Claude Max), OPENAI_API_KEY, GEMINI_API_KEY
+E2B_API_KEY=e2b_...                  # sandbox provider, get at https://e2b.dev
+```
+
+Or get SwarmKit API key at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) (see 3. below):
+```bash
+# .env - Gateway
+SWARMKIT_API_KEY=sk-...
 ```
 
 ```typescript
