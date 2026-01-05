@@ -13,7 +13,7 @@ Much more coming...
 
 ## Get Started
 
-**1. Install the SDK:**
+### 1. Install the SDK
 
 ```bash
 npm install @swarmkit/sdk    # TypeScript
@@ -22,7 +22,7 @@ pip install swarmkit         # Python
 
 **Note:** Requires [Node.js 18+](https://nodejs.org/) (the Python SDK uses a lightweight Node.js bridge).
 
-**2. Run your first agent:**
+### 2. Run your first agent
 
 Bring your own keys:
 ```bash
@@ -37,6 +37,7 @@ Or get your SwarmKit API key at [dashboard.swarmlink.ai](https://dashboard.swarm
 SWARMKIT_API_KEY=sk-...
 ```
 
+Then run:
 ```typescript
 import { SwarmKit } from "@swarmkit/sdk";
 
@@ -55,7 +56,7 @@ output = await swarmkit.get_output_files()  # output.files
 
 <a id="swarmkit-gateway"></a>
 
-**3. Unlock full power with SwarmKit API key:**
+### 3. Unlock full power with SwarmKit API key
 
 Sign up at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/) and get your **SwarmKit API key** for:
 - Agent execution traces, observability and analytics
