@@ -58,7 +58,7 @@ const output = await swarmkit.getOutputFiles();  // output.files
 ```python
 from swarmkit import SwarmKit
 
-swarmkit = SwarmKit()
+swarmkit = SwarmKit()  # auto-resolves env variables
 await swarmkit.run(prompt="Create hello.txt with 'Hello World'")
 output = await swarmkit.get_output_files()  # output.files
 ```
