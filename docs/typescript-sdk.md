@@ -46,25 +46,45 @@ await swarmkit.kill();
 
 - **Tracing:** Every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces)—no extra setup needed. Optionally use `withSessionTagPrefix()` to label your agent session for easy filtering.
 
-### 1.1 Environment Variables
+### 1.1 Authentication
 
-With `SWARMKIT_API_KEY` set, you can skip explicit configuration:
+Two modes: **Gateway** (recommended) or **Direct** (BYOK).
+
+| type | model | default | reasoningEffort | betas | providerApiKey env |
+|------|-------|---------|-----------------|-------|-------------------|
+| `"claude"` | `"opus"` `"sonnet"` `"haiku"` | `"opus"` | — | `["context-1m-2025-08-07"]` (Sonnet) | `ANTHROPIC_API_KEY` |
+| `"codex"` | `"gpt-5.2"` `"gpt-5.2-codex"` `"gpt-5.1-codex-max"` `"gpt-5.1-mini"` | `"gpt-5.2"` | `"low"` `"medium"` `"high"` `"xhigh"` | — | `OPENAI_API_KEY` |
+| `"gemini"` | `"gemini-3-pro-preview"` `"gemini-3-flash-preview"` `"gemini-2.5-pro"` `"gemini-2.5-flash"` `"gemini-2.5-flash-lite"` | `"gemini-3-flash-preview"` | — | — | `GEMINI_API_KEY` |
+| `"qwen"` | `"qwen3-coder-plus"` `"qwen3-vl-plus"` | `"qwen3-coder-plus"` | — | — | `OPENAI_API_KEY` |
+
+**Gateway Mode** — Set `SWARMKIT_API_KEY` from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai). Handles all provider routing and sandbox provisioning automatically.
 
 ```ts
 import "dotenv/config";  // If using .env file (npm install dotenv)
 import { SwarmKit } from "@swarmkit/sdk";
 
-// Minimal — auto-resolves from environment
-const swarmkit = new SwarmKit();  // type defaults to "claude"
-
+const swarmkit = new SwarmKit();  // Auto-resolves from env, defaults to claude
 await swarmkit.run({ prompt: "Hello" });
 ```
 
-| Variable | Description |
-|----------|-------------|
-| `SWARMKIT_API_KEY` | API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) |
+**Direct Mode (BYOK)** — Use your own provider API keys. Requires `E2B_API_KEY` for sandbox.
 
-Agent type defaults to `claude`. Override with `.withAgent({ type: "codex" })`.
+```ts
+import { SwarmKit, E2BProvider } from "@swarmkit/sdk";
+
+const sandbox = new E2BProvider({ apiKey: process.env.E2B_API_KEY! });
+
+const swarmkit = new SwarmKit()
+  .withAgent({
+    type: "claude",
+    providerApiKey: process.env.ANTHROPIC_API_KEY!,
+  })
+  .withSandbox(sandbox);
+```
+
+**Resolution priority:**
+- Agent: `providerApiKey` → `apiKey` → provider env var → `SWARMKIT_API_KEY`
+- Sandbox: `E2B_API_KEY` → `SWARMKIT_API_KEY`
 
 ---
 
@@ -153,18 +173,7 @@ const swarmkit = new SwarmKit()
 
 ---
 
-## 3. Agents
-
-All agents use a single SwarmKit API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/).
-
-| type       | model                                                                                                                                       | model default             | reasoningEffort                                            | betas                                           |
-|------------|---------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|------------------------------------------------------------|-------------------------------------------------|
-| `"claude"` | `"opus"`<br>`"sonnet"`<br>`"haiku"`                                                                                                         | `"opus"`                  | —                                                          | `["context-1m-2025-08-07"]` (Sonnet only)   |
-| `"codex"`  | `"gpt-5.2"`<br>`"gpt-5.2-codex"`<br>`"gpt-5.1-codex-max"`<br>`"gpt-5.1-mini"`                                                               | `"gpt-5.2"`               | `"low"`<br>`"medium"`<br>`"high"`<br>`"xhigh"`             | —                                               |
-| `"gemini"` | `"gemini-3-pro-preview"`<br>`"gemini-3-flash-preview"`<br>`"gemini-2.5-pro"`<br>`"gemini-2.5-flash"`<br>`"gemini-2.5-flash-lite"`           | `"gemini-3-flash-preview"` | —                                                          | —                                               |
-| `"qwen"`   | `"qwen3-coder-plus"`<br>`"qwen3-vl-plus"`                                                                                                   | `"qwen3-coder-plus"`      | —                                                          | —                                               |
-
-<br>
+## 3. Agent Examples
 
 ```ts
 // claude
@@ -767,7 +776,7 @@ const swarm = new Swarm({
 
 > **Defaults**: `agent`, `timeoutMs`, `mcpServers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
 
-**Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Environment Variables](#11-environment-variables)):
+**Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Authentication](#11-authentication)):
 
 ```ts
 import "dotenv/config";  // If using .env file
