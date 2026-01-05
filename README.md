@@ -13,23 +13,50 @@ Much more coming...
 
 ## Get Started
 
-1. Sign up and get your **SwarmKit API key** at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/)
-   - $10 free credits, NO CC REQUIRED
+**1. Install the SDK:**
 
-2. Install the SDK:
+```bash
+npm install @swarmkit/sdk    # TypeScript
+pip install swarmkit         # Python
+```
 
-   **TypeScript:**
-   ```bash
-   npm install @swarmkit/sdk
-   ```
+**Note:** Requires [Node.js 18+](https://nodejs.org/) (the Python SDK uses a lightweight Node.js bridge).
 
-   **Python:**
-   ```bash
-   pip install swarmkit
-   ```
-   **Note:** Requires [Node.js 18+](https://nodejs.org/) (the Python SDK uses a lightweight Node.js bridge).
+**2. Run your first agent:**
 
-3. Check out the [official documentation](https://github.com/brandomagnani/swarmkit/tree/main/docs) and [cookbooks](https://github.com/brandomagnani/swarmkit/tree/main/cookbooks) to start shipping with SwarmKit!
+```bash
+# .env
+ANTHROPIC_API_KEY=sk-ant-...         # or anthropic, or
+CLAUDE_CODE_OAUTH_TOKEN=...          # Claude Max subscription, or
+OPENAI_API_KEY=sk-...                # Codex / Qwen, or
+GEMINI_API_KEY=...                   # Gemini
+```
+
+```typescript
+import { SwarmKit } from "@swarmkit/sdk";
+
+const swarmkit = new SwarmKit();
+await swarmkit.run({ prompt: "Create hello.txt with 'Hello World'" });
+const output = await swarmkit.getOutputFiles();  // output.files
+```
+
+```python
+from swarmkit import SwarmKit
+
+swarmkit = SwarmKit()
+await swarmkit.run(prompt="Create hello.txt with 'Hello World'")
+output = await swarmkit.get_output_files()  # output.files
+```
+
+**3. Unlock full power with SwarmKit API key:**
+
+Sign up at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/) and get your **SwarmKit API key** for:
+- Agent execution traces, observability and analytics
+- Centralized billing across all providers
+- Mix any model with any CLI agent
+- $10 free credits, no CC required
+
+Then check out the [documentation](https://github.com/brandomagnani/swarmkit/tree/main/docs) and [cookbooks](https://github.com/brandomagnani/swarmkit/tree/main/cookbooks)!
 
 ## Documentation
 
