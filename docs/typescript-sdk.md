@@ -160,9 +160,75 @@ Set env vars and the SDK picks them up automatically—no need to pass explicitl
 
 Agent-specific options: `reasoningEffort` (Codex: `"low"` `"medium"` `"high"` `"xhigh"`), `betas` (Claude Sonnet: `["context-1m-2025-08-07"]`)
 
+### Agent Examples
+
+```bash
+# .env - set env vars for auto-pickup
+ANTHROPIC_API_KEY=sk-...   # claude
+OPENAI_API_KEY=sk-...      # codex, qwen
+GEMINI_API_KEY=...         # gemini
+E2B_API_KEY=e2b_...        # sandbox
+```
+
+```ts
+// claude (auto-picks ANTHROPIC_API_KEY + E2B_API_KEY)
+const swarmkit = new SwarmKit()
+    .withAgent({ type: "claude" });
+
+const swarmkit = new SwarmKit()
+    .withAgent({ type: "claude", model: "opus" });
+
+const swarmkit = new SwarmKit()
+    .withAgent({
+        type: "claude",
+        model: "sonnet",
+        betas: ["context-1m-2025-08-07"],
+    });
+```
+
+```ts
+// codex (auto-picks OPENAI_API_KEY + E2B_API_KEY)
+const swarmkit = new SwarmKit()
+    .withAgent({ type: "codex" });
+
+const swarmkit = new SwarmKit()
+    .withAgent({ type: "codex", model: "gpt-5.2-codex" });
+
+const swarmkit = new SwarmKit()
+    .withAgent({ type: "codex", reasoningEffort: "high" });
+```
+
+```ts
+// gemini (auto-picks GEMINI_API_KEY + E2B_API_KEY)
+const swarmkit = new SwarmKit()
+    .withAgent({ type: "gemini" });
+
+const swarmkit = new SwarmKit()
+    .withAgent({ type: "gemini", model: "gemini-3-pro-preview" });
+```
+
+```ts
+// qwen (auto-picks OPENAI_API_KEY + E2B_API_KEY)
+const swarmkit = new SwarmKit()
+    .withAgent({ type: "qwen" });
+
+const swarmkit = new SwarmKit()
+    .withAgent({ type: "qwen", model: "qwen3-coder-plus" });
+```
+
 ---
 
 ## 2. Full Configuration
+
+```ts
+import { SwarmKit, E2BProvider } from "@swarmkit/sdk";
+
+// Sandbox provider (auto-resolved from E2B_API_KEY, or explicit)
+const sandbox = new E2BProvider({
+    apiKey: process.env.E2B_API_KEY,   // (optional) Auto-resolves from E2B_API_KEY env var
+    defaultTimeoutMs: 3600000,          // (optional) Default sandbox timeout (default: 1 hour)
+});
+```
 
 ```ts
 const swarmkit = new SwarmKit()
@@ -178,7 +244,8 @@ const swarmkit = new SwarmKit()
         // oauthToken: process.env.CLAUDE_CODE_OAUTH_TOKEN!, // (optional) Claude Max subscription
     })
 
-    // Sandbox provider (auto-resolved from SWARMKIT_API_KEY)
+    // Sandbox provider (auto-resolved from E2B_API_KEY, or use sandbox from above)
+    .withSandbox(sandbox)
 
     // (optional) Custom working directory, default: /home/user/workspace
     .withWorkingDirectory("/home/user/workspace")
@@ -249,29 +316,7 @@ const swarmkit = new SwarmKit()
 
 ---
 
-## 3. Agent Examples
-
-```ts
-// claude
-.withAgent({ type: "claude" })
-.withAgent({ type: "claude", model: "opus" })
-.withAgent({ type: "claude", model: "sonnet", betas: ["context-1m-2025-08-07"] })
-
-// codex
-.withAgent({ type: "codex" })
-.withAgent({ type: "codex", model: "gpt-5.2-codex" })
-.withAgent({ type: "codex", reasoningEffort: "high" })
-
-// gemini
-.withAgent({ type: "gemini" })
-.withAgent({ type: "gemini", model: "gemini-3-pro-preview" })
-
-// qwen
-.withAgent({ type: "qwen" })
-.withAgent({ type: "qwen", model: "qwen3-coder-plus" })
-```
-
-## 4. Runtime Methods
+## 3. Runtime Methods
 
 All runtime calls are `async` and return a shared `AgentResponse`:
 
@@ -284,7 +329,7 @@ type AgentResponse = {
 };
 ```
 
-### 4.1 run
+### 3.1 run
 
 Runs the agent with a given prompt. 
 
@@ -304,7 +349,7 @@ console.log(result.stdout);
 
 - Calling `run()` multiple times maintains the agent context / history. 
 
-### 4.2 executeCommand
+### 3.2 executeCommand
 
 Runs a direct shell command in the sandbox working directory.
 
@@ -317,7 +362,7 @@ const result = await swarmkit.executeCommand("pytest", {
 ```
 - The command automatically executes in the directory set by `withWorkingDirectory()` (default: `/home/user/workspace`).
 
-### 4.3 Streaming events
+### 3.3 Streaming events
 
 `SwarmKit` extends Node's `EventEmitter`. Both `run()` and `executeCommand()` stream output in real-time:
 
@@ -527,7 +572,7 @@ renderer.stopLive();
 
 > **Full production example:** See [`cookbooks/agent-typescript/ui.ts`](../cookbooks/agent-typescript/ui.ts) for styled formatting with chalk, markdown rendering, spinner animations, and advanced live output management.
 
-### 4.4 Upload: Local → Sandbox
+### 3.4 Upload: Local → Sandbox
 
 **Format:** `{ "destination": content }` — directories created automatically
 
@@ -553,7 +598,7 @@ await swarmkit.uploadContext(readLocalDir("./input", true));
 
 > **Setup alternative:** `withContext()` and `withFiles()` use the same format but upload on first `run()` instead of immediately.
 
-### 4.5 Download: Sandbox → Local
+### 3.5 Download: Sandbox → Local
 
 **Flow:** `getOutputFiles()` → `saveLocalDir()`
 
@@ -596,7 +641,7 @@ console.log(output.error);                // undefined (or validation error mess
 
 Files created before the last `run()` or `executeCommand()` are filtered out.
 
-### 4.6 Session controls
+### 3.6 Session controls
 
 ```ts
 const sessionId = swarmkit.getSession();  // Returns sandbox ID (string) or null (sync)
@@ -611,7 +656,7 @@ await swarmkit.setSession("existing-sandbox-id"); // Sets sandbox ID; reconnecti
 
 `withSession("sandbox-id")` is a builder method equivalent to `setSession()` - use it during initialization to reconnect to an existing sandbox.
 
-### 4.7 getHost
+### 3.7 getHost
 
 Expose a forwarded port:
 
@@ -621,9 +666,9 @@ console.log(`Workspace service available at ${url}`);
 ```
 ---
 
-## 5. Workspace setup and Modes
+## 4. Workspace setup and Modes
 
-### 5.1 Knowledge Mode (default)
+### 4.1 Knowledge Mode (default)
 
 Ideal for knowledge work applications.
 ```ts
@@ -662,7 +707,7 @@ IMPORTANT - Directory structure:
 Any string passed to `withSystemPrompt()` is appended after this default.
 
 
-### 5.2 SWE Mode
+### 4.2 SWE Mode
 
 Ideal for coding applications (when working with repositories).
 ```ts
@@ -685,7 +730,7 @@ The workspace prompt is automatically written with the `repo/` folder included. 
 
 ---
 
-## 6. Cleaning up and session management
+## 5. Cleaning up and session management
 
 **Multi-turn conversations** (most common):
 
@@ -766,7 +811,7 @@ await swarmkit.run({ prompt: 'Compare results' });  // Back to sandbox A
 
 ---
 
-## 7. Observability
+## 6. Observability
 
 Full execution traces—including tool calls, file operations (read/write/edit), text responses, and reasoning chunks—are logged to your SwarmKit dashboard at **https://dashboard.swarmlink.ai/traces** for debugging and replay.
 
