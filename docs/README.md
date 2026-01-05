@@ -46,7 +46,7 @@ SWARMKIT_API_KEY=sk-...
 ```typescript
 import { SwarmKit } from "@swarmkit/sdk";
 
-const swarmkit = new SwarmKit();
+const swarmkit = new SwarmKit();  // auto-resolves env variables
 await swarmkit.run({ prompt: "Create hello.txt with 'Hello World'" });
 const output = await swarmkit.getOutputFiles();  // output.files
 ```
