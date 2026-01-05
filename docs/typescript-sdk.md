@@ -46,45 +46,119 @@ await swarmkit.kill();
 
 - **Tracing:** Every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces)—no extra setup needed. Optionally use `withSessionTagPrefix()` to label your agent session for easy filtering.
 
-### 1.1 Authentication
+## 1.1 Authentication
 
-Two modes: **Gateway** (recommended) or **Direct** (BYOK).
+| | Gateway | Direct (BYOK) |
+|---|---------|---------------|
+| Setup | `SWARMKIT_API_KEY` | Model provider keys + E2B sandbox keys |
+| Observability | [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) | `~/.swarmkit/observability/` |
+| Billing | Swarmlink | Your provider accounts |
 
-| type | model | default | reasoningEffort | betas | providerApiKey env |
-|------|-------|---------|-----------------|-------|-------------------|
-| `"claude"` | `"opus"` `"sonnet"` `"haiku"` | `"opus"` | — | `["context-1m-2025-08-07"]` (Sonnet) | `ANTHROPIC_API_KEY` |
-| `"codex"` | `"gpt-5.2"` `"gpt-5.2-codex"` `"gpt-5.1-codex-max"` `"gpt-5.1-mini"` | `"gpt-5.2"` | `"low"` `"medium"` `"high"` `"xhigh"` | — | `OPENAI_API_KEY` |
-| `"gemini"` | `"gemini-3-pro-preview"` `"gemini-3-flash-preview"` `"gemini-2.5-pro"` `"gemini-2.5-flash"` `"gemini-2.5-flash-lite"` | `"gemini-3-flash-preview"` | — | — | `GEMINI_API_KEY` |
-| `"qwen"` | `"qwen3-coder-plus"` `"qwen3-vl-plus"` | `"qwen3-coder-plus"` | — | — | `OPENAI_API_KEY` |
+---
 
-**Gateway Mode** — Set `SWARMKIT_API_KEY` from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai). Handles all provider routing and sandbox provisioning automatically.
+### Gateway Mode
 
-```ts
-import "dotenv/config";  // If using .env file (npm install dotenv)
-import { SwarmKit } from "@swarmkit/sdk";
+Get API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai).
 
-const swarmkit = new SwarmKit();  // Auto-resolves from env, defaults to claude
-await swarmkit.run({ prompt: "Hello" });
+```bash
+# .env
+SWARMKIT_API_KEY=sk-...
+E2B_API_KEY=e2b_...
 ```
-
-**Direct Mode (BYOK)** — Use your own provider API keys. Requires `E2B_API_KEY` for sandbox.
 
 ```ts
 import { SwarmKit, E2BProvider } from "@swarmkit/sdk";
 
-const sandbox = new E2BProvider({ apiKey: process.env.E2B_API_KEY! });
+const sandbox = new E2BProvider({
+    apiKey: process.env.E2B_API_KEY,
+});
 
 const swarmkit = new SwarmKit()
-  .withAgent({
-    type: "claude",
-    providerApiKey: process.env.ANTHROPIC_API_KEY!,
-  })
-  .withSandbox(sandbox);
+    .withAgent({
+        type: "claude",
+        apiKey: process.env.SWARMKIT_API_KEY,
+    })
+    .withSandbox(sandbox);
+
+await swarmkit.run({ prompt: "Hello" });
 ```
 
-**Resolution priority:**
-- Agent: `providerApiKey` → `apiKey` → provider env var → `SWARMKIT_API_KEY`
-- Sandbox: `E2B_API_KEY` → `SWARMKIT_API_KEY`
+---
+
+### Direct Mode (BYOK)
+
+Use your own provider keys. Requires E2B for sandbox.
+
+```bash
+# .env
+ANTHROPIC_API_KEY=sk-...
+E2B_API_KEY=e2b_...
+```
+
+```ts
+import { SwarmKit, E2BProvider } from "@swarmkit/sdk";
+
+const sandbox = new E2BProvider({
+    apiKey: process.env.E2B_API_KEY,
+});
+
+const swarmkit = new SwarmKit()
+    .withAgent({
+        type: "claude",
+        providerApiKey: process.env.ANTHROPIC_API_KEY,
+    })
+    .withSandbox(sandbox);
+```
+
+---
+
+### Use SwarmKit with your Claude Max subscription
+
+```bash
+# Run in terminal, follow login steps → receive token:
+claude --setup-token
+
+# ✓ Long-lived authentication token created successfully!
+# Your OAuth token (valid for 1 year): sk-ant-...
+```
+
+```bash
+# .env
+CLAUDE_CODE_OAUTH_TOKEN=sk-ant-...
+E2B_API_KEY=e2b_...
+```
+
+```ts
+import { SwarmKit, E2BProvider } from "@swarmkit/sdk";
+
+const sandbox = new E2BProvider({
+    apiKey: process.env.E2B_API_KEY,
+});
+
+const swarmkit = new SwarmKit()
+    .withAgent({
+        type: "claude",
+        oauthToken: process.env.CLAUDE_CODE_OAUTH_TOKEN,
+    })
+    .withSandbox(sandbox);
+```
+
+---
+
+### Auto-resolve from Environment
+
+Set env vars and the SDK picks them up automatically—no need to pass explicitly. See Agent Reference below for env var names.
+
+### Agent Reference
+
+| type | models | default | env var (BYOK) |
+|------|--------|---------|----------------|
+| `"claude"` | `"opus"` `"sonnet"` `"haiku"` | `"opus"` | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` |
+| `"codex"` | `"gpt-5.2"` `"gpt-5.2-codex"` `"gpt-5.1-codex-max"` `"gpt-5.1-mini"` | `"gpt-5.2"` | `OPENAI_API_KEY` |
+| `"gemini"` | `"gemini-3-pro-preview"` `"gemini-3-flash-preview"` `"gemini-2.5-pro"` `"gemini-2.5-flash"` `"gemini-2.5-flash-lite"` | `"gemini-3-flash-preview"` | `GEMINI_API_KEY` |
+| `"qwen"` | `"qwen3-coder-plus"` `"qwen3-vl-plus"` | `"qwen3-coder-plus"` | `OPENAI_API_KEY` |
+
+Agent-specific options: `reasoningEffort` (Codex: `"low"` `"medium"` `"high"` `"xhigh"`), `betas` (Claude Sonnet: `["context-1m-2025-08-07"]`)
 
 ---
 
@@ -99,7 +173,9 @@ const swarmkit = new SwarmKit()
         model: "gpt-5.2-codex",               // (optional) Uses default if omitted
         reasoningEffort: "medium",            // (optional) "low" | "medium" | "high" | "xhigh" - Codex only
         // betas: ["context-1m-2025-08-07"],  // (optional) Claude Sonnet only
-        apiKey: process.env.SWARMKIT_API_KEY!, // (optional) Auto-resolves from env
+        apiKey: process.env.SWARMKIT_API_KEY!, // (optional) Gateway mode - auto-resolves from env
+        // providerApiKey: process.env.ANTHROPIC_API_KEY!, // (optional) Direct mode (BYOK)
+        // oauthToken: process.env.CLAUDE_CODE_OAUTH_TOKEN!, // (optional) Claude Max subscription
     })
 
     // Sandbox provider (auto-resolved from SWARMKIT_API_KEY)

@@ -22,7 +22,7 @@ load_dotenv()  # Load .env file
 # ─────────────────────────────────────────────────────────────
 
 AGENT = AgentConfig(
-    type="gemini",                              # claude, codex, gemini
+    type="claude",                              # claude, codex, gemini
 )
 
 MCP_SERVERS = {}
