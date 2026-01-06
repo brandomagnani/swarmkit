@@ -1,7 +1,7 @@
 """
 HN Time Capsule - SwarmKit Edition
 
-Karpathy's 1,486 lines → 25 lines
+Karpathy's 1,486 lines → 50 lines
 """
 
 from pathlib import Path
