@@ -1418,6 +1418,35 @@ class BestOfResult:
 
 ## 4. Chaining Operations
 
+When chaining Swarm operations, `result.json` from a previous step is automatically renamed to `data.json`. This avoids confusion when the downstream agent writes its own `result.json`. This also applies to [Pipeline](#7-pipeline).
+
+**Example: map → reduce chain**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  MAP (parallel)                                                             │
+│                                                                             │
+│  item_0 agent writes:          item_1 agent writes:                         │
+│  output/                       output/                                      │
+│    result.json ← schema        result.json ← schema                         │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  REDUCE (single agent)                                                      │
+│                                                                             │
+│  context/                                                                   │
+│    item_0/                                                                  │
+│      data.json      ← renamed from result.json                              │
+│    item_1/                                                                  │
+│      data.json      ← renamed from result.json                              │
+│  output/                                                                    │
+│    result.json      ← reduce agent writes its own                           │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ```python
 class AnalysisSchema(BaseModel):
     summary: str
@@ -1501,7 +1530,7 @@ swarm = Swarm(SwarmConfig(
 
 ## 7. Pipeline
 
-Fluent wrapper over Swarm for chaining operations. **All Swarm features work in Pipeline steps** — schema, best_of, verify, retry, agent, mcp_servers, dynamic prompts.
+Fluent wrapper over Swarm for chaining operations. **All Swarm features work in Pipeline steps** — `schema`, `best_of`, `verify`, `retry`, `agent`, `mcp_servers`, dynamic prompts.
 
 ```python
 from dotenv import load_dotenv
