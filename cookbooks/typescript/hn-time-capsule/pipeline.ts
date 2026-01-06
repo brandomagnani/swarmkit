@@ -6,23 +6,13 @@
 
 import "dotenv/config";
 import { writeFileSync, mkdirSync } from "fs";
-import { z } from "zod";
 import { Swarm, Pipeline } from "@swarmkit/sdk";
-import { fetchHnDay } from "./fetch";
+import { fetchHnDay, saveIntermediate } from "./fetch";
 import { ANALYZE, RENDER } from "./prompts";
-
-const AnalysisSchema = z.object({
-    title: z.string(),
-    summary: z.string(),
-    what_happened: z.string(),
-    most_prescient: z.object({ user: z.string(), reason: z.string() }),
-    most_wrong: z.object({ user: z.string(), reason: z.string() }),
-    grades: z.record(z.string()),  // {"tptacek": "A+", "pg": "B"}
-    score: z.number(),             // 0-10
-});
+import { AnalysisSchema } from "./schema";
 
 const swarm = new Swarm({
-    concurrency: 10,                  // max parallel sandboxes
+    concurrency: 10,            // max parallel sandboxes
     retry: { maxAttempts: 3 },  // 2 retries
 });
 
@@ -40,13 +30,14 @@ const pipeline = new Pipeline(swarm)
 
 async function main() {
     console.log("Fetching HN data...");
-    const items = fetchHnDay("2015-12-01", 30);  // top 30 HN articles from 10 years ago
+    const items = fetchHnDay("2015-12-01", 10);  // top 10 HN articles from 10 years ago
     console.log(`Processing ${items.length} articles...`);
 
     const result = await pipeline.run(items);
 
-    // Save to ./output/
-    mkdirSync("output", { recursive: true });
+    saveIntermediate(result.steps[0].results as any[]);  // map output
+
+    mkdirSync("output", { recursive: true });  // reduce output
     for (const [name, content] of Object.entries(result.output.files)) {
         writeFileSync(`output/${name}`, content);
     }

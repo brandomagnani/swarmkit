@@ -172,6 +172,7 @@ def fetch_hn_day(date: str, limit: int | None = None) -> list[dict]:
     """Fetch HN frontpage data as list of FileMap for SwarmKit."""
     # Clean previous run
     shutil.rmtree("input", ignore_errors=True)
+    shutil.rmtree("intermediate", ignore_errors=True)
     shutil.rmtree("output", ignore_errors=True)
 
     articles = fetch_frontpage(date)
@@ -202,3 +203,16 @@ def fetch_hn_day(date: str, limit: int | None = None) -> list[dict]:
             (item_dir / name).write_text(content)
 
     return items
+
+
+def save_intermediate(results) -> None:
+    """Save intermediate map results to intermediate/."""
+    Path("intermediate").mkdir(exist_ok=True)
+    for r in results:
+        item_dir = Path(f"intermediate/item_{r.meta.item_index:02d}")
+        item_dir.mkdir(exist_ok=True)
+        (item_dir / "status.txt").write_text(r.status)
+        if r.data:
+            (item_dir / "analysis.json").write_text(json.dumps(r.data.model_dump(), indent=2))
+        if r.error:
+            (item_dir / "error.txt").write_text(r.error)

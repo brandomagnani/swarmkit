@@ -202,6 +202,7 @@ function fetchArticleContent(url: string): string {
 export function fetchHnDay(day: string, limit?: number): FileMap[] {
     // Clean previous run
     rmSync("input", { recursive: true, force: true });
+    rmSync("intermediate", { recursive: true, force: true });
     rmSync("output", { recursive: true, force: true });
 
     const articles = fetchFrontpage(day);
@@ -235,4 +236,19 @@ export function fetchHnDay(day: string, limit?: number): FileMap[] {
     }
 
     return items;
+}
+
+export function saveIntermediate(results: any[]): void {
+    mkdirSync("intermediate", { recursive: true });
+    for (const r of results) {
+        const itemDir = `intermediate/item_${r.meta.itemIndex.toString().padStart(2, "0")}`;
+        mkdirSync(itemDir, { recursive: true });
+        writeFileSync(`${itemDir}/status.txt`, r.status);
+        if (r.data) {
+            writeFileSync(`${itemDir}/analysis.json`, JSON.stringify(r.data, null, 2));
+        }
+        if (r.error) {
+            writeFileSync(`${itemDir}/error.txt`, r.error);
+        }
+    }
 }

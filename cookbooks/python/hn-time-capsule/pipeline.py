@@ -6,22 +6,12 @@ Karpathy's 1,486 lines → 50 lines
 
 from pathlib import Path
 from dotenv import load_dotenv
-from pydantic import BaseModel
 from swarmkit import Swarm, SwarmConfig, Pipeline, MapConfig, ReduceConfig, RetryConfig, AgentConfig
-from fetch import fetch_hn_day
+from fetch import fetch_hn_day, save_intermediate
 from prompts import ANALYZE, RENDER
+from schema import Analysis
 
 load_dotenv()
-
-
-class Analysis(BaseModel):
-    title: str
-    summary: str
-    what_happened: str
-    most_prescient: dict    # {"user": "...", "reason": "..."}
-    most_wrong: dict        # {"user": "...", "reason": "..."}
-    grades: dict[str, str]  # {"tptacek": "A+", "pg": "B"}
-    score: int              # 0-10
 
 
 swarm = Swarm(SwarmConfig(
@@ -37,18 +27,22 @@ pipeline = (
         schema=Analysis,
         agent=AgentConfig(type='claude', model='haiku'),
     ))  # analyze each article
-    .reduce(ReduceConfig(name='render', prompt=RENDER))  # aggregate into HTML
+    .reduce(ReduceConfig(
+        name='render', 
+        prompt=RENDER,
+    ))  # aggregate into HTML
 )
 
 
 async def main():
     print("Fetching HN data...")
-    items = fetch_hn_day("2015-12-01", limit=10)  # top 30 HN articles from 10 years ago 
+    items = fetch_hn_day("2015-12-01", limit=10)  # top 30 HN articles from 10 years ago
     print(f"Processing {len(items)} articles...")
     result = await pipeline.run(items)
 
-    # Save to ./output/
-    Path("output").mkdir(exist_ok=True)
+    save_intermediate(result.steps[0].results)  # map output
+
+    Path("output").mkdir(exist_ok=True)  # reduce output
     for name, content in result.output.files.items():
         Path(f"output/{name}").write_text(content)
     print(f"Done! Output saved to ./output/")
