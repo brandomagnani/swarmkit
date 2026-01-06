@@ -11,7 +11,7 @@ from swarmkit import (
     MapConfig, ReduceConfig,
     RetryConfig, AgentConfig
 )
-from fetch import load_rent_rolls, save_intermediate
+from utils import load_rent_rolls, save_intermediate
 from prompts import (
     EXTRACT_SYSTEM, EXTRACT,
     ANALYZE_SYSTEM, ANALYZE,

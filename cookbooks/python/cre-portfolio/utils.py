@@ -25,23 +25,11 @@ def load_rent_rolls(pdf_dir: str) -> list[dict]:
 
     items = []
     for i, pdf in enumerate(pdfs):
-        item_dir = Path(f"input/item_{i:02d}")
-        item_dir.mkdir(parents=True, exist_ok=True)
-
-        # Copy PDF to input folder
-        dest = item_dir / "rent_roll.pdf"
-        shutil.copy(pdf, dest)
-
-        # Create metadata file
         meta = {"source_file": pdf.name, "index": i}
-        (item_dir / "meta.json").write_text(json.dumps(meta, indent=2))
-
-        # Return file map for pipeline
         items.append({
-            "rent_roll.pdf": dest.read_bytes(),
+            "rent_roll.pdf": pdf.read_bytes(),
             "meta.json": json.dumps(meta),
         })
-
         print(f"  [{i}] {pdf.name}")
 
     return items
