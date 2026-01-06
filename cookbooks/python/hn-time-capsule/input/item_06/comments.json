@@ -1,0 +1,1035 @@
+[
+  {
+    "author": "an4rchy",
+    "text": "Wow, didn't expect this from WhatsApp. I wonder if we can hear it from their side to see if they have a specific reason. Also, are they blocking any other messenger links i.e WeChat, Line etc or just Telegram.",
+    "children": [
+      {
+        "author": "corv",
+        "text": "It's not particularly surprising considering they are owned by Facebook.",
+        "children": [
+          {
+            "author": "thecatspaw",
+            "text": "but they had to know that people would go dig through the sourcecode and find out that it was not just some random glitch, but a deliberate action on their part",
+            "children": [
+              {
+                "author": "embik",
+                "text": "I think you confused WhatsApp and Telegram now. WhatsApp does not have open source code, Telegram has. WhatsApp is blocking the links though.",
+                "children": [
+                  {
+                    "author": "thecatspaw",
+                    "text": "I was talking about this: http://www.androidpolice.com/2015/12/01/whatsapp-is-blocking...",
+                    "children": []
+                  },
+                  {
+                    "author": "pistoriusp",
+                    "text": "Did you read the article?",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "jcl",
+        "text": "Assuming the source code posted in the article is the only code doing the blocking, it's only blocking links where a domain or subdomain is \"telegram\", although the regex could easily be altered to block other links, too.",
+        "children": []
+      },
+      {
+        "author": "plusquamperfekt",
+        "text": "It might also be due lobbying given that Telegram was recently in the news for being a popular medium of ISIS communication (not for the attack - as we know by now, but for its public channels)",
+        "children": [
+          {
+            "author": "thesimon",
+            "text": "Thank god. Not being able to paste/visit the link directly from WhatsApp surely prevents them from planning an attack over Telegram /sI agree with you that Telegram has been in the news recently, but I doubt it's related with this incident.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "rms_returns",
+        "text": "FB is too large an organization to survive long when competition is eating a huge chunk of their services. And especially so, if the competition is someone like telegram who is both free and open source.Their decision to purchase WhatsApp turned out to be very ill-timed. WhatsApp was at the peak of their popularity when they did, but that peak was only because of ignorance of the masses - ignorance about glaring holes in WhatsApp security, and ignorance about significantly better alternatives like Telegram. But in the age of Internet, ignorance hardly lasts long among the masses, of all people, Zuckerburg should have known this!",
+        "children": [
+          {
+            "author": "coldcode",
+            "text": "Buying WhatsApp made plenty of sense. Paying 22B was 22X what it was worth.",
+            "children": []
+          },
+          {
+            "author": "jsprogrammer",
+            "text": "When FB bought WhatsApp, they estimated that the user base only had a useful life of seven years.That was one or two years ago now and I'm not sure if the estimate has been updated, but it would seem FB is running out of time to convert the user base.",
+            "children": [
+              {
+                "author": "askafriend",
+                "text": "Do you have a source for your claims?",
+                "children": [
+                  {
+                    "author": "jsprogrammer",
+                    "text": "FB's SEC filings.I can pull the link for you tomorrow.",
+                    "children": [
+                      {
+                        "author": "jsprogrammer",
+                        "text": "Here you go: http://investor.fb.com/secfiling.cfm?filingid=1326801-14-47&...The claim is made at about 95% of the way through that document.",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "sschueller",
+        "text": "The current version of WhatsApp is clearly trying to make it difficult to leave the ecosystem. You can see that when you want to copy text in Android. If you copy it you can only send it to other WhatsApp users. In order to copy it somewhere else you need to use the share feature. In Telegram and others you can copy paste easily into other apps.",
+        "children": [
+          {
+            "author": "ibarreto",
+            "text": "I just tried this on my Android phone (I have latest version of WhatsApp), and it allows me to copy text and paste it anywhere.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "fabian2k",
+    "text": "My suspicion woud be that they triggered some automated anti-spam system.Intentionally blocking your competitor in this situation doesn't seem like a good idea, it mostly generates publicity for them.",
+    "children": [
+      {
+        "author": "tshtf",
+        "text": "The Android APKs have been decompiled which confirmed this was completely intentional:http://www.androidpolice.com/2015/12/01/whatsapp-is-blocking...> The smoking gun is a pattern match performed on any URL string that begins with the word 'telegram.' In the most recent version of the app, these strings are classified as a \"bad host,\" so that no hyperlink is generated and it becomes impossible to copy or forward any message with that URL. No other strings trigger the match, so this block is purposefully targeted at Telegram.",
+        "children": [
+          {
+            "author": "fabian2k",
+            "text": "Thanks, that looks like really solid evidence for intentionally blocking them. I see no way to explain this than anything but an attempt to block their competitor.I still think this will result in more publicity for Telegram than all the messages that are blocked.",
+            "children": []
+          },
+          {
+            "author": "JosephRedfern",
+            "text": "Maybe times have changed and these things are now included in the dex file, but that doesn't seem to be a verbatim decompiler output to me.Local variable names aren't normally stored in an APK, they're just refereed to by register numbers. For instance, I wouldn't expect to see \"for(Pattern badHost : BAD_HOSTS)\" (specifically the badHost) - last time I checked, this information would be lost during compilation.I'm not suggesting that the code is falsified - the person that decompiled it probably just guessed at some variable names and re-factored to make it more readable. It just stood out to me, so I thought it was worth mentioning.",
+            "children": [
+              {
+                "author": "bathory",
+                "text": "That's only true if you choose to obfuscate your code on android. I recently decompiled an apk and all variables/function names were perfectly readable",
+                "children": [
+                  {
+                    "author": "JosephRedfern",
+                    "text": "Even variable names? I know that class/method/field names are visible, but I didn't think that local variable names were. I can't see a reason for them to be, aside from debugging... and presumably they're not shipping a debug build.",
+                    "children": [
+                      {
+                        "author": "mmebane",
+                        "text": "It used to be incredibly common for production APKs to contain Java debug info (line numbers and variable names).  IIRC, Android Studio now sets up the Release builds to strip this out and do basic ProGuard optimizations, but if WhatsApp was migrated from an old build system or something, it could easily be missing this step.",
+                        "children": [
+                          {
+                            "author": "JosephRedfern",
+                            "text": "Those were the days ;)I was under the impression that it's now no longer possible to upload an APK that has been built in Debug Mode to Google Play. I don't know if other app stores (i.e. Amazon App store) are enforcing this.",
+                            "children": [
+                              {
+                                "author": "Nutomic",
+                                "text": "Debug mode and obfuscation are completely seperate concepts. You can have a debug build with obfuscation or a release build without. Google Play doesn't care if an apk is obfuscated or not.",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "author": "toyg",
+                        "text": "I don't work with Android, but java code is usually visible after decompilation. Unless there is specific obfuscation tech being used, you should assume all your java code can be seen by others.",
+                        "children": [
+                          {
+                            "author": "JosephRedfern",
+                            "text": "Yes, the \"code\" is - it has to be in order for it to be executed. My point is that method variable names are not normally visible.",
+                            "children": [
+                              {
+                                "author": "toyg",
+                                "text": "I'm not sure I follow -- this is what comes up from a random commercial project (I don't believe it's a debug build): http://i.imgur.com/OhdNC5A.pngWhat part would you refer to as \"method variable name\"?",
+                                "children": [
+                                  {
+                                    "author": "JosephRedfern",
+                                    "text": "That's weird. By \"method variable names\" I mean local variables, i.e. those declared inside a method.I'm not getting the same results as you with a little sample program I wrote - see: https://gist.github.com/JosephRedfern/662131ceb2119abf3e83. Field names and method names are preserved (which make sense), but local variable names are lost (which also makes sense to me!)Are you sure that your example code doesn't include debug information?",
+                                    "children": [
+                                      {
+                                        "author": "toyg",
+                                        "text": "You're looking at the bytecode. If you want full decompilation, use one of the tools mentioned here: http://stackoverflow.com/questions/272535/how-do-i-decompile...",
+                                        "children": [
+                                          {
+                                            "author": "JosephRedfern",
+                                            "text": "I decompiled the dex file, but not the Java Class file.I suppose this is diverging a little from the original comment (which was in the context of an Android application), but surely if running `strings` on the class file found the method, class and field names then it would also find the local variable name too, if it was there.If I specifically compile the java file with `javac -g:vars DecompilationTest.java` then the local variable name IS included in the file. It is not by default.",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "author": "yincrash",
+                            "text": "Proguard is set up to obfuscate by default on release builds with the default build script, but many devs often turn it off or use a different build system without it as a build step. You often need to add exceptions for 3rd party libs that rely on class names or variable names not changing for whatever reason (usually reflection).",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "author": "sk5t",
+                "text": "Local variables no, but a method name like isBadHost, and the field BAD_HOSTS, would be preserved in the absence of an obfuscator (and then, its job would not be trivial as isBadHost is scoped public).",
+                "children": []
+              }
+            ]
+          },
+          {
+            "author": "orliesaurus",
+            "text": "Im lolling at the guy that tested \"hitler.com\" wtf? hahahaha",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "halviti",
+        "text": "This has been going on for a week or more and has gained a decent amount of publicity.  Given that telegram is a legitimate service, and they haven't reversed it yet, seems to indicate that this is a direct attack.In addition, if you are familiar with how whatsapp works, stopping any spam would be much more effective by targeting the phone numbers sending spam, not to mention the difficulty of spamming telephone numbers.. not impossible, but difficult..  which is why whatsapp spam so far has been non-existent AFAIK.",
+        "children": []
+      },
+      {
+        "author": "akerro",
+        "text": "They also block other competitors.",
+        "children": []
+      },
+      {
+        "author": "protomyth",
+        "text": "Pretty good anti-spam system to also take down their Facebook page.  I would go with intentional over automated.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "ilurk",
+    "text": "Whatsapp (facebook) is not the only the only company keen on censoring.Airbnb chat also censors messages. Typically when you try to give your number or whatsapp or some link.",
+    "children": [
+      {
+        "author": "striking",
+        "text": "I would think that's so communication is kept and recorded by Airbnb, for legal reasons.",
+        "children": [
+          {
+            "author": "danmendes",
+            "text": "You would think that is the reason, and not the fact that their matching service can only appropriate value into the company if the two peers being matched can not effectively coordinate themselves?",
+            "children": [
+              {
+                "author": "striking",
+                "text": "That's plausible, except when you do it that way there's a really great chance you'll be screwed over. Airbnb can protect its users to some degree, it's up to you whether you want to use it or not.",
+                "children": [
+                  {
+                    "author": "mlrtime",
+                    "text": "You still get screwed over with airbnb, they are not there to help you.",
+                    "children": [
+                      {
+                        "author": "Canada",
+                        "text": "Not in my experience. AirBnB holds all the money and they can choose to refund or not depending on the circumstances. Just try renting in another city with Craigslist. It's full of scams.But yeah, they censor emails, phone numbers and such in order to prevent deals from being made off site. They don't do it to protect anyone.",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "plusquamperfekt",
+        "text": "AirBnB needs to make sure you are not undermining it by making the deal outside of their system ... b/c then they don't get a provision for it. So I'd say it's fine in this case. AirBnB is no medium where free speech is a significant concept.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "halviti",
+    "text": "I use both whatsapp and telegram.. with whatsapp being the majority of my messaging, I'd been a little apprehensive since the facebook takeover, but haven't changed my usage habits.  This was exactly what it took for me to start pushing my friends to telegram.",
+    "children": [
+      {
+        "author": "NameNickHN",
+        "text": "> pushing my friends to telegramDo you have any suggestions on how to do that? The People I know either think Whatsapp is gods gift to mankind and won't switch or they can't use anything else because the people they interact with think it's gods gift to mankind and won't switch. I find it pretty hard to break that cycle.",
+        "children": [
+          {
+            "author": "brainburn",
+            "text": "Uhm, decent support on all your devices? (there's even a commandline client).Versus that ridiculous hack where you can whatsapp in the browser, provided you scan a qr code and have the phone on the same network.",
+            "children": [
+              {
+                "author": "NameNickHN",
+                "text": "> there's even a commandline clientThis totally speaks to me but I imagine saying to my buddies at the club: \"You should use Telegram. It's free, you don't need an account, and best of all there is even a command line client.\". That'll convince them right away. ;-)",
+                "children": [
+                  {
+                    "author": "izacus",
+                    "text": "Did you missunderstand  \"... there is even ...\" phrase?For most people Telegram offers pretty good desktop clients (as opposed to the rather horrible WhatsApp web experience).",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "kccqzy",
+                "text": "I don't think WhatsApp Web is a ridiculous hack. Instead I think it's quite an ingenious hack to allow you to use a computer to send and receive messages without 1) dealing with the pesky message synchronisation issues that plague iMessage, and 2) having the server store all messages. And your phone only needs to be connected to the Internet, not necessarily on the same network. Regarding the use of QR code, I think it's a clever way to authenticate too; no password to memorise, just a long random auth token.",
+                "children": [
+                  {
+                    "author": "izacus",
+                    "text": "Except that it stops working as soon as the phone enters sleep mode or (if you're roaming or something) has no reliable data connection.",
+                    "children": [
+                      {
+                        "author": "untog",
+                        "text": "Except that it stops working as soon as the phone enters sleep modeCan't say I've ever experienced that.",
+                        "children": [
+                          {
+                            "author": "izacus",
+                            "text": "Android 6.0 Doze mode actually distrupts it, I should have perhaps been clearer.",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "author": "tpinto",
+                    "text": "Have you even tried Telegram on the Web? It's clearly superior and yes, WhatsApp's solution feels like a nasty hack when compared to it. Also, didn't get that mention to iMessage.",
+                    "children": [
+                      {
+                        "author": "morsch",
+                        "text": "Does it work when you're not storing your messages on their servers?",
+                        "children": [
+                          {
+                            "author": "jhasse",
+                            "text": "No",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "author": "Grazester",
+                "text": "Your phone does not need to be on the same network!!!!\nI have my phone in front of me right now at work and I remoting into my home computer(Chrome remote desktop) and using the web client.",
+                "children": []
+              }
+            ]
+          },
+          {
+            "author": "halviti",
+            "text": "The nice thing about both whatsapp and telegram are there are no accounts, so they just need to download the app, and they'll show up in your contacts. So all you have to do is convince them to go to the app store and install the program.From there you just send them messages on Telegram, or start group chats. You likely won't convince them to switch themselves instantly, but if they want to message you, hopefully they're more likely to check telegram, because they'll want to get a better idea of when you were last available.It's not perfect, but it's something, and hopefully if whatsapp keeps up with their paid subscription nonsense, it will push more people away.",
+            "children": [
+              {
+                "author": "NameNickHN",
+                "text": "Thanks. This is better than nothing. Telegram not requiring an account and being free of charge will probably help a bit.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "jlewallen",
+        "text": "I feel like I've just finished convincing the majority of people I'm close to and communicate with regularly to use WhatsApp over standard SMS. I simply argued the group chat UX points and I don't know how privacy arguments would fly, sadly. I think it would induce eye-rolling irritation in them to ask them to switch again. I wish I had done better due diligence because I switched at a time when Signal/Telegram were available but I was pulled towards WA via another friend.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "maxwellito",
+    "text": "Funny thing: when I send 'https://telegram.org' the receiver got it as a hyperlink. But on my phone it remain in plain text.(I just tried with my colleague)",
+    "children": [
+      {
+        "author": "stanmancan",
+        "text": "The fact that is is a hyperlink is a client sided feature. Regardless of what messaging system you use, it's just a plain text URL that gets transmitted, but the client identifies it's a URL and hyperlinks it for convenience.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "Khao",
+    "text": "I saw this pop up on /r/android yesterday and it made me and a couple friends sign up for Telegram, so I guess good job whatsapp on pushing more people towards Telegram. Streisand effect in action!",
+    "children": [
+      {
+        "author": "3333z777",
+        "text": "A reason not to use Telegram: https://oflisback.github.io/telegram-stalking/",
+        "children": [
+          {
+            "author": "plusquamperfekt",
+            "text": "Given the credibility attributed to Signal - f.x. by Bruce Schneier and Edward Snowden - I don't understand why it's not more popular than Telegram.",
+            "children": [
+              {
+                "author": "Khao",
+                "text": "I want something to replace Hangouts, WhatsApp and Messenger and Telegram fits the bill while it looks to me like Signal doesn't. My Telegram account can be synced on multiple PCs and devices, while Signal seems to be phone only.",
+                "children": [
+                  {
+                    "author": "plusquamperfekt",
+                    "text": "Maybe for a synching feature it would be necessary to compromise on security of the data. The data is asymmetrically encrypted - so you'd have to synch it yourself by sending the data encrypted with you second phones key or you'd have to copy the private key itself. But I guess it would be possible. Though I don't miss this feature anyway.",
+                    "children": [
+                      {
+                        "author": "superuser2",
+                        "text": "iMessage already does this without leaking private keys by associating users with many public keys (per-device) instead of just one.",
+                        "children": [
+                          {
+                            "author": "plusquamperfekt",
+                            "text": "I don't trust Apple ...",
+                            "children": []
+                          },
+                          {
+                            "author": "rodgerd",
+                            "text": "Yeah, telling everyone I want to communicate with they have to buy an iPhone to talk to me any more is a totally reasonable approach.",
+                            "children": [
+                              {
+                                "author": "superuser2",
+                                "text": "I'm just pointing out what the solution is for end to end encrypted messaging when users have multiple devices. No need to be hostile.",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "author": "privong",
+                    "text": "> My Telegram account can be synced on multiple PCs and devices, while Signal seems to be phone only.I believe that is only temporary. The latest version of Signal hints at multi-device synchronization, though it appears to not be fully implemented. One example  of this is the Chrome browser extension[0].[0] https://github.com/WhisperSystems/Signal-Browser",
+                    "children": []
+                  },
+                  {
+                    "author": "bitskits",
+                    "text": "Some settings in the latest Android beta of Signal indicate this is being worked on.",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "the_mitsuhiko",
+                "text": "Because people want usability more than they care about things being private.",
+                "children": []
+              },
+              {
+                "author": "mintplant",
+                "text": "No desktop client. There's a Chrome App being worked on, but that's not an ideal setup. I really don't know why they aren't focuing on this, as it's absolutely the #1 issue whenever I talk to someone about Signal. Even the Chrome App packaged in a standalone Electron-like setup would be better.edit: Apparently alpha versions of NW.js now support running Chrome Apps. This could be interesting. https://groups.google.com/forum/#!msg/nwjs-general/YuwMHd_uv...",
+                "children": [
+                  {
+                    "author": "bad_user",
+                    "text": "WhatsApp doesn't have a desktop client either.",
+                    "children": [
+                      {
+                        "author": "mintplant",
+                        "text": "It has a web client, but that doesn't really fit with Signal's model.",
+                        "children": []
+                      },
+                      {
+                        "author": "nilkn",
+                        "text": "Telegram does (as well as a web client and mobile clients on iOS, Android, and Apple Watch).",
+                        "children": []
+                      },
+                      {
+                        "author": "jklp",
+                        "text": "I've been using Chit Chat on Mac which I find suits my needs (https://github.com/stonesam92/ChitChat), and which is essentially a wrapper around the web interface",
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "author": "shawn-furyan",
+                    "text": "Small team + high security standards = slow development progressWhy a chrome extension and not a desktop app? Because a desktop app is 3 desktop apps if you want to be cross platform, and since it is secure communication software, all of those edge cases that pop up in cross platform desktop application development really matter.I think it's better that Signal takes its time and gets it right so that eventually we have a good solution. If Signal were to throw caution to the wind and hackathon up some desktop apps, then we may never have a single good option.Signals competitors don't share it's security standards, and so it's not really reasonable to compare it to its competitors feature for feature. I expect that adding a given feature or other unit of complexity bears a higher cost for Signal than, say Whatsapp or Telegram. In the meantime, we still have the Signal mobile apps for situations where inconvenience isn't an insurmountable barrier.",
+                    "children": [
+                      {
+                        "author": "mintplant",
+                        "text": "So I did some testing, and with a little tweaking the Signal Chrome App can be run under the NW.js alpha as a standalone client. Both need to mature more before the combination becomes fully usable [1][2], but once everything is ready, this looks like a very simple way to set Signal up with cross-platform desktop apps.[1] Signal-Browser doesn't seem to be able to add contacts properly when used with the production server, and the staging server looks like it's down right now.[2] NW.js currently refuses to recognize Signal-Browser as a Chrome App unless I rename package.json to something else. Remote debugging doesn't seem to work with Chrome Apps running under NW.js at the moment - the inspector just gives me an empty response for each page I try to access. And there will need to be some way of configuring the Chromium engine to use Signal's self-signed SSL cert, though they'll have to solve this for the Chrome App as well.",
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "author": "kitsunesoba",
+                    "text": "This is my problem with Signal too. Chrome apps aren\u2019t ideal either, given the weight and battery drain of Blink-wrapped web apps under OS X.",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "darklajid",
+                "text": "It's .. the same thing. Now, bear with me: I don't say that it doesn't offer something over Telegram (most probably: Far better privacy/security), but it's a centralized service, hosted by a single entity, using your phone number as 'identity'. Ignore the first points, but the latter is so broken, Signal could be the most usable and glorious app (\"Everything just works\") on the planet and I'd still hate that idea.Right now, Telegram suffers from the same faults (phone number = identity, closed/central server), but excels in usability and client availability. Signal is - for me, right here - worse. And I _should_ be part of Signal's target group.",
+                "children": [
+                  {
+                    "author": "plusquamperfekt",
+                    "text": "Signal uses asymmetrical encryption - your private key is very well able to prove your identity - I'm pretty sure the concept \"identity\" in Signal is built on that technology. But for contacting people - well - what else would you suggest?!",
+                    "children": [
+                      {
+                        "author": "darklajid",
+                        "text": "Hi plusquamperfekt.I don't know your mail address or telephone number. If this message manages to reach you - can you explain your point a bit more?If the private key would _be_ the identify, that'd be awesome. And maybe I fail to understand ChatSecure/Signal. I'd be glad to be corrected. But as far as I understand, that system ties a user to a mobile number, because 'that is as good a unique identifier as we get' and uses that instead. I think Threema does what you describe - or at least expects you to exchange keys via QR code when you physically meet?My gripe with telephone numbers is this: I don't want to be tied to an identity I cannot control, to an identify that is public knowledge and unchangeable. I want to contact people via IM without them being able to call me.Phone numbers are for calls (okay, texts for historical reasons).",
+                        "children": [
+                          {
+                            "author": "plusquamperfekt",
+                            "text": "I think the identity is connected to what key pair you control / what private key you have on your phone.F.x. I installed a while ago Signal on my phone and recently went to another country where I used a different SIM card (hence a different phone number) and I could still use my Signal app as usual.",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "author": "cvwright",
+                    "text": "TextSecure (the predecessor to Signal) used to support encrypted SMS.  You could send all the encrypted messages you want without using their centralized service.  Unfortunately, for whatever reason, they dropped that capability a few months ago.  Then, to add insult to injury, the app disables itself if you don't update it for 6 months.On the bright side, there's now an open source fork called SMSSecure.  As the name implies, it does encrypted SMS.  It works pretty well.  I just hope the open source maintainers are keeping up with security updates to the protocol and not introducing any new bugs...",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "MichaelGG",
+                "text": "I can get my parents and others using Telegram. It's got lots of cute features, like short audio clips. \"Self destruct\", while not really true, at least provides a time based way to erase conversations. (Signal only does this by message count.)Signal is getting way better, but Telegram is just a better messaging client at the moment.",
+                "children": []
+              },
+              {
+                "author": "Veratyr",
+                "text": "No desktop client (personal computer), no web client (work computer), no multi device support (multiple phones/computers). Telegram has all of these things.EDIT: Apparently they're bringing desktop and \"web\" through a Chrome extension and possibly a desktop browser wrapper. Also multi device support for desktops but apparently not yet for mobile.",
+                "children": []
+              }
+            ]
+          },
+          {
+            "author": "mattbettinson",
+            "text": "You realize this is public front facing information right? You can see who is online in the app itself.",
+            "children": []
+          },
+          {
+            "author": "Aoyagi",
+            "text": "What, that some people can't even look at the settings [1] of the client? This is getting pretty pathetic.I really don't think people expect complete security and privacy from anyone ever, that's impractical and probably impossible. They expect their data to not be used for advertising or whatever and more security than WhatsApp (edit: Wait, it's not using e2e encryption by defautl now?), Skype, and the like. The only thin Telegram should be more upfront about is that the feature with all the security stuff is secret chats.I just don't understand this mentality. People start using something that's not owned by a huge NSA-friendly megacorporation, that is using some advanced security (which will probably be called \"unproven\" for the next thousand years) along with regular security - and a ton of people get mad, because it's allegedly not \"secure enough\". What's next, people start using Signal and hordes of angry 'experts' show up claiming it's not secure and private unless you make a new identity for every chat through Tor running in a VM on some 3rd world island, using your own infrastructure?If I was only slightly more paranoid, I'd start throwing accusations of false flag attacks directed from Facebook.[1] http://puu.sh/lGpoL/f455206b98.png",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "snissn",
+    "text": "Isn't telegram just a really bad version of signal?",
+    "children": [
+      {
+        "author": "finnn",
+        "text": "People seem to use it as a normal IM client. They have a web UI and don't really claim to be all that secure (eg not trying to compete with Signal). I don't understand the benefit over the numerous other IM apps, everyone who uses it just says \"oh i like Telegram better\" or \"my friends are on it\".",
+        "children": []
+      },
+      {
+        "author": "kbart",
+        "text": "As far as I'm concerned, Signal is superior in every way. Telegram simply has gained a lot of publicity and increased its user base (which is critical for IM) thanks to E. Snowden.",
+        "children": [
+          {
+            "author": "StavrosK",
+            "text": "> Telegram simply has gained a lot of publicity and increased its user base (which is critical for IM) thanks to E. SnowdenWhy do you say that? Snowden keeps recommending Signal every time he's asked.",
+            "children": []
+          },
+          {
+            "author": "fredleblanc",
+            "text": "A friend and I downloaded Signal to try it out, and just couldn't get anything to work. I'm on iOS 8, the app would just crash anytime I hit any button to make an action (send a message, even delete my account). On his end (he was on iOS 9), it said it connected to me, but his messages just got lost in the ether in between us.I mean, I'm a technical guy. I don't understand what either of us was doing wrong. Have you seen anything like this in your experience?",
+            "children": []
+          },
+          {
+            "author": "plusquamperfekt",
+            "text": "http://www.theverge.com/2015/11/3/9662724/signal-encrypted-c...Seems like he changed his mind.https://whispersystems.org/",
+            "children": []
+          },
+          {
+            "author": "jhasse",
+            "text": "Telegram has better cloud sync. Signal doesn't have a desktop app AFAIK, only a Chrome plugin which is still in development.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "shawabawa3",
+        "text": "Only if literally the only thing you're looking for is security.A big deal breaker for me is being able to use it without a phone number, and from desktop/sim-free devices, as well as from multiple devices simultaniously",
+        "children": []
+      },
+      {
+        "author": "izacus",
+        "text": "Or a better version of iMessage / WhatsApp. Depends on how you look at it.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "jasonlotito",
+    "text": "What's more likely happening is that Telegram links are being used in a lot more spam.  As a result, it's much better for WhatsApp users as a whole to just block Telegram links.  It's brute force, but it's better than a poor user experience.",
+    "children": []
+  },
+  {
+    "author": "gkfasdfasdf",
+    "text": "According to the Telegram FAQ [1] the Telegram Facebook page [2] has been taken down as well.[1] https://telegram.org/faq#facebook[2] https://www.facebook.com/tlgrm",
+    "children": [
+      {
+        "author": "Tinyyy",
+        "text": "Oh wow, that\u2019s ridiculous! Facebook attacking Telegram to such an extent leaves a really bad taste in my mouth.",
+        "children": [
+          {
+            "author": "issaria",
+            "text": "Switch to Telegram today, just to piss off Facebook. Doesn't matter how much many they donate to charity.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "izacus",
+        "text": "This is IMO one of the greatest dangers of leaving those huge corporations like Facebook, Google, Amazon etc. unchecked - they're starting to attack competition by leveraging their primary products (Amazon blocking Chromecasts, Facebook censoring links and pages about their lawsuits are two latest cases) and are working deliberately against interests of greater public (and capitalism itself if we can stretch that :) )I think it's slowly high time the anti-monopolistic regulation looks into their business practices and starts considering cutting them up into discrete companies per market.",
+        "children": [
+          {
+            "author": "rms_returns",
+            "text": "It is not the anti-monopolistic authorities (who are part of the system, anyway), but WE_THE_PEOPLE who need to do something, so that competition is assured. WE need to keep switching services and not let one service rule everything.Be it messengers, social networking apps, eCommerce stores, ERP software, anything - If we choose one organization to rule them all, it won't be very long before they start showing the traits of that one Saruman's ring that rules them all.",
+            "children": [
+              {
+                "author": "legohead",
+                "text": "Yeah, that's not going to happen.  The majority of \"We the people\" is made up of those who take the path of least resistance.Facebook, by doing things like this, will only hurt themselves.  We've been down this road before with Microsoft.  It is anti-trust, and will get them in a lot of trouble.",
+                "children": []
+              },
+              {
+                "author": "kartan",
+                "text": "It is anti-monopolistic authorities only purpose to do just that. And it is an important role to keep the economy running healthy. But I agree to an extend as I think that we also need to choose more actively to get better products. Each kind of action happens at a different level and they aren't mutually exclusive.",
+                "children": []
+              },
+              {
+                "author": "Nitramp",
+                "text": "That doesn't work.We the people have invented these authorities a long time ago precisely because we the people suck at making individual decisions to improve global outcomes, and we need to organize ourselves in institutions such as these to fix things.",
+                "children": []
+              }
+            ]
+          },
+          {
+            "author": "Camillo",
+            "text": "You list three companies but only give examples for two.",
+            "children": [
+              {
+                "author": "010a",
+                "text": "Google devaluing the position of competitors like Yelp and TripAdvisor in search results for specific businesses.http://www.eater.com/2015/11/25/9800584/google-burying-yelp-...http://au.idigitaltimes.com/google-pushes-yelp-and-amazon-do...http://www.fairsearch.org/yelp-ceo-stoppelman-criticizes-goo...",
+                "children": []
+              }
+            ]
+          },
+          {
+            "author": "necessity",
+            "text": "What's the problem with not helping your competitor? Telegram can use that (\"censoring\") as marketing if they know how to play it. People wanting to tell others what to do and how to operate their business calling themselves \"capitalists\" is hilarious.",
+            "children": [
+              {
+                "author": "xg15",
+                "text": "If nothing else, it's that the users get pulled into some braindead power struggle between two companies that they could care less about. Yet they are the ones who find that they cannot use the products anymore properly. Moves like this decrease the quality of both your product and your competitor's. Yet the whole sense of competition in capitalism is supposedly to increase quality.Of course that's just the obvious consequences, ignoring the larger implications of allowing companies to place arbitrary restrictions on their services - when at the same time those services become more and more critical infrastructure.",
+                "children": [
+                  {
+                    "author": "Justsignedup",
+                    "text": "Generally in a competitive market, you have one company selling product / service X and a competitor selling service Y which does something similar.This is fine.However online communication is different. Imagine if the telephone company would bleep out any time your friend mentions a competitor's company. You'd never know a competitor exists. Especially if that competitor is up-and-coming and doesn't have the pockets to send flyers to every damn house in the state.",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "plusquamperfekt",
+        "text": "We need a competitor to FB ... sadly options like Diaspora are very problematic b/c you need to either run a server or trust a private person with it.",
+        "children": [
+          {
+            "author": "rms_returns",
+            "text": "We have many like Google plus, twitter, linkedin, reddit and even hacker news (catering to a specific niche). Problem here is that too many people whom we may call \"less tech savvy\" won't leave FB. So, in order to stay \"compatible\" with them, we need to keep our FB accounts active!",
+            "children": [
+              {
+                "author": "plusquamperfekt",
+                "text": "- Google plus: that would be kind of pointless, wouldn't it?- LinkedIn: The worst of the worst ... :D- HN / Reddit / Twitter: How do you share pictures privately with friends? (to name one necessary feature)",
+                "children": [
+                  {
+                    "author": "schwap",
+                    "text": "You could have a private subreddit I guess? Still super clumsy compared to FB.Further, HN/Reddit/Twitter etc. each only have a subset of my friends. ALL of my friends are on FB.",
+                    "children": []
+                  },
+                  {
+                    "author": "rodgerd",
+                    "text": "> How do you share pictures privately with friends?Flickr.  Some of the holes in the group management are a weakness there (no albums in Groups, for example).",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "LunaSea",
+                "text": "Reddit and Hacker News are rather content aggregators rather than social networks. Google+ and Twitter have the same issues than Facebook on these specific issues. LinkedIn is a bit too specialised for professional messages and they too like Google+ and Twitter don't have a great track record concerning privacy and abusing their position.",
+                "children": [
+                  {
+                    "author": "bashinator",
+                    "text": "Reddit may have started as a content aggregator, but there are plenty of subs that mostly or only have original/self-posted content.  talesfrom*, various hobby groups, support groups, crowd-sourced advice columns like legaladvice or relationships.It's well past being solely an aggregator.",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "username223",
+                "text": "Do actual humans still use G+ and linkedin?  I thought they were mostly just playgrounds for bot-wars.",
+                "children": [
+                  {
+                    "author": "amyjess",
+                    "text": "Back when I played Ingress, most city-level activity was coordinated through private G+ communities (with neighborhood-level activity being done in Hangouts group chats), and the more social stuff (i.e., the stuff you don't care about keeping secret from the Smurfs) tended to happen in public G+ communities.LinkedIn is a good tool for viewing someone's public resume, though I don't regularly log into it. Every once in a while, I'll log in to check out how a previous employer is doing (e.g. see which of my ex-coworkers are still at the company, what new positions have been created, etc.). I still have dozens of unanswered connection requests from recruiters, though (I don't accept people I don't know), and the site has gotten progressively spammier over the years.",
+                    "children": []
+                  },
+                  {
+                    "author": "reitanqild",
+                    "text": "Did you mean: twitter?Joking aside I almost never get followed by spam accounts on g+, weekly or more on my English speaking twitter account.",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "funkyy",
+                "text": "None listed by you come even close to what Facebook offer to majority of users. Linkedin is work environment and people wont go personal there, Twitter is just status update thing that really tries to become something bigger but fail to see what people outside their user base want and Google Plus is a joke - I am to this day surprised that they created it as Facebook killer, not as LinkedIn killer since obviously it is corporate style network, not a place where you go after the work, relax and see funny pictures.",
+                "children": [
+                  {
+                    "author": "eru",
+                    "text": "Same thing with Google Buzz before.",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "author": "seagreen",
+            "text": "This is a great comment, because it leads in right to the heart of the problem. Why is running a server so hard? This is actually really weird -- the cloud should mean that you can set up a server with a single click.Of course, a Linux VPS needs a fair amount of love (fiddling with settings, updating, and so on). But there are other ways: https://sandstorm.io/",
+            "children": [
+              {
+                "author": "plusquamperfekt",
+                "text": "Interesting perspective! It's true that it should be very easy and cheap - something like setting up an E-mail account or installing an app.",
+                "children": [
+                  {
+                    "author": "seagreen",
+                    "text": "Thanks:) I really feel like this is the core issue here. People complain a lot about Facebook, but what would happen if by some heroic, Odyssey-worthy effort they actually get people to switch to some other social network?. . .The exact same thing. The exact same thing would happen, because the new social network would have _exactly the same incentives_ as facebook.I have some more thoughts on this here: http://housejeffries.com/page/3 Not sure how clear my writing is, but the \"Inspiration\" section at the end has some links to great projects trying to fix this problem.",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "pjc50",
+                "text": "Sandstorm is interesting, but fundamentally the dichotomy is \"leave the running to someone else\" vs. \"spend significant time and effort acquiring the skills to make your own administrative decisions\".If you're running on someone else's platform and automatically accepting updates, are you really \"administering\" it yourself?",
+                "children": [
+                  {
+                    "author": "seagreen",
+                    "text": "Nope! But that's OK:)A majority of people will never develop any real skill level at administering servers. We still need them to be able to use reasonably humane software though, because the consumer software industry revolves around them. If they continue to be easy pickings for predatory software (lock-in, etc.) the incentive for industry will be to continue improving at making predatory software . . . not ideal.So empowering normal users (even partially, Sandstorm certainly doesn't give as much freedom as becoming a unix guru or whatever) is good for expert users too.",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "prostoalex",
+                "text": "The heart of the problem is not publishing, it's discovery and curation. Grandma is not going to visit 20 dedicated servers for her grandkids picture fix, she needs it accessible in one place. But then how do you safeguard that place from the likes of games notifications and various spammy/fraudulent apps taking over?",
+                "children": [
+                  {
+                    "author": "seagreen",
+                    "text": "> Grandma is not going to visit 20 dedicated servers for her grandkids picture fix, she needs it accessible in one place.This is certainly a problem. If only there was some kind of . . . mechanism . . . by which her computer could collect photos off her friends servers and display them locally? Sounds almost impossible!(Sorry for giving you a hard time:-) I appreciate your comment, but think that's a very solvable problem in practice.)",
+                    "children": [
+                      {
+                        "author": "seagreen",
+                        "text": "Since I can't edit anymore:Your comment actually deserves a better response than I gave it. Spam is the open protocol killer. It's a totally serious issue. If our goal was to replicate HN or Reddit via only personal servers, I would be pretty dang paranoid about getting our anti-spam solution perfect:/Happy in the case of Facebook-on-personal-servers, we have all the advantages and the spammers have all the disadvantages. Social network's main purpose is communication between people who know each other. Ignoring the Pages part of FB (which is really more Reddit-like than it is essential to a social network) communication happens between friends, or friends of friends commenting on photos or whatever. Spammy friend requests will be a problem, but that's not too big of a deal.And then, once that's done . . . ahhhh. Your own filtering software, blocking game notifications to your heart's content (since it's your own server you can install whatever filter you want, though of course there will be good defaults). Guess where most of the unwanted posts on Twitter or Snapchat come from for me . . . Twitter and Snapchat. No more!",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "myth_buster",
+        "text": "Interesting that this [0] page exists which has \n  84113 likes \u00b7 1198 talking about this[0] https://www.facebook.com/Telegram-Messenger-438429349592627/",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "Justsignedup",
+    "text": "Any lawyers here? Would this be considered monopolistic behavior? Or a constitutional violation?",
+    "children": [
+      {
+        "author": "DannyBee",
+        "text": "yes and no and no",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "thegayngler",
+    "text": "Is it safe to say this is a kin to AT&T blocking calls from T-Mobile? I can't see how this isn't going elevate the profile of Telegram.",
+    "children": []
+  },
+  {
+    "author": "plusquamperfekt",
+    "text": "I'm opportunistically supporting more secure messengers by \"digital osmosis\".Next to WhatsApp I also have installed:1. Signal2. Threema3. TelegramAnd I will use those (in described order) if possible.Threema seems to be comparatively popular in Germany, while Telegram is at least not among my peers and Signal (the one recommended by Schneier and Snowden) is only used by my gf (b/c I installed it for her).",
+    "children": [
+      {
+        "author": "plusquamperfekt",
+        "text": "I love the idea of encrypting by default - since yesterday my public key is available on the usual key servers.https://emailselfdefense.fsf.org/en/",
+        "children": []
+      },
+      {
+        "author": "mitm2mitm",
+        "text": "FB released a product called Signal http://media.fb.com/2015/09/17/introducing-signal/If you do a Google search that's the first result. Would be funny if they were afraid enough to do a SEO 'attack'. Yeah, tinfoil.",
+        "children": [
+          {
+            "author": "plusquamperfekt",
+            "text": "If I search for \"Signal\" on google.com in a private Chrome window then the first five results are all about the \"good\" Signal app.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "tpinto",
+    "text": "Interesting that WhatsApp didn't bother to update anything that much lately but they took their time to censor Telegram. Cool stuff.",
+    "children": []
+  },
+  {
+    "author": "eljimmy",
+    "text": "I hadn't taken notice of Telegram until now. I've just told all my friends who are very heavy Facebook chat users about it.A migration has begun.",
+    "children": [
+      {
+        "author": "plusquamperfekt",
+        "text": "But it is also possible to parasitically communicate encryptedly through FB - isn't it? At least in a browser it should be possible.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "vamur",
+    "text": "This is a sign that Facebook is in trouble. More and more people are fed up with its slow UI and are moving elsewhere, and increasingly to Telegram.",
+    "children": []
+  },
+  {
+    "author": "downandout",
+    "text": "This is an extraordinarily bad precedent.  Facebook has traditionally bought companies that it felt were competitive threats (Instagram, Whatsapp, etc) even though a significant percentage of their growth came from shares on Facebook products. It now appears that they will deal with competitors by crushing their ability to grow.Of course, they are going to say that this is because of Telegram's links to terrorism.  But any secure messenger can be used by bad actors, so that same excuse could be used for the wholesale blocking of all competing messengers.  This is clearly anticompetitive behavior.",
+    "children": [
+      {
+        "author": "degenerate",
+        "text": "Don't assume FB never offered to purchase. Maybe they did, and Telegram turned them down. Then FB starts the dirty sabotage. We can only speculate if this is a retaliatory move by FB or not, but either way it's NOT ethical - and I'm very glad to hear many people are moving from WatsApp to Telegram against the foul play. Let's hope this is action #1 of FB driving their $19B purchase into the ground. They need to learn a lesson from this.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "venning",
+    "text": "Playing devil's advocate: WhatsApp is a $22B investment.  It makes sense to try to prevent it from being canabalized from the inside.We've seen something like this before, when AIM allowed MSN Messenger to interoperate.  I know this is a little different, but that was still how AIM lost.Here is a fantastic war story from one of the MSN engineers on the battle to subvert AIM [1].[1] https://nplusonemag.com/issue-19/essays/chat-wars/",
+    "children": [
+      {
+        "author": "amyjess",
+        "text": "> We've seen something like this before, when AIM allowed MSN Messenger to interoperate. I know this is a little different, but that was still how AIM lost.Lost? AIM was the dominant IM platform in the US until the late 00s/early 10s when mobile and cloud-based services took over. First SMS/MMS and then platforms like Facebook Messenger, Google Hangouts, and Skype.The only place MSN was dominant was third-world countries like Brazil.",
+        "children": [
+          {
+            "author": "Laaw",
+            "text": "SMS/MMS lost?  Tell that to my friends/family/telcos.",
+            "children": [
+              {
+                "author": "amyjess",
+                "text": "No, I said that AIM was first overtaken by SMS/MMS and then by Facebook/Google/Skype. I didn't say that SMS/MMS died out, just that it was joined by the others.",
+                "children": []
+              }
+            ]
+          },
+          {
+            "author": "MAGZine",
+            "text": "MSN was way more popular than AIM in parts of Canada (maybe all, I can't speak nationally).Probably, AIM usage correlated with AOL's marketing strategy, meaning it prevailed in the US, though I'm not even sure about europe.Anyhow, your assertion that MSN was only dominant in 3rd world countries is unfounded.",
+            "children": [
+              {
+                "author": "realusername",
+                "text": "Don't know about other countries, on my case in France, it was MSN-only, I've never seen anyone with a AIM account ever. I had no idea it used to be popular in the US, I've actually learned that now.",
+                "children": [
+                  {
+                    "author": "scottmcf",
+                    "text": "I'd say MSN had the edge over AIM in Scotland too, although the populations overlapped heavily (i.e. most people I talked with had both).",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "author": "venning",
+            "text": "Fair point.  I got a little word-happy.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "roymurdock",
+        "text": "From my experience, AIM lost because it was the cool thing to do in high school before everyone had cell phones. Once texting/BBM was a thing, AIM became completely obsolete. I don't think I know anyone who ever used MSN Messenger.",
+        "children": [
+          {
+            "author": "fluxquanta",
+            "text": ">I don't think I know anyone who ever used MSN MessengerI did because it had the best quality video chat at the time, before Skype became a thing, but that was probably 15 years ago. My current company used to use it for in-office communication as recently as five years ago when I was first hired. It was an abysmal mess of sending out group chats as individual windows every time someone had a question. For a software company it was really disgraceful.",
+            "children": [
+              {
+                "author": "ParadoxOryx",
+                "text": "My company used Yahoo! Messenger for the longest time. Thank goodness for HipChat/Slack.",
+                "children": []
+              },
+              {
+                "author": "giancarlostoro",
+                "text": "But MSN had group conversations (as far as I remember), why not simply use those?",
+                "children": [
+                  {
+                    "author": "fluxquanta",
+                    "text": "Our office was about 20 people at the time. Any time anyone had a question, but didn't know who to direct it to, a new group conversation was initiated with everyone in the office. That was the problem.",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "author": "joepie91_",
+            "text": "In the Netherlands, there was almost nobody who didn't use MSN Messenger.",
+            "children": []
+          },
+          {
+            "author": "izacus",
+            "text": "MSN Messenger was one of those \"regional\" services simillar to WhatsApp - it was very popular in Europe, pretty much everyone used it around here, while as far as I heard it was very rare in US.",
+            "children": [
+              {
+                "author": "giancarlostoro",
+                "text": "Odd you say that, everyone I ever met here in the US and even in Puerto Rico had MSN. Probably because it came with a free email, and was maintained by Microsoft.",
+                "children": []
+              },
+              {
+                "author": "rchaud",
+                "text": "It was very popular all across Asia too, except maybe China where Internet restrictions probably led to local competitors,sprouting up. It likely wasn't popular in the US as AOL captured the market first, and the impact of network effects is huge when it comes to chat apps.Interestingly, MSN Messenger's capabilities in the late 90s/early 2000s were quite impressive. I remember being able to make long-distance audio VOIP calls using Messenger back in 2000, even on an awful 33.6kbps modem. The feature was removed pretty soon after, probably because it was abused (there was no charge for calls).You could also send decently sized files (~10MB) using Messenger until about 2005, and that too was discontinued as people used it to send MP3s to one another.",
+                "children": []
+              },
+              {
+                "author": "chetanahuja",
+                "text": "\"regional\" services simillar to WhatsAppThe app with a billion plus installs, quite likely the largest actively used chat app in the world is a \"regional\" service. Just to take a wild guess, you're not an iOS user from the bay area by any chance? \n I haven't come across too many Android users who are not using WhatsApp in the US.",
+                "children": [
+                  {
+                    "author": "vmarsy",
+                    "text": "I think the parent put regional in double quotes for a reason, he/she just meant to say that it was more popular in certain part of the world than other and it's 100% right: It used to have 100 million users and was #1 in 11 countries[1]. Back in 2003 this is quite impressive!Bashing on 'iOS users from the bay area' makes no sense, the parent also implies in his post that he is from Europe.And as a non-iOS user, not from the bay area, I have rarely see people using WhatsApp, neither in Europe, nor in the US. The only few people I've seen using it is foreigners who want to stay in contact with relatives/friends in an country where WhatsApp is popular.[1]http://news.microsoft.com/2003/05/12/100-million-customers-a...",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "HappyTypist",
+        "text": "Preventing interoperatibility is one thing. Rewriting user messages without their consent is another.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "cJ0th",
+    "text": "A friend once mourned that she got too many spam mails. I recommended her a throwaway e-mail service via a private Facebook message. FB blocked my message telling me that I can not send it as it includes a dangerous link.I made a screenshot of this response and wanted to share that instead. The funny thing is that in the screenshot, FBs red comment re: the dangerous link was so blurry that you could not read it. I guess this was probably due to a compression algorithm they apply on pictures but it is funny that the rest of the message was easily readable in the screenshot.",
+    "children": [
+      {
+        "author": "eveningcoffee",
+        "text": "It could be that it was also result of the character recognition.Could you repeat the test and provide the name of the service so others can try to replicate it?",
+        "children": [
+          {
+            "author": "cJ0th",
+            "text": ">  It could be that it was also result of the character recognition.That's what I initially thought. But then again, it seemed a bit too paranoid.The name of the service is discardmail.com",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "merlincorey",
+        "text": "Yes, even if you send a high quality PNG image to facebook, they will convert it to a low quality JPG.  This is especially bad for things with text.  See: http://lbrandy.com/blog/2008/10/my-first-and-last-webcomic/",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "myth_buster",
+    "text": "Could someone with the time and resource at hand independently decompile and verify the veracity of the code?It looks a bit fishy as it reads like an actual code as opposed to one outputted from a decompiler.",
+    "children": []
+  },
+  {
+    "author": "Animats",
+    "text": "Another reason for using Mozilla Thunderbird for your communications needs.Soon we'll have wall charts of who can and can't talk to what.",
+    "children": []
+  },
+  {
+    "author": "paul_milovanov",
+    "text": "To be the best, you need to learn from the best. Tencent's immensely popular WeChat (Weixin) has been blocking links to Baidu properties for a while now.Coming soon to a server near you!",
+    "children": []
+  },
+  {
+    "author": "bad_user",
+    "text": "Signal from Open Whisper Systems is open source, easy to use, provides rock solid encryption for both text and audio calls and is available on both iOS and Android: https://whispersystems.org/",
+    "children": [
+      {
+        "author": "Aoyagi",
+        "text": "And it has neither Windows nor WP client. Oh, and you can't send all kinds of files over it.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "dijit",
+    "text": "Seems to be working again here, but this sort of thing is enough to worry me though.Same problem as I have with facebook, there is too much critical mass to switch :(",
+    "children": []
+  },
+  {
+    "author": "HappyTypist",
+    "text": "I think this is a good opportunity to plug Signal. Telegram uses a non-standard DIY crypto protocol that already had attacks, its chats are not end to end encrypted by default, and Telegram stores all your messages in the cloud by default while deceptively advertising as a 'private' alternative.Signal / TextSecure on the other hand is encrypted by default, implements more thoroughly audited cryptography, and is recommended by Edward Snowden and Bruce Schneier.",
+    "children": [
+      {
+        "author": "heitortsergent",
+        "text": "Are there any links that show those pieces of information about Telegram?",
+        "children": [
+          {
+            "author": "dmix",
+            "text": "Matthew Green (a well regarded cryptographer) summarized it well:> The UX is nice. The crypto is like being stabbed in the eye with a fork.\nhttps://twitter.com/matthew_d_green/status/66668673163526553...Which pieces of information do you need exactly? You can search HN for 'Telegram', it get's criticized nearly every time it makes headlines. Or just look at Telegram's interface and you'll see that 'secret chat' is not the default option, it's not end-to-end encrypted by default making it marginally more secure than HTTPS.Signal/TextSecure on the otherhand has been the 'golden child' of the privacy and infosec scenes since it was released and their website has plenty of documentation on their protocol.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "sasvari",
+        "text": "unfortunately it isn't currently possible to use Signal on android without\nthe gapps/google play store installed, which is a deal breaker (I'm not arguing\nabout whether this makes sense or not from the developers' perspective, it's\njust a fact).",
+        "children": [
+          {
+            "author": "nibnib",
+            "text": "Why is this a deal breaker for you?",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "notspanishflu",
+        "text": "Not an option for me. Signal / TextSecure is not available for Ubuntu Phones yet and coding efforts like janimo is doing (1) are only half-cooked by now.(1) https://github.com/janimo/textsecure-qml",
+        "children": []
+      },
+      {
+        "author": "spost",
+        "text": "Signal's great.I don't use it because it doesn't sync chats between devices or have a desktop client.Full-on e2e is great, and I'd use Signal if it supported my use case, but it doesn't.  So I use Telegram instead, as a fast, easy-to-use, grandparent-compatible chat client with sane picture and file-transfer support.  The oddball encryption and the fact that it's not end-to-end by default is a downside, but it's better than plaintext and it's actually useful to me, so\u2026Don't get me wrong, Signal is absolutely the right choice for people who don't need or care about multi-device syncing and only need a mobile client, or people who want the best security they can get.  I fully support the widespread adoption of top-tier cryptography, including by people who don't need to protect their communications from global powers.  But right now Signal is not (yet?) a one-size-fits-all solution.",
+        "children": [
+          {
+            "author": "escobar",
+            "text": "There is an unfinished Browser plugin (Chrome) for Signal that has seen quite a bit of activity recently. I am excited at the prospect of being able to use Signal from a desktop, and am hoping that it gets an actual release date in the next year or so. https://github.com/WhisperSystems/Signal-Desktop",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "oznathan",
+    "text": "\"making the world more open and connected\"",
+    "children": []
+  }
+]

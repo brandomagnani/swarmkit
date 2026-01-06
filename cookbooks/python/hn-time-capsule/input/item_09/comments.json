@@ -1,0 +1,380 @@
+[
+  {
+    "author": "brianzelip",
+    "text": "Cool js app[0]! I often have to look up flexbox properties. After level 4 of this game, align and justify are definitely more clear in my mind now. It also helps to see over and over in each level that these properties are for the flex parent.Edit: later levels (~10) begin to help with the discerning the difference between the flexbox main and cross axes.[0] https://github.com/thomaspark/flexboxfroggy/",
+    "children": []
+  },
+  {
+    "author": "roneesh",
+    "text": "This is an amazing follow up to the greatly missed FlexBoxIn5. Kudos to the creator!",
+    "children": []
+  },
+  {
+    "author": "fvargas",
+    "text": "It's a pretty neat way to visualize what the properties do. Learning how Flexbox works visually, as opposed to referring to a certain popular (and excellent) guide 10 times a day, is a pretty nice technique.",
+    "children": [
+      {
+        "author": "Eric_WVGG",
+        "text": "I\u2019ve had the scotch.io guide in a browser tab for months now.\n  https://scotch.io/tutorials/a-visual-guide-to-css3-flexbox-p...But this game was great! Ten minutes and I think I\u2019m almost ready to ditch the crutch.",
+        "children": []
+      },
+      {
+        "author": "wesbos",
+        "text": "Love to see new ways of learning like this - I'm the Creator of http://Flexbox.io and this will go hand in hand with the videos.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "amelius",
+    "text": "So \"display: flex\" affects how items within an element are positioned, while e.g. \"display: inline-block\" affects how an element itself is positioned. It seems to me that this is in conflict. Am I overlooking something? Or are the creators of CSS still not able to figure these kinds of problem out?",
+    "children": [
+      {
+        "author": "Eric_WVGG",
+        "text": "The creators (contributors, really) of CSS very much did figure this problem out.Their solution was creating a new paradigm. You need to regard it as different from display:block and display:inline in the same way that those are fundamentally different than display:table.CSS is capable of supporting all sorts of display models\u2026 just wait until display:grid rolls around.",
+        "children": [
+          {
+            "author": "lukasb",
+            "text": "Why not use something like display-contents:flex instead?",
+            "children": [
+              {
+                "author": "bennettfeely",
+                "text": "\"display: flex\" creates a block-level element, in other words, is the same as \"display: block\".There is also \"display: inline-flex\" which functions as an element with \"display: inline\".In my opinion this system is better than introducing a brand new css property. It would be redundant to have to put \"display-contents: flex\" along with \"display: block\".",
+                "children": []
+              },
+              {
+                "author": "talmand",
+                "text": "Because that implies you could have the display and display-contents properties have values at the same time that can conflict with each other.The thing is, display: flex does control some aspects of the element it is applied to. Because there is display: inline-flex. It is roughly the equivalent of block and inline-block. It's just an added bonus that display: flex also affects the immediate children, making them flex items to be manipulated. For instance, make a div display: table and imagine its immediate children are automatically display: table-row, or something of that nature.",
+                "children": [
+                  {
+                    "author": "jewbacca",
+                    "text": "Doesn't that redundancy kinda suggest that there are two orthogonal things going on here?ie,    block | inline\n      ---------\n    flex  | inline-flex\n\nWhat could you label the axes here?  Or is this not a valid way to frame the relationship between these things?",
+                    "children": [
+                      {
+                        "author": "talmand",
+                        "text": "I'm not sure I understand what it is your asking.I'm guessing maybe I can say flex = block and inline-flex = inline-block? Except that the flex properties also affect its immediate children.",
+                        "children": []
+                      },
+                      {
+                        "author": "DiThi",
+                        "text": "inline and inline-block are not the same thing. inline-flex behaves like inline-block",
+                        "children": [
+                          {
+                            "author": "jewbacca",
+                            "text": "Brainfart.  You're right, thank you.",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "author": "amelius",
+            "text": "I think the most important thing to consider is \"composability\". I.e., that you can take a DOM-subtree from someplace, and put it somewhere else (perhaps inline) without modification. The current way CSS handles things violates this basic principle.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "LargeCompanies",
+    "text": "So, flex looks to be a better way to create/handle responsive design; rely less on bootstrap and stuff?On a similar note Im curious if there is a responsive typography framework that's out there and people are using? A framework where the text automatically shrinks down without having to change the font-size in various media queries?",
+    "children": [
+      {
+        "author": "Eric_WVGG",
+        "text": "yeah look into vw, vh, vmin, and vmax measurements. They\u2019re fantastic and surprisingly well-supported.https://web-design-weekly.com/2014/11/18/viewport-units-vw-v...",
+        "children": [
+          {
+            "author": "talmand",
+            "text": "Or, another option, using rem for font-sizes that bases the size off the font-size of the html element.",
+            "children": [
+              {
+                "author": "Eric_WVGG",
+                "text": "That solves a different problem. REM is useful for making the value relative to a master value; v-units make the value relative to the viewport.I actually use the two in conjunction. I set some my html {font-size: 1.2vw;} (or whatever), and all type in the document to 1rem (or whatever measurement). Then I finally step out the html size to major browser breakpoints using old-fashioned media queries.",
+                "children": [
+                  {
+                    "author": "LargeCompanies",
+                    "text": "cool, do you have any examples of yours you can share?",
+                    "children": [
+                      {
+                        "author": "Eric_WVGG",
+                        "text": "I can\u2019t share my recent stuff because it\u2019s still under private development, but here\u2019s the results of my first experiments in this method, a little rough around the edges but etc.http://midcenturymay.nycThe \"master\" type size is set to a vh unit, everything else is rem\u2019d off that, and stepped via media query.",
+                        "children": [
+                          {
+                            "author": "hanniabu",
+                            "text": "Masterful, I love it. I can see how you broke this down and it simplifies things a great deal.",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "Carrok",
+    "text": "The possible values for justify-content are only displayed on Levels 1 and 2. By Level 3 you're supposed to have all 5 values memorized even though you've only used 2 of them? I had to keep flipping back to Level 2 just to get a list of the possible values. For a game built for someone who has never used flex before, I think you're assuming too much familiarity with it.",
+    "children": [
+      {
+        "author": "crisnoble",
+        "text": "Just hover over the 'justify-content' displayed in the instructions for level 3+ and you get a nice tooltip showing you the possible values.",
+        "children": [
+          {
+            "author": "pimlottc",
+            "text": "I discovered this myself but it's not immediately obvious.  I also found the final level to be overly difficult without a reference to all the css property names and values.",
+            "children": [
+              {
+                "author": "jrapdx3",
+                "text": "I agree with you about the last level.  I definitely needed the \"cheat sheets\" as the options for properties are difficult to remember (names kind of blend together).  Finally I opened another browser window on the site I could refer to.  Then I was able to glean the right options and solve it without too much difficulty.",
+                "children": []
+              },
+              {
+                "author": "rev087",
+                "text": "I too struggled on the last level, which was certainly jarring because the ramp up until that point was quite gentle.That said, I did enjoy the last level as a challenge; it prompted me not only to review earlier levels, but also check documentation elsewhere. Much like a real-world challenge, these can be valuable learning experiences.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "canthonytucci",
+        "text": "I thought the same thing, but found that if you hover over the property it will give you possible values in a tool-tip.",
+        "children": []
+      },
+      {
+        "author": "tvararu",
+        "text": "I thought that was intentional; the copy for levels 3 and 4 heavily hint at what the values should be. The learner is encouraged to try and guess.This is similar to the way that https://rubymonk.com/ for example shows you how to do `2.even?` but doesn't show you the equivalent method for checking if a number is odd.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "metasean",
+    "text": "Love it!Reminds me of CSS Diner - https://flukeout.github.io/",
+    "children": [
+      {
+        "author": "k5un",
+        "text": "+1",
+        "children": []
+      },
+      {
+        "author": "jakerocheleau",
+        "text": "I'm consistently amazed at the quality of free CSS resources posted online these days.I first started learning webdev in 2005 and just a decade later the number of educational resources blows my mind.",
+        "children": []
+      },
+      {
+        "author": "andreiv",
+        "text": "I was just the other day searching for a flexbox \"game\", inspired by CSS Diner. It seams my \"googleing\" techniques need some improvement.",
+        "children": [
+          {
+            "author": "metasean",
+            "text": "Or there needs to be more cross-linking and meta tagging, so Google can find it.That said, try \"flexbox game learning\" in duckduckgo ;-) - https://duckduckgo.com/?q=flexbox+game+learning&t=ffhpFWIW: DuckDuckGo ROCKS! DuckDuckGo bang syntax ROCKS! Even when DuckDuckGo itself doesn't rock, it let's you easily, and slightly more privately, search other search engines https://duckduckgo.com/bang so It ROCKS even when it doesn't ROCK!",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "Zekio",
+    "text": "Damn, this is a great learning tool for teaching people flexbox",
+    "children": []
+  },
+  {
+    "author": "whoiskevin",
+    "text": "Being picky here but when the first paragraph says \"Guide this frog to the lilypad on the right\" it should probably specify that you are moving all content in the pond.  Just seems that it should start with moving the frog as a selector or reword that to be a bit more clear.",
+    "children": []
+  },
+  {
+    "author": "ZenoArrow",
+    "text": "This is one of the best tutorials I've ever seen. Great idea, great execution.",
+    "children": []
+  },
+  {
+    "author": "estava",
+    "text": "Oh man, best game ever. I really wanted to learn it having putting it off for so long. I can see how I could use it in a framework of mine. Gives me an excuse to use open web technologies again.I was revamping some old code of mine, removing outdated technologies of third parties like YUI... But I noticed that I needed them for layout. But flexbox can provide an alternative for me.Thanks a bunch!",
+    "children": []
+  },
+  {
+    "author": "Technomaniacz",
+    "text": "This is the best way ever to learn!! You sir deserve a cookie...",
+    "children": []
+  },
+  {
+    "author": "PlzSnow",
+    "text": "Just another comment to say the same thing as the others: great idea and really well done. Congratulations!",
+    "children": []
+  },
+  {
+    "author": "such_a_casual",
+    "text": "I think that this is great and I just want to make a suggestion. I see a lot of these \"learn to code/css\" run into the same problem where they don't feel like real games. Give the player a dilemma such as dying if they don't type the right command fast enough. Resetting the level if they fail.edit: lvl 15 makes colorblind kids sad :(edit2: almost, almost http://i.imgur.com/egndPZ8.pngedit3: champion!",
+    "children": [
+      {
+        "author": "oneeyedpigeon",
+        "text": "I think, maybe, you're taking \"game\" too literally. First and foremost, it's a teaching tool, and throwing you back to the start would actually be counterproductive. It's more of a \"fun, imaginary use-case\" but \"game\" sounds better :-)",
+        "children": [
+          {
+            "author": "such_a_casual",
+            "text": "The levels are small enough that it makes no difference. And as far as teaching goes, repetition is the name of the game. Resetting on failures just means typing the same thing multiple times, reinforcing the things you are having difficulty with. A timer also allows for such things as scoring.",
+            "children": [
+              {
+                "author": "oneeyedpigeon",
+                "text": "Hmmm... now you've got me wondering. Thing is, on the later levels, I found myself working one property at a time, understanding the effect of that one property, and building up the complete 'answer'. I'm not sure that handling the 'wrong answer' as a special case works for this type of approach. The repetition should (and is, to an extent) be provided by subsequent questions reusing just-learned knowledge.There's nothing to stop you starting from the beginning at any point, or starting from scratch at any point in future. It makes it less of a 'game' but, like I said, I think you're overplaying the game element.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "superjisan",
+    "text": "excellent game. thoroughly enjoyed it",
+    "children": []
+  },
+  {
+    "author": "andy_ppp",
+    "text": "The final solution was pretty fun.Here is a gist if you can't get it :-)https://gist.github.com/aphillipo/59ab3b54419c97d96687",
+    "children": [
+      {
+        "author": "Keithamus",
+        "text": "FYI the site's source also provides the solution:https://github.com/thomaspark/flexboxfroggy/blob/gh-pages/le...",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "gohrt",
+    "text": "The flex command suite seems rather arbitary chosen and named. Doesn't seem to reflect a decade of experience learning from the pain of CSS.",
+    "children": [
+      {
+        "author": "drcode",
+        "text": "design by committee",
+        "children": [
+          {
+            "author": "foldor",
+            "text": "You know, I'm starting to feel that there is no pleasing everyone. When a company decides to do a design without consulting a committee, people get all upset that they broke the standardization process. But when a feature does go through the process, people will complain about how it was designed and then blame it for being designed by a committee. What's the solution?",
+            "children": [
+              {
+                "author": "drcode",
+                "text": "Well, the problem is that CSS is a monolithic mess at this point, like many other standards... If it was made of a selection of loosely-coupled parts, everyone would be fine with a strong guiding individual streamlining each individual part, and if you don't like part of the design you can just use another solution. Eventually CSS will be replaced by something like this (but it will take many more years, and it will require some rethinking about web code versioning, sandboxing, how low level web browser reflow algos work, etc.)",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "gohrt",
+    "text": "Since the game doesn't show you the effect of \"wrong\" answers, you're left haphazardly guessing answers until one is correct, instead of incrementally learning by exploring.Game designers, take note: design open-world games that let the player explore the controls, instead of simply refusing all unwanted actions.",
+    "children": [
+      {
+        "author": "thomaspark",
+        "text": "The game does (should) show you the wrong answers. And if a level requires multiple properties, you can add one at a time and check them incrementally clicking the \"Submit\" button.",
+        "children": [
+          {
+            "author": "tutts",
+            "text": "It does if you hit the submit button, but not if you just hit Enter.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "cfreeman",
+    "text": "This is great, but I wish it was longer. The first 23 levels are pretty easy and it tells you what properties to use, then it drops you into a really difficult level with no hints. It would be nice if it built up to that with some medium difficulty levels.",
+    "children": [
+      {
+        "author": "Sakes",
+        "text": "His code is pretty damn awesome. Open the site in chrome.  Open web inspector.Paste this into the console:levels.push({\n    name: 'super secret-1',\n    instructions: 'This is a secret level you get no instructions.',\n    board: 'rggggyyyyy',\n    style: {'flex-direction': 'column-reverse', 'flex-wrap': 'wrap-reverse', 'align-content': 'space-between', 'justify-content': 'center'},\n    before: \"#pond {\\n  display: flex;\\n\",\n    after: \"}\",\n  });Proceed to the secret 25th level!  You can create your own levels, and make a pull request to his git repository if you really want to add some interesting practice levels.  Just modify levels.js.",
+        "children": [
+          {
+            "author": "kearneyandy",
+            "text": "I tried out your secret level, surprisingly easy after level 24 :)",
+            "children": [
+              {
+                "author": "Sakes",
+                "text": "haha, yup, you'd have to modify 'style' attribute in the new level definition.  I didn't test but i'm assuming it determines the position of the lily pads.You can reference his levels here when trying to create your own.https://github.com/thomaspark/flexboxfroggy/blob/gh-pages/le...",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "hanniabu",
+    "text": "I've been telling myself to learn flexbox for a while now. Went to check this game out, got hooked, and learned it in about 10 minutes. Tooooo good, thanks webman!",
+    "children": []
+  },
+  {
+    "author": "dismal2",
+    "text": "Avoided using flexbox up to now and overall it seems pretty great for some layout tasks.I do wonder about the point of the `order` property, would anyone ever want to mess with this? It seems like something that should absolutely be in your application code, either client-side javascript or server-side. Using it seems like it would make a project harder to maintain and understand.",
+    "children": [
+      {
+        "author": "gadtfly",
+        "text": "re `order`: for a usage you probably hadn't considered, that I'm sure you would agree is purely presentational and not application logic, check out:https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexibl...tldr:desktop viewport:    _header____\n    nav|article\n\nmobile viewport:    header\n    article\n    nav\n\ncan be done really easily with flexbox and `order`.",
+        "children": [
+          {
+            "author": "dismal2",
+            "text": "Ah, makes sense",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "grumblestumble",
+        "text": "order is huge for accessibility. eg, you want to render a sidebar (aside) menu on the left side of the screen, but screen readers should prioritize the actual screen content. Before flexbox, this involved all kinds of nasty positioning tricks, the order property makes it simple as pie.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "rev087",
+    "text": "This was incredibly educational for me. My only feedback/request would be to reinforce the difference between `align-content` and `align-items`. I still don't quite get when to use which.",
+    "children": [
+      {
+        "author": "Keithamus",
+        "text": "I agree, the site wasn't so clear.My understanding is that it seems `align-items` is to do with the children of the element, while `align-content` is to do with the spacing with regards to the parent container. In some ways, `align-content` will always imply a certain \"bunching\" to the children (they are either stuck to the start, end, center or spaced evenly in some manner - but never changing order, wrap or size), whereas `align-items` changes how lone-items behave in the flow, be it start, end, center or some stretching).These two URLs provide some decent visual demos & distinction:https://css-tricks.com/almanac/properties/a/align-content/\nhttps://css-tricks.com/almanac/properties/a/align-items/",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "pfooti",
+    "text": "Thoroughly enjoyed it. I think I just need to run through it about a dozen more times to keep the difference between align-content, justify-content, and align-items separate in my head. So many words, so close in meaning.",
+    "children": []
+  },
+  {
+    "author": "lai",
+    "text": "Wow, I think I finally get flexbox now.",
+    "children": []
+  },
+  {
+    "author": "pistle",
+    "text": "Anyone else have to use align-content instead of the \"taught\" align-items for 24?",
+    "children": []
+  },
+  {
+    "author": "bipin_nag",
+    "text": "Awesome. Clears lot of properties from flexbox display. Thanks a ton.",
+    "children": []
+  }
+]

@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HN Predictions Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #141414;
+            --accent: #ff6600;
+            --accent-dim: #cc5200;
+            --accent-glow: rgba(255, 102, 0, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --border: #2a2a2a;
+            --success: #22c55e;
+            --error: #ef4444;
+            --grade-a: #22c55e;
+            --grade-b: #84cc16;
+            --grade-c: #eab308;
+            --grade-d: #f97316;
+            --grade-f: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            min-width: 320px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--accent);
+        }
+
+        .sidebar-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            padding: 12px;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 10px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--text-muted);
+        }
+
+        .nav-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text-primary);
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .sidebar-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 8px;
+            border: 1px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border);
+        }
+
+        .sidebar-item.active {
+            background: var(--bg-tertiary);
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .sidebar-score {
+            min-width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 2px 10px var(--accent-glow);
+        }
+
+        .sidebar-title {
+            font-size: 13px;
+            line-height: 1.4;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .sidebar-item.active .sidebar-title {
+            color: var(--text-primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            background: var(--bg-primary);
+        }
+
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .welcome-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            opacity: 0.8;
+        }
+
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        /* Article Panel */
+        .article-panel {
+            max-width: 900px;
+            margin: 0 auto;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .article-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .article-score-badge {
+            min-width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .score-label {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .article-title {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+        }
+
+        .article-section {
+            margin-bottom: 32px;
+        }
+
+        .article-section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+        }
+
+        .section-icon {
+            font-size: 20px;
+        }
+
+        .article-section p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        /* Prediction Cards */
+        .prediction-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .prediction-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .prediction-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .prediction-card.prescient {
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .prediction-card.prescient:hover {
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.15);
+        }
+
+        .prediction-card.wrong {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .prediction-card.wrong:hover {
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            font-size: 24px;
+        }
+
+        .card-label {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .prescient .card-label {
+            color: var(--success);
+        }
+
+        .wrong .card-label {
+            color: var(--error);
+        }
+
+        .card-author {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .card-quote {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            border-left: 3px solid var(--border);
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+
+        .prescient .card-quote {
+            border-left-color: var(--success);
+        }
+
+        .wrong .card-quote {
+            border-left-color: var(--error);
+        }
+
+        .card-reason {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        /* Grades Section */
+        .grades-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .grades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .grade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .grade-user {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        .grade-value {
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .grade-a { background: rgba(34, 197, 94, 0.2); color: var(--grade-a); }
+        .grade-b { background: rgba(132, 204, 22, 0.2); color: var(--grade-b); }
+        .grade-c { background: rgba(234, 179, 8, 0.2); color: var(--grade-c); }
+        .grade-d { background: rgba(249, 115, 22, 0.2); color: var(--grade-d); }
+        .grade-f { background: rgba(239, 68, 68, 0.2); color: var(--grade-f); }
+
+        /* Leaderboard */
+        .leaderboard-container {
+            animation: fadeIn 0.4s ease;
+        }
+
+        .leaderboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .leaderboard-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .leaderboard-subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        .leaderboard-table {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 80px 60px 100px;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s ease;
+        }
+
+        .leaderboard-row:last-child {
+            border-bottom: none;
+        }
+
+        .leaderboard-row:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .leaderboard-rank {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .leaderboard-rank.gold { color: #ffd700; }
+        .leaderboard-rank.silver { color: #c0c0c0; }
+        .leaderboard-rank.bronze { color: #cd7f32; }
+
+        .leaderboard-user {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .leaderboard-gpa {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .leaderboard-letter {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .leaderboard-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        /* Empty State */
+        .empty-leaderboard {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-leaderboard p {
+            font-size: 15px;
+            margin-top: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: 100%;
+                height: auto;
+                max-height: 40vh;
+            }
+
+            .main-content {
+                padding: 24px;
+            }
+
+            .prediction-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .article-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .leaderboard-row {
+                grid-template-columns: 50px 1fr 60px 50px;
+            }
+
+            .leaderboard-count {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">&#128640;</div>
+                    <div class="logo-text">HN <span>Predictions</span></div>
+                </div>
+                <div class="sidebar-subtitle">Analyzing the wisdom of the crowd</div>
+            </div>
+
+            <div class="sidebar-nav">
+                <button class="nav-btn active" onclick="showArticles()">Articles</button>
+                <button class="nav-btn" onclick="showLeaderboard()">Hall of Fame</button>
+            </div>
+
+            <div class="sidebar-content" id="articles-list">
+                
+        <div class="sidebar-item" data-article="0" onclick="showArticle(0)">
+            <div class="sidebar-score">72</div>
+            <div class="sidebar-title">Hacker News Predictions: Sketch Leaving the Mac App Store (N...</div>
+        </div>
+        <div class="sidebar-item" data-article="1" onclick="showArticle(1)">
+            <div class="sidebar-score">72</div>
+            <div class="sidebar-title">Retrospective Analysis: Justin Kan's 'Three Stories' (2015) ...</div>
+        </div>
+        <div class="sidebar-item" data-article="2" onclick="showArticle(2)">
+            <div class="sidebar-score">9</div>
+            <div class="sidebar-title">Thunderbird's 10-Year Vindication: HN Commenters' Prediction...</div>
+        </div>
+        <div class="sidebar-item" data-article="3" onclick="showArticle(3)">
+            <div class="sidebar-score">8</div>
+            <div class="sidebar-title">Google Chromebook Student Privacy Complaint (2015): A Retros...</div>
+        </div>
+        <div class="sidebar-item" data-article="4" onclick="showArticle(4)">
+            <div class="sidebar-score">8</div>
+            <div class="sidebar-title">"This Is Not a Day Care. It's a University" - 2015 HN Discus...</div>
+        </div>
+        <div class="sidebar-item" data-article="5" onclick="showArticle(5)">
+            <div class="sidebar-score">8</div>
+            <div class="sidebar-title">Anti-Disassembly Techniques in Malware: A 10-Year Retrospect...</div>
+        </div>
+        <div class="sidebar-item" data-article="6" onclick="showArticle(6)">
+            <div class="sidebar-score">8</div>
+            <div class="sidebar-title">Flexbox Froggy 10-Year Retrospective Analysis</div>
+        </div>
+        <div class="sidebar-item" data-article="7" onclick="showArticle(7)">
+            <div class="sidebar-score">7</div>
+            <div class="sidebar-title">Facebook's Philanthropic Promise: A 10-Year Reality Check</div>
+        </div>
+        <div class="sidebar-item" data-article="8" onclick="showArticle(8)">
+            <div class="sidebar-score">7</div>
+            <div class="sidebar-title">Netflix's Linux Performance Analysis in 60 Seconds (2015): A...</div>
+        </div>
+        <div class="sidebar-item" data-article="9" onclick="showArticle(9)">
+            <div class="sidebar-score">7</div>
+            <div class="sidebar-title">WhatsApp Blocks Telegram Links - 10 Year Retrospective (2015...</div>
+        </div>
+            </div>
+        </aside>
+
+        <main class="main-content" id="main-content">
+            <div class="welcome-screen" id="welcome">
+                <div class="welcome-icon">&#128200;</div>
+                <h1 class="welcome-title">HN Predictions Dashboard</h1>
+                <p class="welcome-subtitle">Explore retrospective analyses of Hacker News discussions. Select an article to see who was prescient and who got it wrong.</p>
+            </div>
+
+            
+        <div class="article-panel" id="article-0" style="display: none;">
+            <div class="article-header">
+                <div class="article-score-badge">72<span class="score-label">/10</span></div>
+                <h1 class="article-title">Hacker News Predictions: Sketch Leaving the Mac App Store (November 2015)</h1>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128196;</span> Summary</h2>
+                <p>Analysis of 15 key predictions and claims from Hacker News commenters when Sketch announced they were leaving the Mac App Store in November 2015. Commenters predicted an exodus of major apps, Apple's shift away from desktop computing toward iOS, the death of the indie Mac development scene, potential restrictions on macOS similar to iOS, and debates about whether developers could succeed outside the App Store. The discussion revealed deep pessimism about Apple's commitment to professional users and the Mac platform.</p>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128197;</span> What Happened</h2>
+                <p>On November 25, 2015, Sketch announced they were leaving the Mac App Store, citing three major issues: (1) App Review taking at least a week, (2) technical limitations from sandboxing that prevented features they wanted to implement, and (3) lack of upgrade pricing. This announcement sparked an extensive discussion on Hacker News with 400+ comments, where developers, users, and industry observers made predictions about the future of the Mac App Store, Apple's desktop platform strategy, and the broader implications for software distribution on macOS.</p>
+            </div>
+
+            <div class="prediction-cards">
+                <div class="prediction-card prescient">
+                    <div class="card-header">
+                        <span class="card-icon">&#127942;</span>
+                        <span class="card-label">Most Prescient</span>
+                    </div>
+                    <div class="card-author">@milen</div>
+                    <blockquote class="card-quote">The Mac App Store exodus has already begun - more flagship apps will abandon the MAS</blockquote>
+                    <p class="card-reason">This prediction would prove highly accurate if many prominent apps did leave the MAS in subsequent years. The structural issues identified (no upgrade pricing, slow reviews, sandboxing) remained long-term problems that Apple was slow to address.</p>
+                </div>
+
+                <div class="prediction-card wrong">
+                    <div class="card-header">
+                        <span class="card-icon">&#10060;</span>
+                        <span class="card-label">Most Wrong</span>
+                    </div>
+                    <div class="card-author">@eveningcoffee</div>
+                    <blockquote class="card-quote">Apple might restrict running compilers on macOS like they do on iOS</blockquote>
+                    <p class="card-reason">This would prove incorrect as Apple moved in the opposite direction. As noted by another commenter (oddevan), Apple removed the requirement for expensive code signing certificates in iOS 9 to run your own code. Rather than locking down macOS more, Apple has generally maintained or expanded developer freedoms on the Mac platform.</p>
+                </div>
+            </div>
+
+            <div class="article-section grades-section">
+                <h2><span class="section-icon">&#127891;</span> All Grades</h2>
+                <div class="grades-grid">
+                    <div class="grade-item"><span class="grade-user">milen_mas_exodus</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">jasber_direct_sales</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">pkamb_sandboxing_issue</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">veryvito_pump_and_dump</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">profmonocle_voting_feet</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">kybernetyk_ecosystem_dead</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">alex3917_neglect</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">djloche_consumer_focus</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">chuckmcm_critical_feature</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">xenadu02_easily_solved</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">timcook_ipad_future</span><span class="grade-value grade-b">B-</span></div><div class="grade-item"><span class="grade-user">cmdkeen_competitor</span><span class="grade-value grade-c">C</span></div><div class="grade-item"><span class="grade-user">mpweiher_working_intended</span><span class="grade-value grade-c">C+</span></div><div class="grade-item"><span class="grade-user">api_kill_osx</span><span class="grade-value grade-c">C+</span></div><div class="grade-item"><span class="grade-user">eveningcoffee_restrict_compilers</span><span class="grade-value grade-f">F</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="article-panel" id="article-1" style="display: none;">
+            <div class="article-header">
+                <div class="article-score-badge">72<span class="score-label">/10</span></div>
+                <h1 class="article-title">Retrospective Analysis: Justin Kan's 'Three Stories' (2015) - A Look Back from 2026</h1>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128196;</span> Summary</h2>
+                <p>This retrospective analyzes a November 2015 Hacker News discussion about Justin Kan's blog post 'Three Stories,' examining predictions and observations made during Justin.tv/Twitch's early success against the reality of what happened in the following decade. At the time, Amazon had recently acquired Twitch for $970M (September 2014), and the platform was experiencing exponential growth. The discussion focused on leadership philosophy, startup pivots, ethical business decisions around pornography, and operational war stories. With the benefit of hindsight from 2026, we can evaluate how prescient or misguided the community's perspectives were.</p>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128197;</span> What Happened</h2>
+                <p>After the 2015 discussion:
+
+**Justin Kan's Journey (2015-2026):**
+- Left Twitch after the Amazon acquisition to pursue new ventures
+- Founded Atrium (2017), a tech-enabled law firm that raised $75M from top-tier VCs including a16z, but shut down in March 2020 after failing to deliver better efficiency than traditional law firms
+- Launched NFT marketplace Fractal in December 2021 (raised $35M), later renamed to Stash in 2024
+- Started YouTube channel in 2021, exploring NFTs and creator economy
+- Co-founded Thin Ice Entertainment (2024), a music artist management platform
+- Became a prolific angel investor (122 investments) and General Partner at Goat Capital
+- Remained active in gaming, blockchain, and AI ventures through 2026
+
+**Twitch's Trajectory (2015-2026):**
+
+*Growth Phase (2015-2020):*
+- Explosive growth from 100M monthly viewers (2015) to becoming a cultural phenomenon
+- Peaked at 9.89M streamers in January 2021 during pandemic
+- Revenue grew from under $500M (2016-2017) to peak of $2.8B (2022)
+- Over 1 trillion minutes watched in 2020 (69% increase from 2019)
+
+*Decline Phase (2021-2026):*
+- Streamers declined from 9.89M peak (2021) to 7.23M (April 2024)
+- Revenue fell from $2.8B peak (2022) to $1.8B (2024) - 8.1% decline year-over-year
+- Viewership hours declined 2.8% in 2024 to 20.8B hours
+- Policy changes hurt creators: 50-50 revenue split implemented (October 2022), down from more favorable terms
+- Massive layoffs: 400 employees (March 2023), 500 more (January 2024 - 35% of staff), and another round in October 2025 as Amazon cut 14,000+ corporate jobs
+- Remained unprofitable despite $2B annual revenue
+- Faced intense competition from YouTube Gaming and Kick (offering better creator payouts)
+- As of January 2025, remained 30th most-visited website globally but growth had plateaued
+- Core challenge: never achieved profitability in its entire existence despite dominant market position</p>
+            </div>
+
+            <div class="prediction-cards">
+                <div class="prediction-card prescient">
+                    <div class="card-header">
+                        <span class="card-icon">&#127942;</span>
+                        <span class="card-label">Most Prescient</span>
+                    </div>
+                    <div class="card-author">@timr</div>
+                    <blockquote class="card-quote"></blockquote>
+                    <p class="card-reason">This comment demonstrated remarkable foresight about what actually mattered for Justin.tv/Twitch's success. The commenter (who appears to be an insider based on use of 'we') correctly identified that the dramatic stories being discussed - losing the Jonas Brothers, the porn affiliate decision, the pizza delivery incident - were ultimately sideshows. The truly important development was 'the gaming category off languishing in its own little corner of the site' - which became Twitch and led to a $970M acquisition. This perfectly captures a pattern that would repeat in Justin Kan's career: the high-profile, dramatic moments often distract from the quieter, more fundamental pivots that determine success. Even Atrium's 2020 failure, despite massive fundraising and media attention, proved less significant than Kan's quieter pivot to Web3/NFTs and angel investing. The comment warns against the 'founder mythology' trap of believing heroic moments determine outcomes, when in reality it's often the unsexy, overlooked corner of the business that matters most.</p>
+                </div>
+
+                <div class="prediction-card wrong">
+                    <div class="card-header">
+                        <span class="card-icon">&#10060;</span>
+                        <span class="card-label">Most Wrong</span>
+                    </div>
+                    <div class="card-author">@AznHisoka</div>
+                    <blockquote class="card-quote"></blockquote>
+                    <p class="card-reason">This comment fundamentally misunderstood the strategic and business implications of revenue sources for a venture-backed startup seeking mainstream adoption and eventual acquisition. The commenter suggested that high revenue from pornography (40%) should override ethical or strategic concerns, and expressed frustration that Justin.tv was 'bullied' by TechCrunch into abandoning porn affiliate revenue. With hindsight, this perspective was completely wrong for multiple reasons: (1) Twitch's success came from creating a family-friendly, advertiser-safe platform that could attract major brand partnerships and corporate investment - Amazon paid $970M precisely because Twitch was mainstream and scalable; (2) Multiple respondents correctly noted that corporate America won't partner with porn-adjacent businesses - this would have been fatal for an Amazon acquisition; (3) The pornography revenue was a short-term distraction from finding a sustainable, scalable business model; (4) The comment thread revealed the commenter doubled down, saying they 'lost respect' for the founders for capitulating to TechCrunch pressure, completely missing that this was a savvy strategic decision that helped enable the eventual $970M exit. The porn revenue debate exemplifies a common startup trap: optimizing for near-term metrics (40% revenue!) while destroying long-term strategic optionality. The founders made the right call.</p>
+                </div>
+            </div>
+
+            <div class="article-section grades-section">
+                <h2><span class="section-icon">&#127891;</span> All Grades</h2>
+                <div class="grades-grid">
+                    <div class="grade-item"><span class="grade-user">tptacek</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">hamburglar</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">timr</span><span class="grade-value grade-a">A+</span></div><div class="grade-item"><span class="grade-user">sanderjd</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">arram</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">sagargv</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">cassieramen</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">stevesearer</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">jacquesm</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">krschultz</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">dcx</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">noahlt</span><span class="grade-value grade-c">C</span></div><div class="grade-item"><span class="grade-user">pkfrank</span><span class="grade-value grade-c">C</span></div><div class="grade-item"><span class="grade-user">navitronic</span><span class="grade-value grade-c">C+</span></div><div class="grade-item"><span class="grade-user">AznHisoka</span><span class="grade-value grade-f">F</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="article-panel" id="article-2" style="display: none;">
+            <div class="article-header">
+                <div class="article-score-badge">9<span class="score-label">/10</span></div>
+                <h1 class="article-title">Thunderbird's 10-Year Vindication: HN Commenters' Predictions Evaluated Against Reality</h1>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128196;</span> Summary</h2>
+                <p>In November 2015, Mozilla announced plans to spin off Thunderbird to focus on Firefox. The HN discussion revealed stark disagreement: optimists predicted community-driven success, pessimists predicted slow death. A decade later, Thunderbird not only survived but thrived, with 300,000+ daily users, $6.4M annual donations (2022), native Exchange support, and expansion to mobile platforms under MZLA Technologies. The most prescient commenter (bad_user) correctly predicted community-driven survival; the most wrong (crististm) claimed no developers would maintain an abandoned corporate project.</p>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128197;</span> What Happened</h2>
+                <p>Mozilla's November 2015 announcement to decouple Thunderbird from Firefox proved a watershed moment. Rather than being abandoned, Thunderbird followed this path: (1) 2015 announcement created uncertainty; HN debated whether it would survive; (2) Thunderbird Council began collecting donations in 2015-2016 to demonstrate user support; (3) Mozilla Foundation recommitted in May 2017; (4) MZLA Technologies Corporation created as Mozilla Foundation subsidiary in January 2020 to operate Thunderbird independently; (5) 2021-2026 saw accelerated development—v78 added encryption, v91 added UI refresh, v102 added Matrix chat, 2025 added native Exchange support and commercial services. The community that skeptics said would abandon it instead grew it sustainably. 754 verified companies adopted Thunderbird by 2025. Monthly release cadence began in 2025. iOS app reached TestFlight stage. The separation proved beneficial—Firefox wasn't encumbered by Thunderbird maintenance, and Thunderbird thrived with dedicated focus.</p>
+            </div>
+
+            <div class="prediction-cards">
+                <div class="prediction-card prescient">
+                    <div class="card-header">
+                        <span class="card-icon">&#127942;</span>
+                        <span class="card-label">Most Prescient</span>
+                    </div>
+                    <div class="card-author">@bad_user</div>
+                    <blockquote class="card-quote">Thunderbird is still being actively developed by the community. I'm on version 42 beta and it's looking good. This is what open source is about. It doesn't matter if the parent no longer wants to maintain it. As long as there is interest, the product survives.</blockquote>
+                    <p class="card-reason">PERFECT PREDICTION</p>
+                </div>
+
+                <div class="prediction-card wrong">
+                    <div class="card-header">
+                        <span class="card-icon">&#10060;</span>
+                        <span class="card-label">Most Wrong</span>
+                    </div>
+                    <div class="card-author">@crististm</div>
+                    <blockquote class="card-quote">I'm implying that 'open source-ness' is not necessarily _the_ ingredient that will save a massive abandoned project. You need also 'drive' - and good hackers are put of by massive corporate projects. They have better things to do than clean up corporate mess. I argue that there is no such a community that will save TB after Mozilla drops it.</blockquote>
+                    <p class="card-reason">COMPLETELY WRONG</p>
+                </div>
+            </div>
+
+            <div class="article-section grades-section">
+                <h2><span class="section-icon">&#127891;</span> All Grades</h2>
+                <div class="grades-grid">
+                    <div class="grade-item"><span class="grade-user">jvehent</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">bad_user</span><span class="grade-value grade-a">A+</span></div><div class="grade-item"><span class="grade-user">coderdude</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">jacquesm</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">parennoob</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">ath0</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">bzbarsky</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">ZenoArrow</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">toisanji</span><span class="grade-value grade-b">B-</span></div><div class="grade-item"><span class="grade-user">bshimmin</span><span class="grade-value grade-c">C</span></div><div class="grade-item"><span class="grade-user">puppetmaster3</span><span class="grade-value grade-c">C+</span></div><div class="grade-item"><span class="grade-user">floor_</span><span class="grade-value grade-c">C-</span></div><div class="grade-item"><span class="grade-user">betteringred</span><span class="grade-value grade-d">D-</span></div><div class="grade-item"><span class="grade-user">crististm</span><span class="grade-value grade-f">F</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="article-panel" id="article-3" style="display: none;">
+            <div class="article-header">
+                <div class="article-score-badge">8<span class="score-label">/10</span></div>
+                <h1 class="article-title">Google Chromebook Student Privacy Complaint (2015): A Retrospective Analysis</h1>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128196;</span> Summary</h2>
+                <p>In December 2015, the EFF filed an FTC complaint alleging Google deceptively tracked students' internet browsing via Chromebooks, claiming the company collected and data-mined students' searches, browsing history, and other personal information in violation of the Student Privacy Pledge. Ten years later, Google faced a biometric data lawsuit (2025) and subsequent settlement, suggesting the core concerns were both legitimate and prescient.</p>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128197;</span> What Happened</h2>
+                <p>The 2015 complaint focused on Chrome Sync being enabled by default on school Chromebooks, allowing Google to track browsing data. Google promised to disable data sharing between Sync and other services, but this was a minor concession. Over the following decade: (1) The 2015 complaint did not result in a major FTC settlement at the time, indicating regulatory action was slow; (2) Google maintained it didn't use student data for advertising, but the complaint alleged data was being 'mined for non-advertising purposes'; (3) By 2025, Google faced a new lawsuit alleging collection of biometric data (voiceprints, facial templates) from students through G Suite without parental consent; (4) Google settled the 2025 biometric lawsuit for $8.75 million, finally acknowledging violations; (5) The broader issue remained unresolved: Google collected more student data than strictly necessary, and schools had limited ability to prevent it due to network effects and locked-in deployments. The EFF's core complaint proved prescient—Google was indeed collecting data beyond legitimate educational purposes, and this behavior continued largely unabated for a decade until biometric collection became the focal point.</p>
+            </div>
+
+            <div class="prediction-cards">
+                <div class="prediction-card prescient">
+                    <div class="card-header">
+                        <span class="card-icon">&#127942;</span>
+                        <span class="card-label">Most Prescient</span>
+                    </div>
+                    <div class="card-author">@chestnut-tree</div>
+                    <blockquote class="card-quote">ChromeOS tracking is fundamentally different from OS choice—users cannot remain anonymous, all activity is logged to a named Google account, and the company should be asked 'who sees this data at Google? How long is it kept? Does Google disassociate identity from activity?' These are important questions not answered in privacy policies.</blockquote>
+                    <p class="card-reason">This comment captured the essential privacy problem: the fundamental incompatibility of a named account system with student privacy. Ten years later, the 2025 biometric lawsuit revealed exactly this—Google was collecting and storing sensitive biometric data tied to named student accounts. The comment's observation about lack of transparency in privacy policies (or at least, unanswerable questions) was validated by the litigation that showed Google was collecting data they didn't explicitly disclose or obtain consent for.</p>
+                </div>
+
+                <div class="prediction-card wrong">
+                    <div class="card-header">
+                        <span class="card-icon">&#10060;</span>
+                        <span class="card-label">Most Wrong</span>
+                    </div>
+                    <div class="card-author">@kllrnohj</div>
+                    <blockquote class="card-quote">The EFF complaint lacks substantiated evidence of actual data mining for harmful purposes. Google explicitly states it doesn't use student data for advertising. The data must be stored somewhere for legitimate sync purposes, and there's no evidence of malicious use.</blockquote>
+                    <p class="card-reason">This comment exemplified the 'trust Google's word' approach that proved dangerously naive. The commenter demanded evidence of harm while dismissing EFF's technical findings as unsubstantiated. However, within 10 years, a lawsuit revealed Google WAS collecting biometric data beyond educational scope—proving the skepticism was misplaced. The comment's assertion that 'there's no evidence of data mining' ignored the EFF's detailed technical complaint showing Chrome Sync was capturing all browsing data. The belief that legitimate purposes justified unlimited data collection was precisely what led to the 2025 biometric violations.</p>
+                </div>
+            </div>
+
+            <div class="article-section grades-section">
+                <h2><span class="section-icon">&#127891;</span> All Grades</h2>
+                <div class="grades-grid">
+                    <div class="grade-item"><span class="grade-user">pdkl95</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">chestnut-tree</span><span class="grade-value grade-a">A+</span></div><div class="grade-item"><span class="grade-user">maratd</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">natch</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">ksk</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">jlarocco</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">free2rhyme214</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">ryanhuff</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">gmisra</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">CaptSpify</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">arebop</span><span class="grade-value grade-b">B-</span></div><div class="grade-item"><span class="grade-user">MattHeard</span><span class="grade-value grade-b">B-</span></div><div class="grade-item"><span class="grade-user">thomaskcr</span><span class="grade-value grade-d">D</span></div><div class="grade-item"><span class="grade-user">asuffield</span><span class="grade-value grade-d">D+</span></div><div class="grade-item"><span class="grade-user">kllrnohj</span><span class="grade-value grade-d">D-</span></div><div class="grade-item"><span class="grade-user">bduerst</span><span class="grade-value grade-f">F</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="article-panel" id="article-4" style="display: none;">
+            <div class="article-header">
+                <div class="article-score-badge">8<span class="score-label">/10</span></div>
+                <h1 class="article-title">"This Is Not a Day Care. It's a University" - 2015 HN Discussion Retrospective</h1>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128196;</span> Summary</h2>
+                <p>A November 2015 blog post from Oklahoma Wesleyan University arguing against perceived 'coddling' of college students and safe spaces became a focal point for a 672-comment HN debate about student activism, diversity, inclusion, and free speech on campuses. The article emerged amid the Yale Halloween costume controversy and student protests over racial sensitivity. The discussion reflected deep disagreement between those who saw student activism as necessary moral progress versus those who viewed it as excessive sensitivity and threat to academic freedom.</p>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128197;</span> What Happened</h2>
+                <p>Ten years later (2026), the issues discussed in 2015 have largely affirmed the concerns of student activists rather than their critics. Yale implemented many of the 2015 protesters' demands: increased funding for cultural centers, expanded mental health resources for students of color, and ongoing efforts to increase diverse faculty hiring. The 'safe spaces' debate evolved into broader acknowledgment that universities need both academic freedom AND supportive environments for marginalized students. Rather than the discourse dying down, it intensified—becoming a central political issue nationwide with government intervention (Trump administration attacks on DEI initiatives) by 2025. Student mental health remains a significant concern, with contemporary research showing strong links between political climate and psychological wellbeing. The criticism that safe space advocates were merely 'oversensitive' proved inaccurate; their concerns mapped onto real systemic issues of discrimination and harassment that colleges continue addressing in 2026.</p>
+            </div>
+
+            <div class="prediction-cards">
+                <div class="prediction-card prescient">
+                    <div class="card-header">
+                        <span class="card-icon">&#127942;</span>
+                        <span class="card-label">Most Prescient</span>
+                    </div>
+                    <div class="card-author">@Unknown</div>
+                    <blockquote class="card-quote">My problem with this line of argument is that people who aren't well-off straight white guys like myself are already scared of expressing opinions. They have been for centuries. The only thing that has changed is that now they're saying it out loud.</blockquote>
+                    <p class="card-reason">This captured a fundamental reality: the student activism wasn't new sensitivity, but rather newly-empowered groups speaking about longstanding problems. The argument that marginalized groups' concerns were merely recent 'coddling' misunderstood that these students had always faced these issues—they were simply now organizing collectively. Ten years of continued activism around these issues proves this perspective correct.</p>
+                </div>
+
+                <div class="prediction-card wrong">
+                    <div class="card-header">
+                        <span class="card-icon">&#10060;</span>
+                        <span class="card-label">Most Wrong</span>
+                    </div>
+                    <div class="card-author">@Unknown</div>
+                    <blockquote class="card-quote">Imagine what it is like to be white/asian in a country where a disproportionate number of crimes are committed by black men... My father feels unsafe (on my behalf) when he watches various Islamic terror attacks on the news. So why aren't the irrational fears held by various student groups treated the same way?</blockquote>
+                    <p class="card-reason">This argument fundamentally misunderstood the distinction between structural discrimination and media-driven perception. It conflated personal safety concerns rooted in centuries of documented discrimination with statistically inflated fears. Ten years of research confirms that marginalized students' mental health concerns correlate with real discrimination experiences and have measurable impacts, while the proposed equivalence to fear of crime statistics was never empirically valid. The argument's logical structure (statistical correlation = causation, and therefore all such fears are equally valid) was fundamentally flawed.</p>
+                </div>
+            </div>
+
+            <div class="article-section grades-section">
+                <h2><span class="section-icon">&#127891;</span> All Grades</h2>
+                <div class="grades-grid">
+                    <div class="grade-item"><span class="grade-user">wpietri</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">coldpie</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">ebola1717</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">maaku</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">SolaceQuantum</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">fixermark</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">rayiner</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">warfangle</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">philh</span><span class="grade-value grade-b">B-</span></div><div class="grade-item"><span class="grade-user">noonespecial</span><span class="grade-value grade-c">C</span></div><div class="grade-item"><span class="grade-user">lagadu</span><span class="grade-value grade-d">D</span></div><div class="grade-item"><span class="grade-user">yummyfajitas</span><span class="grade-value grade-d">D</span></div><div class="grade-item"><span class="grade-user">stupidcar</span><span class="grade-value grade-d">D</span></div><div class="grade-item"><span class="grade-user">VLM</span><span class="grade-value grade-d">D+</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="article-panel" id="article-5" style="display: none;">
+            <div class="article-header">
+                <div class="article-score-badge">8<span class="score-label">/10</span></div>
+                <h1 class="article-title">Anti-Disassembly Techniques in Malware: A 10-Year Retrospective (Nov 2015)</h1>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128196;</span> Summary</h2>
+                <p>This HN thread from November 2015 discussed anti-disassembly techniques used by malware to prevent reverse engineering analysis. The article focused on obfuscation methods like overlapping instructions, junk code, and variable-length instruction set exploitation. Commenters discussed the historical evolution of these techniques, their use in game copy protection (Elite), the Skype case study, and the limitations of disassemblers like IDA Pro. The conversation revealed the ongoing arms race between malware authors and security analysts.</p>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128197;</span> What Happened</h2>
+                <p>Over the 10 years since this article (2015-2025), anti-disassembly techniques evolved significantly. The major developments were: (1) Ghidra, the NSA's open-source reverse engineering tool, was released in March 2019, providing a free alternative to expensive IDA Pro with comparable decompilation capabilities; (2) IDA Pro improved but remained expensive and had known limitations with stripped binaries; (3) Malware authors escalated sophistication, with modern packers using 100+ layers of encryption (versus ~50 in 2015); (4) AI/ML-assisted decompilation tools emerged; (5) StarForce DRM largely faded from gaming due to industry shift to digital distribution (Steam); (6) Skype obfuscation became less relevant after Microsoft's acquisition and transition to Skype for Business; (7) Code obfuscation became increasingly commoditized through tools like PELock, which was founded in 2015 and continued active development.</p>
+            </div>
+
+            <div class="prediction-cards">
+                <div class="prediction-card prescient">
+                    <div class="card-header">
+                        <span class="card-icon">&#127942;</span>
+                        <span class="card-label">Most Prescient</span>
+                    </div>
+                    <div class="card-author">@userbinator</div>
+                    <blockquote class="card-quote">Commented about automated ways to unwrap multi-layered packers, citing research showing 100+ layers is 'not uncommon' and the need to automate the process. Also noted the arms race is 'always interesting.'</blockquote>
+                    <p class="card-reason">This proved highly prescient. By 2025, automated decompilation tools (Ghidra, Hex-Rays decompiler, AI-assisted tools) became standard practice. The user correctly identified that manual analysis wouldn't scale with increasing packer complexity, and that automation was the inevitable solution. The arms race observation remains apt—modern malware still uses sophisticated packing, but automation counters it.</p>
+                </div>
+
+                <div class="prediction-card wrong">
+                    <div class="card-header">
+                        <span class="card-icon">&#10060;</span>
+                        <span class="card-label">Most Wrong</span>
+                    </div>
+                    <div class="card-author">@StripeNoGood</div>
+                    <blockquote class="card-quote">Implied that PELock's obfuscator was a cutting-edge threat with 'even more anti-re damage' than existing techniques, suggesting it had been 'on the market for about 5 years' (from 2010) and was particularly dangerous.</blockquote>
+                    <p class="card-reason">This overstated PELock's significance and maturity. Research shows PELock was actually founded around 2015 (not 2010), making it brand new at the time. More importantly, PELock never became a mainstream malware tool and remained a relatively niche commercial product. The comment treated it as a major threat comparable to established DRM like StarForce, but it never achieved comparable adoption or notoriety in malware analysis circles. The 'even more' damage claim was not vindicated.</p>
+                </div>
+            </div>
+
+            <div class="article-section grades-section">
+                <h2><span class="section-icon">&#127891;</span> All Grades</h2>
+                <div class="grades-grid">
+                    <div class="grade-item"><span class="grade-user">AimHere</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">ant6n</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">anonion</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">kazinator</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">iheartmemcache</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">jacquesm</span><span class="grade-value grade-a">A+</span></div><div class="grade-item"><span class="grade-user">userbinator</span><span class="grade-value grade-a">A+</span></div><div class="grade-item"><span class="grade-user">rasz_pl</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">seccess</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">legulere</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">keyle</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">AlphaSite</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">christoph</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">nes350</span><span class="grade-value grade-b">B-</span></div><div class="grade-item"><span class="grade-user">ksk</span><span class="grade-value grade-c">C</span></div><div class="grade-item"><span class="grade-user">StripeNoGood</span><span class="grade-value grade-d">D</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="article-panel" id="article-6" style="display: none;">
+            <div class="article-header">
+                <div class="article-score-badge">8<span class="score-label">/10</span></div>
+                <h1 class="article-title">Flexbox Froggy 10-Year Retrospective Analysis</h1>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128196;</span> Summary</h2>
+                <p>This December 2015 Hacker News discussion showcased the launch of Flexbox Froggy, an interactive game for learning CSS Flexbox. The discussion was largely positive (315 points, 69 comments) with most commenters praising the innovative educational approach. The thread touched on broader topics including CSS design philosophy, responsive design alternatives, and predictions about future CSS features like Grid. After 10 years, Flexbox has achieved near-universal browser adoption (99.68% by 2022) and remains a cornerstone of modern web layout, while Flexbox Froggy itself became a widely-used educational resource translated into 25+ languages with continued maintenance by creator Thomas Park.</p>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128197;</span> What Happened</h2>
+                <p>Flexbox Froggy became one of the most successful CSS learning tools in web development. The game, created by Thomas Park (who is now a Ph.D. researcher in human-computer interaction at Drexel University), has been forked, localized to 25 languages (including Esperanto), and remains actively used for teaching CSS Flexbox basics. Thomas Park continued creating educational games - most recently releasing Anchoreum in 2024 for learning CSS Anchor Positioning. CSS Flexbox itself achieved near-universal browser support by 2022 and co-exists productively with CSS Grid (which did arrive around 2017 as predicted). The 'gentle learning without punishment' approach that commenters debated became the standard for educational games. Bootstrap and similar frameworks that commenters mentioned have been largely superseded by utility-first frameworks like Tailwind CSS and modern component-based approaches, though Flexbox remains fundamental to all of them.</p>
+            </div>
+
+            <div class="prediction-cards">
+                <div class="prediction-card prescient">
+                    <div class="card-header">
+                        <span class="card-icon">&#127942;</span>
+                        <span class="card-label">Most Prescient</span>
+                    </div>
+                    <div class="card-author">@Eric_WVGG</div>
+                    <blockquote class="card-quote">CSS is capable of supporting all sorts of display models… just wait until display:grid rolls around.</blockquote>
+                    <p class="card-reason">This comment predicted CSS Grid's arrival and emphasized that new layout paradigms would arrive alongside Flexbox. CSS Grid became widely supported by 2017-2018 and is now considered equally fundamental to Flexbox. Eric correctly understood that CSS layout would evolve with multiple complementary tools rather than replacing Flexbox.</p>
+                </div>
+
+                <div class="prediction-card wrong">
+                    <div class="card-header">
+                        <span class="card-icon">&#10060;</span>
+                        <span class="card-label">Most Wrong</span>
+                    </div>
+                    <div class="card-author">@gohrt</div>
+                    <blockquote class="card-quote">The flex command suite seems rather arbitrary chosen and named. Doesn't seem to reflect a decade of experience learning from the pain of CSS... [followed by prediction that CSS would eventually be replaced]</blockquote>
+                    <p class="card-reason">This comment doubted Flexbox's naming/design and suggested CSS as a whole would be replaced. Instead, Flexbox's property names (justify-content, align-items, flex-direction) became standard terminology that developers must know. Flexbox didn't get replaced - it became more entrenched. The 'arbitrary naming' criticism was unfounded; the properties are well-motivated once understood.</p>
+                </div>
+            </div>
+
+            <div class="article-section grades-section">
+                <h2><span class="section-icon">&#127891;</span> All Grades</h2>
+                <div class="grades-grid">
+                    <div class="grade-item"><span class="grade-user">brianzelip</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">fvargas</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">bennettfeely</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">wesbos</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">tvararu</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">metasean</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">ZenoArrow</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">estava</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">Eric_WVGG</span><span class="grade-value grade-a">A+</span></div><div class="grade-item"><span class="grade-user">jakerocheleau</span><span class="grade-value grade-a">A+</span></div><div class="grade-item"><span class="grade-user">gadtfly</span><span class="grade-value grade-a">A+</span></div><div class="grade-item"><span class="grade-user">grumblestumble</span><span class="grade-value grade-a">A+</span></div><div class="grade-item"><span class="grade-user">roneesh</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">talmand</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">Carrok</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">crisnoble</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">rev087</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">Sakes</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">hanniabu</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">Keithamus</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">amelius</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">andreiv</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">cfreeman</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">lai</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">pistle</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">bipin_nag</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">jewbacca</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">DiThi</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">pimlottc</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">jrapdx3</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">Technomaniacz</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">PlzSnow</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">oneeyedpigeon</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">pfooti</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">LargeCompanies</span><span class="grade-value grade-b">B-</span></div><div class="grade-item"><span class="grade-user">such_a_casual</span><span class="grade-value grade-c">C</span></div><div class="grade-item"><span class="grade-user">foldor</span><span class="grade-value grade-c">C+</span></div><div class="grade-item"><span class="grade-user">drcode</span><span class="grade-value grade-c">C-</span></div><div class="grade-item"><span class="grade-user">dismal2</span><span class="grade-value grade-c">C-</span></div><div class="grade-item"><span class="grade-user">gohrt</span><span class="grade-value grade-d">D</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="article-panel" id="article-7" style="display: none;">
+            <div class="article-header">
+                <div class="article-score-badge">7<span class="score-label">/10</span></div>
+                <h1 class="article-title">Facebook's Philanthropic Promise: A 10-Year Reality Check</h1>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128196;</span> Summary</h2>
+                <p>In December 2015, Mark Zuckerberg and Priscilla Chan announced they would donate 99% (~$45 billion) of their Facebook shares during their lifetimes through the newly-created Chan-Zuckerberg Initiative. The HN discussion focused on the ethics of large-scale philanthropy, concerns about Facebook's privacy practices and Internet.org, and skepticism about whether such pledges would actually materialize.</p>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128197;</span> What Happened</h2>
+                <p>Over the past decade, the Chan-Zuckerberg Initiative became a major philanthropic force, distributing $7.22+ billion in grants and $300M in venture investments across science, education, housing, and community development. However, Facebook's core business practices became increasingly scrutinized: the company faced the Cambridge Analytica scandal (2015-2018) exposing 87M users' data, multiple regulatory fines including $5B FTC settlement in 2019, €265M+ GDPR fines in 2022, and ongoing privacy violations. Internet.org/Free Basics launched in 2015 was banned in India in 2016 for net neutrality violations and quietly ended in Myanmar in 2018. Facebook's stock surged from ~$100 in 2015 to peak at $788.82 in August 2025, then fell to $650 by January 2026. Meta faced increasing regulatory pressure globally, and privacy concerns about data collection and tracking—precisely the criticisms raised in 2015—proved prescient.</p>
+            </div>
+
+            <div class="prediction-cards">
+                <div class="prediction-card prescient">
+                    <div class="card-header">
+                        <span class="card-icon">&#127942;</span>
+                        <span class="card-label">Most Prescient</span>
+                    </div>
+                    <div class="card-author">@psykovsky</div>
+                    <blockquote class="card-quote">I still remember what Internet.org was supposed to be and what it turned out to be. The man is an egocentric liar.</blockquote>
+                    <p class="card-reason">This comment proved remarkably accurate. Internet.org was positioned as bringing connectivity to the developing world, but it was banned in India for net neutrality violations (giving Facebook preferential access) and ended in Myanmar under controversial circumstances. Critics were right that it served Facebook's interests, not pure humanitarian goals.</p>
+                </div>
+
+                <div class="prediction-card wrong">
+                    <div class="card-header">
+                        <span class="card-icon">&#10060;</span>
+                        <span class="card-label">Most Wrong</span>
+                    </div>
+                    <div class="card-author">@austenallred</div>
+                    <blockquote class="card-quote">>1B people log into products he founded every day. He lets advertisers target you using data you've provided, as you sit on the platform he helped build, but I'm not convinced that makes him an evil dude.</blockquote>
+                    <p class="card-reason">This comment downplayed legitimate privacy concerns, characterizing them as overstated. A decade of evidence proved otherwise: Cambridge Analytica exposed unauthorized data collection on 87M users, Belgium ordered Facebook to stop tracking non-users, health apps sent sensitive data without consent, and Meta's 2026 policies again sparked privacy outrage. The commenters who called this 'evil' or exploitative of cognitive biases were vindicated.</p>
+                </div>
+            </div>
+
+            <div class="article-section grades-section">
+                <h2><span class="section-icon">&#127891;</span> All Grades</h2>
+                <div class="grades-grid">
+                    <div class="grade-item"><span class="grade-user">psykovsky</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">goatforce5</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">tjl</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">DanBC</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">bigbugbag</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">joering2</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">huac</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">myth_buster</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">nextos</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">saiya-jin</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">Chathamization</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">Cshelton</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">AndrewKemendo</span><span class="grade-value grade-c">C</span></div><div class="grade-item"><span class="grade-user">sytelus</span><span class="grade-value grade-c">C</span></div><div class="grade-item"><span class="grade-user">vinceguidry</span><span class="grade-value grade-c">C+</span></div><div class="grade-item"><span class="grade-user">austenallred</span><span class="grade-value grade-d">D</span></div><div class="grade-item"><span class="grade-user">reddytowns</span><span class="grade-value grade-d">D+</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="article-panel" id="article-8" style="display: none;">
+            <div class="article-header">
+                <div class="article-score-badge">7<span class="score-label">/10</span></div>
+                <h1 class="article-title">Netflix's Linux Performance Analysis in 60 Seconds (2015): A 10-Year Retrospective</h1>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128196;</span> Summary</h2>
+                <p>In November 2015, Netflix published a foundational guide by Brendan Gregg on Linux performance troubleshooting using 10 basic commands (dmesg, vmstat, iostat, iotop, free, ps, top/htop, pidstat, sar, and netstat). The article emphasized using the USE Method (Utilization, Saturation, Errors) for systematic performance analysis. The discussion focused on tool suggestions, performance analysis methodologies, and practical server optimization challenges.</p>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128197;</span> What Happened</h2>
+                <p>Over the past 10 years, the Linux performance analysis landscape evolved significantly but in ways that both validated and diverged from the 2015 article. The foundational commands discussed (vmstat, iostat, dmesg, pidstat, top) remain essential tools widely used in 2026. However, the trajectory was shaped by: (1) The rise of eBPF-based tooling (bpftrace, BCC tools) which became production-standard by 2020-2024, offering deeper kernel visibility than the traditional tools recommended in 2015. (2) Evolution of Netflix's own monitoring: Vector (mentioned in comments, launched 2015) evolved toward Grafana-based stacks by 2020s, reflecting industry consolidation around centralized observability platforms. (3) Tool ecosystem evolution: htop remained relevant but was joined by modern alternatives like btop; glances (mentioned in 2015 comments) continues to be recommended; atop remains the standard for historical forensic analysis. (4) Containers and cloud-native infrastructure shifted focus: by 2020, Kubernetes monitoring became dominant, partially shifting away from host-level analysis toward distributed tracing and log aggregation. (5) Frame pointers in userspace became standard practice again by 2024, validating flamegraph methodology. The traditional tools still work in 2026 but are now primarily used by systems programmers, Linux kernel developers, and infrastructure teams, not mainstream developers.</p>
+            </div>
+
+            <div class="prediction-cards">
+                <div class="prediction-card prescient">
+                    <div class="card-header">
+                        <span class="card-icon">&#127942;</span>
+                        <span class="card-label">Most Prescient</span>
+                    </div>
+                    <div class="card-author">@brendangregg</div>
+                    <blockquote class="card-quote">Author Brendan Gregg's follow-up comment listing perf, execsnoop, turbostat, slabtop, iosnoop, and perf-tools indicated the future direction toward more specialized, lower-level analysis tools beyond the basic 10 commands</blockquote>
+                    <p class="card-reason"></p>
+                </div>
+
+                <div class="prediction-card wrong">
+                    <div class="card-header">
+                        <span class="card-icon">&#10060;</span>
+                        <span class="card-label">Most Wrong</span>
+                    </div>
+                    <div class="card-author">@jandrese</div>
+                    <blockquote class="card-quote">Commented that the Java process shown in the example 'might just be the video server and expected behavior' and that 'none of [the tools] had any visibility inside of their Java VM'</blockquote>
+                    <p class="card-reason"></p>
+                </div>
+            </div>
+
+            <div class="article-section grades-section">
+                <h2><span class="section-icon">&#127891;</span> All Grades</h2>
+                <div class="grades-grid">
+                    <div class="grade-item"><span class="grade-user">agentgt</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">luckydude</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">anarcat</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">pixelbeat</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">brendangregg</span><span class="grade-value grade-a">A+</span></div><div class="grade-item"><span class="grade-user">ucsdrake</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">ipozgaj</span><span class="grade-value grade-a">A-</span></div><div class="grade-item"><span class="grade-user">Aissen</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">baldfat</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">cthalupa</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">samstave</span><span class="grade-value grade-b">B-</span></div><div class="grade-item"><span class="grade-user">jandrese</span><span class="grade-value grade-c">C+</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="article-panel" id="article-9" style="display: none;">
+            <div class="article-header">
+                <div class="article-score-badge">7<span class="score-label">/10</span></div>
+                <h1 class="article-title">WhatsApp Blocks Telegram Links - 10 Year Retrospective (2015-2025)</h1>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128196;</span> Summary</h2>
+                <p>In December 2015, WhatsApp was caught deliberately blocking Telegram links through hardcoded filters. The HN discussion debated whether this was anticompetitive behavior, whether Signal or Telegram would displace WhatsApp, and whether network effects or security would determine the market. A decade later, WhatsApp dominates with 3 billion users (47% market share), Telegram reached 1 billion users (12% market share), and Signal remains a niche player with 70 million users. The blocking was indeed deliberate and anticompetitive—but it didn't significantly impact WhatsApp's dominance, which was sustained by network effects and Facebook's acquisition strategy rather than technological superiority.</p>
+            </div>
+
+            <div class="article-section">
+                <h2><span class="section-icon">&#128197;</span> What Happened</h2>
+                <p>WhatsApp, owned by Facebook (acquired for $19B in 2014), deliberately blocked Telegram links by hardcoding 'telegram' as a 'bad host' in their Android app. This became a major story about anticompetitive behavior. The 226-comment discussion centered on three main debates: (1) Is this monopolistic behavior that will backfire? (2) Will users migrate to Telegram or Signal due to privacy concerns? (3) Is Facebook vulnerable to competition? Over the next decade: WhatsApp grew to 3 billion users and expanded to become Meta's messaging hub alongside Messenger, integrated with business features and monetized through ads in Stories (not private chats). Telegram grew to 1 billion users as a feature-rich alternative with superior UX (desktop client, cloud sync, bots). Signal remained small (~70 million users) despite being cryptographically superior, hampered by multi-device limitations and niche appeal. Facebook faced antitrust scrutiny (EU DMA, various regulators) but maintained dominance. The block eventually became irrelevant as WhatsApp evolved into something Telegram couldn't displace.</p>
+            </div>
+
+            <div class="prediction-cards">
+                <div class="prediction-card prescient">
+                    <div class="card-header">
+                        <span class="card-icon">&#127942;</span>
+                        <span class="card-label">Most Prescient</span>
+                    </div>
+                    <div class="card-author">@halviti (comment #199) & downandout (comment #814)</div>
+                    <blockquote class="card-quote">This is deliberate, sustained anticompetitive behavior, not a glitch. Facebook will continue to block and stifle competition.</blockquote>
+                    <p class="card-reason">These commenters correctly identified that Facebook was engaging in deliberate monopolistic behavior and would continue this pattern. They understood that network effects matter more than individual incidents. Within a decade, this behavior became the basis for EU/regulatory antitrust cases against Meta. The block stayed in place for years and was part of a pattern—Facebook also blocked competitor links in Messenger, removed Telegram from App Stores at times, and engaged in aggressive acquisition of potential threats.</p>
+                </div>
+
+                <div class="prediction-card wrong">
+                    <div class="card-header">
+                        <span class="card-icon">&#10060;</span>
+                        <span class="card-label">Most Wrong</span>
+                    </div>
+                    <div class="card-author">@rms_returns (comment #52) - Part 2</div>
+                    <blockquote class="card-quote">WhatsApp's dominance is built on ignorance. In the age of Internet, ignorance doesn't last. Telegram (better and free) will displace WhatsApp when people learn about it.</blockquote>
+                    <p class="card-reason">This comment fundamentally misunderstood network effects. It assumed people choose messaging apps based on technical merit and information availability. In reality: (1) WhatsApp's dominance is built on network effects (everyone you know is on it), not ignorance. (2) Information about Telegram and Signal being 'better' became widely known within 2-3 years via Edward Snowden recommendations, Bruce Schneier endorsements, and countless security articles. (3) Despite this information becoming mainstream, WhatsApp only grew stronger—reaching 3 billion users by 2025, far exceeding the 2015 user base.</p>
+                </div>
+            </div>
+
+            <div class="article-section grades-section">
+                <h2><span class="section-icon">&#127891;</span> All Grades</h2>
+                <div class="grades-grid">
+                    <div class="grade-item"><span class="grade-user">halviti</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">downandout</span><span class="grade-value grade-a">A</span></div><div class="grade-item"><span class="grade-user">halviti_user_migration</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">jcl</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">corv</span><span class="grade-value grade-b">B</span></div><div class="grade-item"><span class="grade-user">Khao</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">fabian2k</span><span class="grade-value grade-b">B+</span></div><div class="grade-item"><span class="grade-user">HappyTypist</span><span class="grade-value grade-d">D</span></div><div class="grade-item"><span class="grade-user">snissn</span><span class="grade-value grade-d">D</span></div><div class="grade-item"><span class="grade-user">jsprogrammer</span><span class="grade-value grade-f">F</span></div><div class="grade-item"><span class="grade-user">rms_returns</span><span class="grade-value grade-f">F</span></div><div class="grade-item"><span class="grade-user">vamur</span><span class="grade-value grade-f">F</span></div>
+                </div>
+            </div>
+        </div>
+
+            <div class="leaderboard-container" id="leaderboard" style="display: none;">
+                <div class="leaderboard-header">
+                    <h1 class="leaderboard-title">&#127942; Hall of Fame</h1>
+                    <p class="leaderboard-subtitle">Most prescient HN commenters (3+ graded predictions)</p>
+                </div>
+
+                <div class='leaderboard-table'>
+        <div class="leaderboard-row">
+            <div class="leaderboard-rank gold">&#129351;</div>
+            <div class="leaderboard-user">jacquesm</div>
+            <div class="leaderboard-gpa">3.77</div>
+            <div class="leaderboard-letter">A-</div>
+            <div class="leaderboard-count">3 grades</div>
+        </div></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentView = 'articles';
+        let currentArticle = null;
+
+        function showArticles() {
+            currentView = 'articles';
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.nav-btn')[0].classList.add('active');
+            document.getElementById('leaderboard').style.display = 'none';
+
+            if (currentArticle !== null) {
+                document.getElementById('article-' + currentArticle).style.display = 'block';
+                document.getElementById('welcome').style.display = 'none';
+            } else {
+                document.getElementById('welcome').style.display = 'flex';
+            }
+        }
+
+        function showLeaderboard() {
+            currentView = 'leaderboard';
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.nav-btn')[1].classList.add('active');
+
+            document.getElementById('welcome').style.display = 'none';
+            document.querySelectorAll('.article-panel').forEach(el => el.style.display = 'none');
+            document.getElementById('leaderboard').style.display = 'block';
+        }
+
+        function showArticle(index) {
+            currentArticle = index;
+            currentView = 'articles';
+
+            // Update nav
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.nav-btn')[0].classList.add('active');
+
+            // Update sidebar selection
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item')[index].classList.add('active');
+
+            // Show article panel
+            document.getElementById('welcome').style.display = 'none';
+            document.getElementById('leaderboard').style.display = 'none';
+            document.querySelectorAll('.article-panel').forEach(el => el.style.display = 'none');
+            document.getElementById('article-' + index).style.display = 'block';
+
+            // Scroll main content to top
+            document.getElementById('main-content').scrollTop = 0;
+        }
+
+        // Auto-select first article on load for better UX
+        // document.addEventListener('DOMContentLoaded', () => showArticle(0));
+    </script>
+</body>
+</html>

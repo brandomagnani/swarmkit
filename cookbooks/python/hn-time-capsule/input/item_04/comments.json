@@ -1,0 +1,449 @@
+[
+  {
+    "author": "anarcat",
+    "text": "that's a pretty awesome summary. to that i would add:* `iftop` that allows me to quickly check which network streams are hogging the machine (this is a little like sar -n DEV 1 but much more detailed!)* `tcpdump -c 100 -vv`- poor man's alternative to iftop or systat if they're not available locally* tail those logfiles, with systemd it's even easier with journald as all logfiles can be checked at once: `journalctl -xf -p notice | ccze -m ansi` (ccze colors the output, purely optional)* probably more i am forgetting nowthe great takeaways in the article for me are:* pidstat: great to have an average, beats top for sure* back to basics: hit dmesg, vmstat and iostat first, as you learned in the beginning! :)",
+    "children": [
+      {
+        "author": "agentgt",
+        "text": "I'll add to your list with htop. Its a little nicer than plain ole top.",
+        "children": [
+          {
+            "author": "STRML",
+            "text": "And `glances` is pretty great for big-picture stuff, all-in-one. It's not as precise on CPU/memory as htop, but you get network bandwidth, disk I/O, disk usage and more.",
+            "children": [
+              {
+                "author": "luckydude",
+                "text": "No love for dstat?  Glances looks cool though, thanks for that one.",
+                "children": [
+                  {
+                    "author": "anarcat",
+                    "text": "glances (which i just discovered recently) is pretty awesome, definitely something i'll try out more next time i need something similar.dstat i already knew about, somehow forgot it in the listing, definitely a must as well.",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "author": "ipozgaj",
+            "text": "problem with (h)top is that it doesn't catch short-lived processes, and it displays only the most basics stats. For more detailed perf analysis you will likely be better with something like atop",
+            "children": []
+          },
+          {
+            "author": "baldfat",
+            "text": "Also like to add atop. I love the interface and usually is my first command I launch.",
+            "children": []
+          },
+          {
+            "author": "anarcat",
+            "text": "htop is useful, but i find it doesn't add enough on top of top to justify changing my hand-wired reflexes to add that \"h\". it's often not installed everywhere either, so the top habit remains.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "acdha",
+        "text": "If you like iftop, iptraf is similar and goes deeper in the ability to dig into TCP details or confuse yourself with scads of BPF rules.",
+        "children": [
+          {
+            "author": "anarcat",
+            "text": "iptraf doesn't work on FreeBSD, unfortunately, but it is a great tool.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "i_have_to_speak",
+    "text": "Hmm, that java process has 0.227 TB of mapped virtual memory and 3090% CPU..",
+    "children": [
+      {
+        "author": "dspillett",
+        "text": "You sound like you doubt the readings. This is netflix, I assume they have some pretty hefty kit backing up their service.For a massive server the CPU reading might not be unusual. Maybe it has 32+ CPU cores and a multi-threaded java app is spinning most of them.Also remember that on a heavily loaded system the task that is reading CPU use is itself competeing for time. Timing issues and other monitoring vagueries can make such readings noticably imprecise (though for CPU time usually in the downwards direction by missing tasks that started+worked+ended between readings).The 233GB of memory seems high but there are possible explanations for this. A server with 32+ cores is not unlikely to have a lot of RAM too, the motherboard in my home server supports up to 128GB so perhaps that large java process genuinely does use more then 200. Also all that memory might not really be in use: it could have been allocated but never accessed so it isn't yet holding pages in RAM or swap for all of it.",
+        "children": [
+          {
+            "author": "drewg123",
+            "text": "The 233GB is VIRT, meaning virtual memory. It need not all be backed by physical memory.  For example, if you mmap a file, and then access only a small portion.The RES column shows how much memory is resident (eg, currently backed by physical memory), and that is a much more reasonable 12GB.",
+            "children": []
+          },
+          {
+            "author": "mentat",
+            "text": "Probably r3.8xlarge.",
+            "children": [
+              {
+                "author": "darkr",
+                "text": "jinx!",
+                "children": []
+              }
+            ]
+          },
+          {
+            "author": "darkr",
+            "text": "The r3.8xlarge instance type has 32 vCPUs and 244GiB RAM",
+            "children": []
+          },
+          {
+            "author": "myth_buster",
+            "text": "  For a massive server the CPU reading might not be unusual. Maybe it has \n  32+ CPU cores and a multi-threaded java app is spinning most of them.\n\nYes, the article states that  The %CPU column is the total across all CPUs;\n  1591% shows that that java processes is consuming almost 16 CPUs.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "akerro",
+        "text": "and they run it as root",
+        "children": [
+          {
+            "author": "to3m",
+            "text": "It could be running in a container?",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "pixelbeat",
+        "text": "Note that's virtual memory. For determining real RAM usage for programs, I find https://github.com/pixelb/ps_mem extremely useful",
+        "children": []
+      },
+      {
+        "author": "jandrese",
+        "text": "I'm guessing that the java process is their video server.  It's probably having to DRM and bandwidth regulate hundreds of HD streams.  Unfortunately, this might mean that all of the stuff he talked about in here didn't actually help him solve the problem because none of it had any visibility inside of their Java VM.",
+        "children": [
+          {
+            "author": "anon3423423422",
+            "text": "Some of their recommendation algorithms run on large boxes in java.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "Aissen",
+    "text": "I'm wondering if there's a way to automate this kind of analysis to give you condensed, interesting points of a system performance status. \u00c0 la powertop for power management.",
+    "children": [
+      {
+        "author": "jaimex2",
+        "text": "There is, look up Conky",
+        "children": [
+          {
+            "author": "qznc",
+            "text": "Conky is for your desktop. We are talking about a server, which you connect to via ssh.",
+            "children": []
+          },
+          {
+            "author": "Aissen",
+            "text": "Conky doesn't tell you what's wrong with your system (\u00c0 la powertop 2.0). It just present the information differently.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "nanoojaboo",
+        "text": "maybe monit or something similar (inspeqtor etc)",
+        "children": []
+      },
+      {
+        "author": "akerro",
+        "text": "nmon",
+        "children": []
+      },
+      {
+        "author": "ucsdrake",
+        "text": "Agreed, considering they've built Vector (mentioned by bgregg in the second sentence - https://github.com/Netflix/vector) on top of Performance Co-Pilot.  While PCP doesn't yet have all the wrappers to mimic each sysstat output in a fully compat manner.  The underlying mechanisms to remotely fetch that data (using the tools Vector is already built on), is already there.",
+        "children": []
+      },
+      {
+        "author": "jeffjose",
+        "text": "glances. Mentioned elsewhere in the thread.",
+        "children": [
+          {
+            "author": "Aissen",
+            "text": "Very nice. https://github.com/nicolargo/glances/I like how there are configurable alerts for each datapoint, that's a start for analyzing what's wrong.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "Thaxll",
+        "text": "Collectd + Graphite / InfluxDB + Grafana. You shoudn't need to ssh on a host to see those metrics.",
+        "children": [
+          {
+            "author": "samstave",
+            "text": "Stackdriver, boundary, signalFX",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "fedora007",
+        "text": "glances? https://pypi.python.org/pypi/Glancespip install glances.",
+        "children": []
+      },
+      {
+        "author": "cakes",
+        "text": "There is - software like Splunk, SysTrack, etc. get towards that in various ways.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "agentgt",
+    "text": "The real gem for me in that article (particularly since I already knew about those linux commands) was the USE method [1] and then consequently finding the TSA method [2] on the same linked site.[1]: http://www.brendangregg.com/usemethod.html[2]: http://www.brendangregg.com/tsamethod.html",
+    "children": []
+  },
+  {
+    "author": "davis",
+    "text": "If you want more from Brendan Gregg on analyzing performance, be sure to check out his book, Systems Performance: http://smile.amazon.com/dp/0133390098",
+    "children": [
+      {
+        "author": "klshxsh",
+        "text": "There was an interesting interview with him earlier in the year on Software Engineering Radio where he talked about his book:  http://www.se-radio.net/2015/04/se-radio-episode-225-brendan...",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "baldfat",
+    "text": "> Don\u2019t miss this step! dmesg is always worth checking.Best advice given in the whole article. Many times I go to check something that \"can't figure out what is wrong.\" dmseg | tail and then the swearing begins on their end.",
+    "children": [
+      {
+        "author": "jandrese",
+        "text": "Can you imagine a world where the Windows System Event Viewer was this useful?It's amazing how much time one useful error message can save.Also, I'm a little disappointed that the author didn't drill down into what the actual problem was in his example.  That java process is of course suspicious, but that might just be the video server and expected behavior.",
+        "children": [
+          {
+            "author": "digi_owl",
+            "text": "dmesg and being able to run most things in a terminal to check what its doing (grumble, skype, grumble) is likely what has drawn many to Linux in the first place.And a likely source of misgivings regarding recent developments in the ecosystem...",
+            "children": [
+              {
+                "author": "baldfat",
+                "text": "journalctl is a good tool. I really like SystemD but wish we still had plain text logs.",
+                "children": [
+                  {
+                    "author": "zantana",
+                    "text": "One improvement (which may or may not be related to systemd, but is in newer kernels) is that dmesg has timestamps enabled by default which makes it much easier and `dmesg -H` is really nice as well.",
+                    "children": [
+                      {
+                        "author": "simoncion",
+                        "text": "  dmesg -T\n\nHas been available for years to print out human-readable timestamps. Check to see if dmesg is an alias to that on your system. Also, -IIRC- dmesg has printed system-uptime timestamps with every line since at least the early 2000's.One caveat: the times printed by dmesg -T will be incorrect if the system has suspended to RAM or disk.Check dmesg(1) for more info! :D",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "JoshTriplett",
+    "text": "> Pidstat is a little like top\u2019s per-process summary, but prints a rolling summary instead of clearing the screen. This can be useful for watching patterns over time, and also recording what you saw (copy-n-paste) into a record of your investigation.top has a batch mode: \"top -b\" will print all processes periodically to the terminal, without starting the curses-style UI, providing the same \"rolling summary\".",
+    "children": [
+      {
+        "author": "fedora007",
+        "text": "\"pidstat 1\" prints active processes, making it much less noisy that top -b, and therefore highlights malevolent processes. I think the top equivalant would be \"top -b -i\", though that has more output and is a bit noisier.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "brendangregg",
+    "text": "Good to see people sharing extra commands!I had written some follow on commands at the end of the article, but trimmed them to make it shorter. They were:  # CPU\n  perf record -F 99 -a -g -- sleep 10; perf report -n --stdio   # and flamegraphs\n  execsnoop       # from perf-tools\n  turbostat\n\n  # Memory\n  cat /proc/meminfo\n  slabtop\n\n  # Disk\n  df -h\n  iosnoop         # from perf-tools\n  pidstat -d\n  iotop\n\n  # Networking\n  netstat -s\n  tcpdump\n  tcpretrans      # from perf-tools\n\nWhere perf-tools is https://github.com/brendangregg/perf-tools.",
+    "children": []
+  },
+  {
+    "author": "luckydude",
+    "text": "This is pretty cool because back in the dot com days I got paid huge amounts of money to do what they did in the first 60 seconds.  I started at $1000/day and the phone rang off the hook.  Talked to a friend and he said \"double your rates\" and I said \"WTF?  I'm not worth $2000/day, that's crazy\".  He said \"double your rates\".  So I did, phone still rang like crazy.  I got up to $4000/day and had 5 days/week work.  Went to $8000/day and got about 3-4 more days and then it dried up.And that is how I made payroll for BitKeeper in the early days.I think it's cool that this stuff is far more common knowledge these days.  All I was doing was figuring out if it was CPU, network, disks, file system, vm system, memory.  99% of the time I knew what the problem was in a few minutes, all the real effort was tracking down what program (or programs) were causing it.  Funny enough, most people didn't care what cause was, they just wanted to know what to buy to make it not an issue.  Crazy amounts of money being thrown at Sun equipment.",
+    "children": [
+      {
+        "author": "danieltillett",
+        "text": "Did the money dry up because you got too expensive or because the dot com bubble burst?",
+        "children": [
+          {
+            "author": "luckydude",
+            "text": "$8K / day in 1998 or 1999 was too much.  I suspect I could have gone on until the bubble burst at $4-$6K.I stopped because I had enough money for payroll and wanted to work on my startup.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "tveita",
+    "text": "The link redirects to the blog frontpage for me, but https://media.netflix.com/en/tech-blog/linux-performance-ana... works.",
+    "children": [
+      {
+        "author": "unfletch",
+        "text": "I think Netflix may have just rolled out a blog redesign. (The original link worked for me at first, but now redirect me to media.netflix.com.) Too bad they broke old links though. Hopefully that's temporary.",
+        "children": [
+          {
+            "author": "JD557",
+            "text": "It seems that they also removed the RSS feed, which is a shame.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "brendangregg",
+        "text": "Odd, that URL messes up the pre tags when I load it in Chrome or Firefox (desktop). http://techblog.netflix.com/2015/11/linux-performance-analys... looks right.",
+        "children": [
+          {
+            "author": "brendangregg",
+            "text": "A blog redesign was launched today, which has messed up the pre tags. Hopefully fixed shortly...edit: old version is (PDF) http://www.brendangregg.com/Articles/Netflix_Linux_Perf_Anal...",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "simoncion",
+        "text": "Can confirm that your link works, but the current link in the HN submission does not. MODS, CAN YOU FIX THIS? :)",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "seanwilson",
+    "text": "Direct link to the blog post (the OP is redirecting to the list of blog posts for me):https://media.netflix.com/en/tech-blog/linux-performance-ana...",
+    "children": []
+  },
+  {
+    "author": "elchief",
+    "text": "Anybody got a different source? Apparently I'm not allowed to watch netflix at work (or view their blog).",
+    "children": [
+      {
+        "author": "brendangregg",
+        "text": "Printed as PDF: http://www.brendangregg.com/Articles/Netflix_Linux_Perf_Anal...",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "samstave",
+    "text": "This is yet another awesome contribution from Netflix.Just curious though, anyone know of a similar type of writeup or post regarding windows?I have an MSSQL box I want to kill with fire - but I would like to be able to measure its perf with as much insight as I might on a comparable linux box.What is the best way to measure disk IO perf on a windows box, specifically?",
+    "children": [
+      {
+        "author": "Splines",
+        "text": "xperf/wpr.  Launch wprui, select First Level Triage and Disk I/O and File I/O, make sure logging mode is set to Memory, then click Start.Let it run for a minute, click Stop, then open up the generated ETL in WPA.From there it's hard to tell you what to do in WPA.  Documentation isn't the greatest, but this link is close to what you're trying to do: http://blogs.msdn.com/b/sql_pfe_blog/archive/2013/03/19/trou...Drag in the relevant graphs into your current view, and understand how the yellow bar aggregates data.  MSSQL probably has event providers - you might want to look those up and add them to wprui when you generate your ETL.",
+        "children": [
+          {
+            "author": "samstave",
+            "text": "Thank you!!",
+            "children": [
+              {
+                "author": "Splines",
+                "text": "If you have any questions, send me an email and I can help.  See profile for email.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "acd",
+    "text": "Good page,Here is another  quick performance view.\nInstall atop a better top replacement and watch for anything showing up in red colors.",
+    "children": []
+  },
+  {
+    "author": "Abundnce10",
+    "text": "I had one of my EC2 instances (Ubuntu 14.04) lock up on Monday morning.  I use it to run a Ruby on Rails app and to do a handful of ETL jobs.  The website wasn't able to load and I wasn't able to SSH into the box.  So, I went into the AWS console and rebooted the instance.  This has happened 3 times in the last 6 months.  It looks like the CPU spikes up to almost 100% around the same time when the instance locks up.I'd love to be able to identify the root cause of the instance locking up.  It seems like this article is more about the commands you'd run to assess the health of an active/working EC2 instance and not one that you're unable to SSH into.  Any idea on how to identify the problem with my EC2 instance?",
+    "children": [
+      {
+        "author": "richardwhiuk",
+        "text": "Check the log files that got written before you killed the instance?",
+        "children": []
+      },
+      {
+        "author": "CTrox",
+        "text": "I can recommend atop[1] for that. It runs every ten minutes by default and writes lots of information to /var/log/atop/atop_YYYYMMDD. With that you can examine what happend before the crash, just open a file with atop -r /var/log/atop/atop_YYYYMMDD.[1] http://linux.die.net/man/1/atop",
+        "children": [
+          {
+            "author": "sciurus",
+            "text": "A nice atop tutorial: https://lwn.net/Articles/387202/",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "perlgeek",
+        "text": "One thing we do at $work is collecting each server's static with https://collectd.org/ and often the graphs are pretty revealing. Sometimes it's the disk activity that kills the server, sometimes it's the memory usage, or number of processes, or a disk running full.For things like databases, you can gather more specific information as well, for example number of queries and connections, failed transactions and the likes.If you have a hunch what it might be, you could try to counter-act, for example limiting memory, number of processes, or use cgroups to limit IO rate (see for examplehttp://unix.stackexchange.com/questions/48138/how-to-throttl...).Also leave a ssh connection with something like htop or atop open, and look at it once it freezes up.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "shade23",
+    "text": "Seems like the link opens a different page from the original ? \nOriginal Link :\nhttps://media.netflix.com/en/tech-blog/linux-performance-ana...",
+    "children": []
+  },
+  {
+    "author": "jerf",
+    "text": "Is there any way to analyze memory bandwidth usage?I've had a couple of programs over the years that I wondered if we were just hitting memory bandwidth limitations but I couldn't find any way to prove that, or even particularly gather evidence.",
+    "children": [
+      {
+        "author": "odaymansour",
+        "text": "I've identified a memory bandwidth issue in the past by keeping an eye on truss/strace output and \"counting\" mem operations.After that, I compiled and ran a tiny executable called Stream[1] and got the numbers I needed in order to explain why one machine was twice as slow as another.[1] http://www.cs.virginia.edu/stream/",
+        "children": [
+          {
+            "author": "brendangregg",
+            "text": "Using truss/strace to figure out memory bandwidth issues sounds pretty unreliable. I would not have guessed there was much correlation between memory syscalls that truss/strace can observe (mmap/munmap, brk), and the CPU load/stores that consume memory bandwidth.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "caf",
+        "text": "It will show up like CPU usage - the hyperthread that is waiting for memory will appear busy executing.perf can record hardware counter events - use \"perf list\" to see the list - including those that count frontend and backend stalls (stalls in the instruction decoding and execution stages respectively).  A high stall ratio / low instructions per cycle throughput is an indicator that you're running into memory bandwidth limitations.",
+        "children": [
+          {
+            "author": "odaymansour",
+            "text": "You've also reminded me that while they do show up as CPU time, they wouldn't be 'user' time (for example in the output of the command 'time')",
+            "children": [
+              {
+                "author": "brendangregg",
+                "text": "If it's user-mode loads and stores, which for applications is pretty common, it is user time. Easy to test.",
+                "children": [
+                  {
+                    "author": "odaymansour",
+                    "text": "Thanks for that, I'll take another look at it and see what I've been missing then.",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "brendangregg",
+        "text": "Yes, PMCs (CPU performance monitoring counters; also known by many other terms, such as PMU counters, PICs, CPCs, etc). In the past I've written tools that print usage of memory busses (really, CPU interconnect ports) via the PMCs.They are also a PITA to work with.As another person said, it shows up as CPU utilization. So I check that along with IPC (instructions per cycle), and if IPC is low (what \"low\" is depends, but say, < 1.0), then that's a good clue you're blocked on memory.... but of course, I want actual throughput (usage), bandwidth (maximum), and utilization (ratio), which is more digging with the PMCs.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "alinspired",
+    "text": "Great list with \"standard\" tools that you'd find on most systems by default.\nFrom my experience for virtualized servers you might also look at:- system and stolen cpu to show virtualization overhead and VMs starvation for CPU (in vmstat)- interrupts and context switches which might indicate that VMs might be running non-optimized OSs or non-paravirtualized drivers (vmstat)- abusing VMs/Containers (platform specific), ie for KVM: virsh vcpuinf, virsh dominfo- socket summary and dig from there: ss -s",
+    "children": []
+  },
+  {
+    "author": "nodesocket",
+    "text": "My goto are htop, and for network: nload.",
+    "children": []
+  },
+  {
+    "author": "cthalupa",
+    "text": "Awesome article! One point of contention, though:>and stolen time (by other guests, or with Xen, the guest's own isolated driver domain).This isn't necessarily true. If there is any sort of credit scheduler interaction ( http://wiki.xen.org/wiki/Credit_Scheduler ) resulting in the CPU being throttled, it will show as steal. Steal actually just means the CPU was not in a runnable state, which can be caused by multiple things, but predominately throttling by the CPU scheduler.",
+    "children": []
+  },
+  {
+    "author": "frik",
+    "text": "Do you use a application monitoring solution in production? An APM records all such data and you can drill down (starting from pretty graphs down to call stacks and long lasting SQL snips).",
+    "children": []
+  }
+]

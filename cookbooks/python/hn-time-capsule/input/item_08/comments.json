@@ -1,0 +1,138 @@
+[
+  {
+    "author": "jacquesm",
+    "text": "Many of these techniques were pioneered by games programmers. The idea was that games should be played, not cheated and the same reverse assembly tricks apply and so the same counter-measures apply as well. One game that I'm familiar with had a never ending Matroshka like structure where each pass through a decryption routine would yield just another pile of gibberish and another chunk of code.The game took a couple of seconds to start up due to this and it needed tremendous patience to get to the end. I gave up after the 50th or so level of trash, never figured out how many there were, for all I know it would have been the next one, or there may have been a few hundred more. One particularly depressing thing was that at level 40+ or so a message appeared at the beginning of the hexdump: \"Does your mother know you're doing this?\"...",
+    "children": [
+      {
+        "author": "keyle",
+        "text": "I love cruel easter eggs like that. It worked didn't it.",
+        "children": [
+          {
+            "author": "jacquesm",
+            "text": "Yep :)",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "christoph",
+        "text": "I have a guess, but after reading that, I would very much appreciate knowing what the game was?",
+        "children": [
+          {
+            "author": "jacquesm",
+            "text": "More fun if you find out for yourself but I'll give you a hint: BBC Micro.",
+            "children": [
+              {
+                "author": "AlphaSite",
+                "text": "Elite?",
+                "children": [
+                  {
+                    "author": "jacquesm",
+                    "text": "I will neither confirm nor deny that :)",
+                    "children": [
+                      {
+                        "author": "AimHere",
+                        "text": "The Sinclair Spectrum port of Elite did something like this in the tape loader where, while loading off an audio cassette, it would load a new tape loader code and jump into that, and the load a bit more of the game, before grabbing yet another loader, and so on; it was a pretty effective way of stopping people getting to the game code without extra hardware.",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "ksk",
+        "text": "Hmm why not just dump the mapped memory when it started up? Or did it do this even after loading?",
+        "children": [
+          {
+            "author": "jacquesm",
+            "text": "After loading.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "userbinator",
+        "text": "You may find this interesting - automated ways to unwrap these multilayered packers:http://marionjy.loria.fr/wp-content/uploads/2015/10/codisasm...50 levels is pretty low compared to what modern packers have; according to those slides, 100+ is not uncommon, hence the need to automate the process.",
+        "children": [
+          {
+            "author": "jacquesm",
+            "text": "That's a really neat thing they did there. These arms races are always interesting.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "rasz_pl",
+        "text": "StarForce (drm) also used VM. Good cracking groups ripped it out, bad/sloppy crackers emulated expected inputs. Emulation was often not enough because VM was a blackbox and you newer knew if you emulated everything VM would expect. This resulted in cracked game breaking few hours deep into the storyline when some late level triggered another hidden check.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "seccess",
+    "text": "An interesting thing worth mentioning here is that many of these techniques work because x86 is a variable length instruction set. A fixed length instruction set (ie, ARM) specifies jump targets as instruction offsets, not byte/word, so you can't jump into the middle of an instruction.",
+    "children": [
+      {
+        "author": "ant6n",
+        "text": "Ah, but Thumb code can use two 16bit values (T32). But If I remember correctly, the first and second such sequence will have disjoint values, so you can't misinterpret the second 16-bit value as the beginning of an instruction. This is, btw, also true for utf-8.",
+        "children": []
+      },
+      {
+        "author": "anonion",
+        "text": "With fixed width instruction sets there are similar tricks that trip up IDA's style of analysis. For example, this MIPS code:        bal 1f\n        nop\n        .word DATA      /* some data */\n     1: lw REG, 0(ra)   /* some destination register */\n\nDespite it being unreachable, it will attempt to disassemble the word after the branch/nop rather than recognizing it as data.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "kazinator",
+    "text": "Overlapping instructions were used in some 8 bit microcomputers to fit code into a small memory. For instance, Apple II cards have a 256 byte window for a tiny I/O driver (the address of that window being slot-position-dependent, so the code has to be relocatable: plug the hardware into a different slot and the code moves.) Some cards use overlapping instructions in order to fit this constraint. (Cards can also provide a 2048 byte ROM. However, that was mapped to a fixed memory location shared by all the slots. Before anything jumps there, it has to ensure that the correct slot's code is currently selected for visibility.)Interestingly, in nature there are some viruses which similarly have overlapping sequences in their DNA.  That is to say, one entry point codes for a protein and then another entry point codes for another, and the sequences overlap.",
+    "children": []
+  },
+  {
+    "author": "ant6n",
+    "text": "I guess that's why QEMU translates small linear segments of machine code, i.e. code up to the next branch or jump.",
+    "children": [
+      {
+        "author": "chrisseaton",
+        "text": "Yes - they're called 'basic blocks'.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "nes350",
+    "text": "Similar (I think) techniques were once used by Skype[1]. I wonder how much they've changed in the past few years.1. https://www.blackhat.com/presentations/bh-europe-06/bh-eu-06...",
+    "children": []
+  },
+  {
+    "author": "StripeNoGood",
+    "text": "Look at the Obfuscator from PELockhttps://www.pelock.com/products/obfuscator/screenshotsit does even more anti-re damage and it's been on the market for about 5 years?",
+    "children": []
+  },
+  {
+    "author": "userbinator",
+    "text": "I wonder what is it about overlapping instructions that seems to confound even well-established (and expensive!) disassemblers like IDA Pro, since it's basically a solved problem; a long time ago, I wrote a disassembler that would just attempt to disassemble all the paths, and if instructions overlapped then it presented the alternate \"streams\" side-by-side until they merged together again. The first example would come out looking like this:    40100E  jz 401011\n    401010  call 8B4C55A0      | 401011  mov eax, [ebp+0C]\n                               | 401014  mov ecx, [eax+4]\n    401015  dec eax\n    401016  add al, 0F         | 401017  movsx edx, byte ptr [ecx]\n    401018  mov esi, 70FA8311  | 40101A\n    40101C\n\nThis was in the early PC/XT days, so it handled 8088 and .COM files only, and only needed ~128KB of RAM to run (I remember it also swapped to disk(ette) when needed.) I probably still have the source (in Asm, naturally) and binary somewhere amongst all my 5.25\" floppies...",
+    "children": [
+      {
+        "author": "legulere",
+        "text": "On many architectures it just can't happen. In normal code it doesn't happen. It would probably be quite hard to implement in an old and big codebase as IDA (I think it stems back to dos times). And there's Ida Python to fix up obfuscated code",
+        "children": []
+      },
+      {
+        "author": "iheartmemcache",
+        "text": "Eh, I have a feeling the reason why your stream analysis was so easy back then was because you were working with such small binaries. As I'm sure you know having a variable length instruction set like x86 makes it really really really (really) hard to even heuristically analyze the right \"stream\" to take. Each potential fake branch can potentially double* the analysis IDA is forced to do. Even with 6.8, analysis for reasonably complex binary can run into the minutes. Even with great heuristics, it's not as trivial as just 'render alt-streams' in column 2. Seriously, look at the call-graphs of any modern binary in IDA. It's insanity. \nThat being said, there are plugins for PyIDA Pro that do what you're saying to a certain extent. IDA Pro in my mind is sort of like emacs -- a decent platform, but the strength really comes from the die-hard community of engineers who make things like org-mode and ELPA.It is a fun arms race to watch though. Microsoft released their SAT solver Z3 on Github which they used to sell only to the enterprise (think: an oil provisioning company needs a bare minimum of various quantities of different types of refined oil as each source will have different distillation properties. Crude from Venezuela refines entirely differently than from the Gulf or from Russia. They need quantity Foo of gasoline to sell to a set of customers X with forecasted demands of Y, from various vendors who sell crude oil with variable pricing, quantity Bar of jet fuel, and quantity Baaz for plastics manufacturing. You then have production limits that each vendor can supply, etc). Anyways, tangent aside - Z3 is the best constraint solver out there (AFAIK, someone in academia please correct me), and it has the distinct ability to be useful in decompilation. Within 2 weeks of MS opening it up, I was seeing plugins for IDA that were integrating Z3 in a very, very useful manner. (Also IDA Pro even with Hex-Rays is not that expensive at all! Think about how much an average company spends on developer licenses for other tools, and it's not quite cheap but definitely in line with what one would expect to pay for a tool you spend 6 hours a day as its fundamental to your job!* Yeah I know this only applies up until the end of the 'stream' remains valid, so in theory your complexity is only linear, not polynomial, but if you nest valid byte-streams, you get 2^(number_of_valid_streams_while_op_codes_remain_concurrently_valid_to_analyze).Edit: Ha yeah my verbose post can effectively be dwindled down to what un:legulere said.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "rasz_pl",
+    "text": "what a terrible website, minified obfuscated js keeps auto scrolling to the top, menu is broken, looks like js was tested on 'one true browser' only, reminds me of the good old IE or nothing days :(. Do NOT touch my document.documentElement.scrollTop :(",
+    "children": []
+  }
+]
