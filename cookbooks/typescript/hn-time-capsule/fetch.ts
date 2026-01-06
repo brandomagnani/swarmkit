@@ -3,7 +3,7 @@
  */
 
 import { execSync } from "child_process";
-import { mkdirSync, writeFileSync } from "fs";
+import { mkdirSync, writeFileSync, rmSync } from "fs";
 
 type FileMap = Record<string, string>;
 
@@ -200,6 +200,10 @@ function fetchArticleContent(url: string): string {
 }
 
 export function fetchHnDay(day: string, limit?: number): FileMap[] {
+    // Clean previous run
+    rmSync("input", { recursive: true, force: true });
+    rmSync("output", { recursive: true, force: true });
+
     const articles = fetchFrontpage(day);
     const items: FileMap[] = [];
 

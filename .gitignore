@@ -10,8 +10,12 @@ env/
 # Input/Output folders - contents ignored, folders created by script
 **/input/*
 **/output/*
+!cookbooks/python/hn-time-capsule/input/
+!cookbooks/python/hn-time-capsule/input/**
 !cookbooks/python/hn-time-capsule/output/
 !cookbooks/python/hn-time-capsule/output/*
+!cookbooks/typescript/hn-time-capsule/input/
+!cookbooks/typescript/hn-time-capsule/input/**
 !cookbooks/typescript/hn-time-capsule/output/
 !cookbooks/typescript/hn-time-capsule/output/*
 

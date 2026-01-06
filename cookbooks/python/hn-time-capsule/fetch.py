@@ -2,6 +2,7 @@
 
 import json
 import re
+import shutil
 import subprocess
 from dataclasses import dataclass
 from html import unescape
@@ -169,6 +170,10 @@ def fetch_article_content(url: str) -> str:
 
 def fetch_hn_day(date: str, limit: int | None = None) -> list[dict]:
     """Fetch HN frontpage data as list of FileMap for SwarmKit."""
+    # Clean previous run
+    shutil.rmtree("input", ignore_errors=True)
+    shutil.rmtree("output", ignore_errors=True)
+
     articles = fetch_frontpage(date)
     if limit:
         articles = articles[:limit]
