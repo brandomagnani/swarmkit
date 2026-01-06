@@ -25,7 +25,8 @@ class Analysis(BaseModel):
 
 
 swarm = Swarm(SwarmConfig(
-    retry=RetryConfig(max_attempts=3)  # 2 retries
+    concurrency=10,
+    retry=RetryConfig(max_attempts=3),  # 2 retries
 ))
 
 pipeline = (

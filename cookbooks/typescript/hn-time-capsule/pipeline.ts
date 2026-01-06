@@ -22,6 +22,7 @@ const AnalysisSchema = z.object({
 });
 
 const swarm = new Swarm({
+    concurrency: 10,
     retry: { maxAttempts: 3 },  // 2 retries
 });
 
