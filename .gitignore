@@ -10,6 +10,8 @@ env/
 # Input/Output folders - contents ignored, folders created by script
 **/input/*
 **/output/*
+!cookbooks/python/hn-time-capsule/output/
+!cookbooks/python/hn-time-capsule/output/*
 
 # IDE
 .idea/
