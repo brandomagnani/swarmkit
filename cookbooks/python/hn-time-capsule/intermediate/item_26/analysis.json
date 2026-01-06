@@ -1,0 +1,85 @@
+{
+  "title": "Researchers find new phase of carbon, make diamond at room temperature",
+  "summary": "In November 2015, researchers at NC State University announced the discovery of Q-carbon, a new phase of solid carbon distinct from graphite and diamond. Created by hitting amorphous carbon with a nanosecond laser pulse (raising temperature to 4000K then rapidly cooling at room pressure), Q-carbon was claimed to be harder than diamond, ferromagnetic, and able to be converted into single-crystal diamond structures at room temperature and ambient atmospheric pressure. The article claimed revolutionary implications for electronics, displays, and industrial applications. The HN discussion was largely positive but contained important caveats: some commenters noted the \"room temperature\" claim was misleading (since the process involves extreme temperatures during laser treatment), questioned the practical scalability versus existing synthetic diamond methods, and expressed skepticism about the hype common in materials science announcements.",
+  "what_happened": "Q-carbon research has continued at NC State through 2025, with the Narayan lab publishing ongoing studies on Q-carbon nanostructures, ferromagnetic properties, and battery applications. However, one 2016 paper on Q-carbon in Metallurgical and Materials Transactions A was retracted by the editor due to significant overlap with other publications. The research remains active but has not resulted in the commercial diamond revolution initially suggested. Meanwhile, the broader synthetic diamond market has grown substantially (reaching $27.2B in 2025), but this growth has been driven primarily by traditional HPHT and CVD methods for jewelry and industrial drilling/cutting tools, not by Q-carbon technology. In 2025, quantum-grade synthetic diamond thin films were announced (by IonQ), focusing on quantum computing applications rather than Q-carbon specifically. Q-carbon patents were licensed to Q-Carbon LLC for commercialization efforts, but no major breakthrough commercial products from Q-carbon have emerged after 10 years. The discovery appears valid but less revolutionary than initially hyped\u2014it remains a laboratory achievement rather than a transformative technology.",
+  "most_prescient": {
+    "user": "Animats",
+    "reason": "Animats correctly identified that this was likely overhyped materials science and questioned whether amorphous diamond films at $140/kg wholesale price would constitute a real breakthrough. This prediction aged well\u2014the discovery proved interesting scientifically but did not disrupt the synthetic diamond market or enable the revolutionary applications initially claimed. Animats also presciently noted that the 'room temperature' framing was misleading marketing, which the discussion later confirmed."
+  },
+  "most_wrong": {
+    "user": "gooseus",
+    "reason": "Gooseus asked if this would 'impact everyday people in the relatively near future (10 years)' with genuine amazement. After 10 years, Q-carbon has had essentially zero impact on everyday consumer products or applications. It remains a laboratory curiosity with continued academic research but no commercial implementations despite initial promises of diamond electronics, displays, and revolutionary applications."
+  },
+  "notable_aspects": "1. The 'room temperature' marketing: Multiple commenters (yetihehe, such_a_casual) correctly caught that the process involves extreme laser heating to 4000K, making 'room temperature' a misleading description of the overall process. 2. The retraction: A paper was retracted for duplication with other publications, suggesting some sloppiness in the research dissemination process. 3. The materials science hype cycle: ChuckMcM's comment about carbon nanotubes is prescient\u2014discovering interesting structures in the lab is very different from manufacturing them at scale with specific properties. 4. The licensing to Q-Carbon LLC: Patents were commercialized but produced no notable products, suggesting the gap between lab discovery and commercial viability remained substantial. 5. The broader diamond market: While synthetic diamonds boomed commercially, it was driven by CVD/HPHT methods for jewelry and industrial tools, not the room-temperature Q-carbon route.",
+  "grades": {
+    "ryanmcbride": {
+      "grade": "A",
+      "rationale": "Correctly skeptical joke about marketing\u2014Diamond-Nine would be a gimmick name, which Q-carbon turned out to be from a commercial perspective."
+    },
+    "gooseus": {
+      "grade": "F",
+      "rationale": "Asked the right question but got the wrong answer. Hoped for impact on everyday people within 10 years\u2014did not materialize."
+    },
+    "lifeisstillgood": {
+      "grade": "B+",
+      "rationale": "Provided clear technical summary and correctly separated the laser heating aspect from room pressure, though still optimistic about TV applications that never materialized."
+    },
+    "yetihehe": {
+      "grade": "A",
+      "rationale": "Correctly identified the 'room conditions' misleading claim by noting that vapor deposition substrate coating means it's not truly room conditions."
+    },
+    "venomsnake": {
+      "grade": "C",
+      "rationale": "Somewhat romantic musing about carbon's potential, but vague and didn't attempt specific predictions about Q-carbon's future."
+    },
+    "FrankenPC": {
+      "grade": "C",
+      "rationale": "Reasonable observation about materials science importance but didn't specifically engage with Q-carbon predictions."
+    },
+    "troels": {
+      "grade": "B",
+      "rationale": "Correctly identified that 'harder than diamond' would be the most significant claim if true, showing good scientific intuition."
+    },
+    "timlyo": {
+      "grade": "A-",
+      "rationale": "Correctly cited existing superhard materials and prevented the discussion from accepting marketing hype uncritically."
+    },
+    "Animats": {
+      "grade": "A+",
+      "rationale": "Skeptical of hype, correctly noted that amorphous/polycrystalline diamond powder at $140/kg wouldn't be revolutionary, and pointed out the cheap existing competition. This aged perfectly."
+    },
+    "the8472": {
+      "grade": "B",
+      "rationale": "Technical correction about crystal structure shows scientific literacy but didn't make broader predictions."
+    },
+    "queeerkopf": {
+      "grade": "A",
+      "rationale": "Correctly identified that the paper wasn't available and questioned the publication status\u2014prescient about quality control issues."
+    },
+    "skeesicks": {
+      "grade": "B",
+      "rationale": "Charitable explanation of publication delay, turned out to be justified but didn't challenge the science."
+    },
+    "saalweachter": {
+      "grade": "B+",
+      "rationale": "Literary reference to low-tech viability was clever and somewhat predictive\u2014Q-carbon remains accessible to labs but hasn't escaped that realm."
+    },
+    "dschiptsov": {
+      "grade": "B-",
+      "rationale": "Cynical question about commercialization was justified in hindsight, but too minimal to rate higher."
+    },
+    "such_a_casual": {
+      "grade": "A-",
+      "rationale": "Correctly identified confusion in article framing and distinguished between laser temperature and ambient pressure\u2014showed critical reading."
+    },
+    "mkingston": {
+      "grade": "A",
+      "rationale": "Provided excellent technical context comparing to existing HPHT and CVD methods, helping readers understand this wasn't as revolutionary as claimed."
+    },
+    "ChuckMcM": {
+      "grade": "A+",
+      "rationale": "Perfectly prescient comment about the gap between making something interesting in a lab and manufacturing at scale with specific properties. Carbon nanotubes parallel proved exact."
+    }
+  },
+  "score": 8
+}

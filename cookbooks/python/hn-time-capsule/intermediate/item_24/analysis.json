@@ -1,0 +1,41 @@
+{
+  "title": "Ask HN: Who is hiring? (December 2015)",
+  "summary": "This is the monthly 'Who is Hiring?' thread from December 2015 on Hacker News, where startups and companies post job openings. The thread contains 427 comments, primarily consisting of job listings from tech companies across various sectors including cloud infrastructure, education, healthcare, finance, and video streaming. Notable companies posting include Theranos, fuboTV, Pivotal, CloudFlare, AWS, Cloudera, Lyft, and many others. The discussion is mostly operational (people asking questions about roles, locations, visa sponsorship) rather than substantive predictions about the future.",
+  "what_happened": "With 10 years of hindsight (now 2025), several major developments are clear: (1) Theranos, the most shocking element, was a complete fraud. Founder Elizabeth Holmes was convicted in 2022 on four counts of wire fraud and conspiracy, sentenced to 135 months in prison, and her conviction was upheld on appeal in 2024. At the time of this December 2015 posting, Theranos was actively recruiting engineers with claims about 'unleashing disruptive technology to save lives' - all fabricated. (2) FuboTV, the soccer streaming startup recruiting in this thread, actually thrived. Launched in January 2015, it evolved from a soccer-focused service to a virtual cable provider and went public on NYSE in October 2020. In 2025, it was acquired by Disney, who combined it with Hulu + Live TV. (3) Pivotal Software was in the midst of significant organizational changes, with new CEO Rob Mee taking the helm in August 2015. Cloud Foundry was transferred to independent governance under the Linux Foundation in January 2015. The company would eventually be acquired. (4) Many companies recruiting here represented the height of the Silicon Valley boom - some thrived, others quietly faded. The thread captures a moment in 2015 when venture-backed hiring was energetic but before major corrections and consolidations.",
+  "most_prescient": {
+    "user": "bohnej",
+    "reason": "While seemingly offering a simple criticism about Theranos' hiring practices ('They don't respond to applicants'), this comment was the most prescient in ways the commenter couldn't have known. Theranos indeed was not serious about responding to candidates - not out of incompetence, but because the entire company was built on fraud. The lack of responsiveness was symptomatic of a company more focused on deception than genuine operations. This accidental prescience makes bohnej's comment the most accurate retrospective observation: the company's dysfunction was real, just for reasons nobody yet understood."
+  },
+  "most_wrong": {
+    "user": "djworth",
+    "reason": "The fuboTV job posting by djworth claimed they were 'changing the way soccer fans watch live matches' and confidently posted hiring for 'a growing video streaming startup.' While djworth wasn't wrong about the company's ambitions, the framing was slightly premature - fuboTV did successfully change how people watch sports, but it took longer and in different ways than the 2015 optimism suggested. However, more broadly, many commenters posting tech company jobs were wrong about the trajectory of their companies. The most broadly 'wrong' prediction was implicit in the thread: that all these venture-funded startups would maintain their 2015 momentum. Many would collapse, pivot, or be consolidated. FuboTV defied this, but was an exception."
+  },
+  "notable_aspects": "The most striking aspect of this retrospective is the Theranos posting itself. In December 2015, Elizabeth Holmes was at peak credibility - Forbes had named her the world's youngest self-made female billionaire in 2015. Her company was actively recruiting top engineering talent with grandiose language about 'saving lives.' Yet within months (October 2015, just before this posting), John Carreyrou of the Wall Street Journal had begun publishing investigations into Theranos fraud. By the time this December 2015 thread was posted, Theranos was already under investigation, though few knew the full extent. The hiring thread captures a company in its final days of legitimacy, actively recruiting people who would never actually work there. Another notable aspect: the thread shows the prevalence of onsite-only hiring in 2015 (many postings explicitly state 'ONSITE ONLY'). By 2025, remote work has become standard post-COVID. The thread also captures the dominance of AngularJS, Node.js, and traditional web stacks - technologies that would see significant evolution. Finally, the thread demonstrates how difficult it was to identify fraud even in real-time - Theranos looked like any other ambitious biotech startup, just with software engineers.",
+  "grades": {
+    "bohnej": {
+      "grade": "A",
+      "rationale": "Correct about Theranos being unresponsive to candidates and having poor hiring practices, though neither bohnej nor anyone else knew it was because the company was a fraud. Identified legitimate hiring red flags months before the scandal became public."
+    },
+    "jacques_chester": {
+      "grade": "B+",
+      "rationale": "Posted about Pivotal's hiring practices and company philosophy. While honest about challenges (scaling hiring, providing feedback at volume), Pivotal did eventually get acquired but maintained its reputation for engineering excellence. The honesty about difficulty scaling was prescient about challenges many high-growth companies face."
+    },
+    "eropple": {
+      "grade": "A-",
+      "rationale": "Correctly identified that companies should provide feedback to candidates as a matter of professional respect. This perspective has increasingly become standard practice by 2025. The stance was right about hiring ethics, even if premature in terms of industry adoption."
+    },
+    "djworth": {
+      "grade": "A",
+      "rationale": "FuboTV did exactly what was promised - changed how people watch sports. The company survived, thrived, went public, and was acquired by Disney in 2025. Despite the inherent optimism bias of a job posting, djworth's claims about the company's direction turned out to be accurate."
+    },
+    "powera": {
+      "grade": "C+",
+      "rationale": "Dismissed criticisms of Theranos' hiring process somewhat dismissively. While not necessarily wrong about the specific commenter, the response shows hindsight bias vulnerability - the critique of Theranos was actually valid, it just wasn't about 'bad candidates' but about a fraudulent company."
+    },
+    "bohnej_theranos_response": {
+      "grade": "A-",
+      "rationale": "Persisted in pointing out that no response was unacceptable, with evidence. Right about the principle; accidentally right about Theranos specifically. This stance correctly anticipated the modern norm of transparent, respectful hiring practices."
+    }
+  },
+  "score": 8
+}

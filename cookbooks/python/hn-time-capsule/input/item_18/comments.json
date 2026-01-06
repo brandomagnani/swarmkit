@@ -1,0 +1,260 @@
+[
+  {
+    "author": "umanwizard",
+    "text": "Releasing this code that was obviously not intended to ever be public rubs me the wrong way a bit -- not to mention, it's probably illegal.Edit: \"publicizing\", not \"releasing\". As others pointed out, the website doesn't contain any actual code.",
+    "children": [
+      {
+        "author": "shakethemonkey",
+        "text": "Calling screenshots \"code\" might be a bit much. This isn't in any way illegal, as it barely qualifies as a creative work.",
+        "children": [
+          {
+            "author": "morninj",
+            "text": "OK, though plenty of illegality is not very creative.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "Archio",
+        "text": "> it's probably illegalI certainly, certainly hope not. While of course there is an ethical question involved here, making it illegal to release \"code that was obviously not intended to be public\" is a MASSIVE slippery slope. I could put your grandmother in jail for clicking a broken link in her email and sharing the confusing things she saw, because of a \"bug\" in my app.",
+        "children": [
+          {
+            "author": "TheDong",
+            "text": "It definitely has a good chance at being illegal. So does your grandmother clicking a link in the email if she has any hint of an idea that she's not supposed to click that link (e.g. if the email said \"you are not permitted to access this link\" it suddenly could be illegal to intentionally visit it).It's called the \"Computer Fraud and Abuse Act\"[0].The exact portion is: \"Whoever intentionally accesses a computer without authorization or exceeds authorized access, and thereby obtains information from any protected computer\" is guilty of a criminal offence.This user of Gmail obviously surmised this was debug information he was not meant to see. As soon as he clicked that debug link or the detail link, he was intentionally accessing information without authorized access. He knew he was not supposed to access that information and he did so anyways.The CFAA has been used before for things not too far off for this. 3Tap[1] was found guilty of CFAA abuse when it scraped Craigslist after its IPs were banned.Weev[2] was prosecuted under the CFAA for accessing unprotected AT&T customer data that was hidden behind a url with an incrementing integer ID (no password, no username, just a perl script to increment a url parameter in a get request).This is a fairly well documented law that has been used a number of times and it's almost certain that the author is guilty under it, as written. It's one hell of a broad law.[0]: https://en.wikipedia.org/wiki/Computer_Fraud_and_Abuse_Act[1]: https://en.wikipedia.org/wiki/Craigslist_Inc._v._3Taps_Inc.[2]: https://www.eff.org/deeplinks/2013/07/weevs-case-flawed-begi...",
+            "children": [
+              {
+                "author": "Falkon1313",
+                "text": "Looks like the user was accessing his own browser on his own computer, so he probably had authorization to do that, and it's unlikely that his own computer was 'protected' against him obtaining information from it.Would you say that everyone who has ever clicked 'view source' is a criminal?  (despite the fact that the source was sent to them in plain-text with the knowledge that a 'view-source' function is available to them)",
+                "children": [
+                  {
+                    "author": "TheDong",
+                    "text": "Weev was also accessing AT&T's servers from his own computer using his own software.This user was accessing Google's debug servers and debug information. Did you read up on the Weev case? It's not that dissimilar.\nIt seems like you're being intentionally obtuse in saying \"his computer was not protected from him\", well, no, Google's debug servers and information were meant to be.If someone accesses the source code of a website while knowing that the website author intends them to not access it, then yes, they're potentially exceeding their authorized access and breaking the law under the CFAA.I don't think the law is good nor makes sense, but explaining why it's dumb logically to me doesn't help. You're preaching to the choir. I know it's dumb and doesn't make sense. This law was created by people who do not understand technology or the internet except by analogies to it being \"kinda like a supermarket\" or such.I gave suitable evidence that this is quite possibly illegal because of a dumb law. You've told me that it's dumb for this to be illegal (yes it is dumb) as if that means it can't be illegal. That's not a rebuttal to the links and statements I provided and, without a meaningful counter argument that isn't you intentionally being obtuse about what I said, you aren't furthering this discussion.",
+                    "children": [
+                      {
+                        "author": "Falkon1313",
+                        "text": "Perhaps I missed something.  I don't see anything about the user accessing Google's protected debug servers that require authorization.  I see 'mail.google.com' then 'about:blank' in the url bar, which indicates that he's accessing a public server and then probably accessing data already on his machine.  Data that they chose to send to him and present to him within his browser with controls that were displayed to him to allow him to access it because they decided he was authorized to see it.I don't know much about weev's case except that it sounds like it was information that AT&T had decided that the public was authorized to access without any authentication or protection.  They screwed up.  I agree that a lot of legal people are tech-illiterate, and they screw up, too.  Which may be why they eventually bailed on a venue technicality rather than address the actual case.But your point was: \"Whoever intentionally accesses a computer without authorization or exceeds authorized access, and thereby obtains information from any protected computer\" (which doesn't really sound that dumb on its own)My point is that you're authorized to access your own computer and it isn't protected from you, so that would not apply (unless the legals involved couldn't figure it out).  Is clicking the 'About' button in the help menu of an application and accessing the version number a crime?  Seeing the Gmail debug info in chrome is just that with more detail.  Try putting \"chrome://about\" in your Chrome url bar.  Ooh, there's data.  Lots of debug data.  Are you a criminal now?  No, it's your system and you're authorized to use it.  And the makers of Chrome chose to give you access to that data.  Just for fun, try chrome://quit/",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "author": "realusername",
+                "text": "In this case there is no action at all on the users part.> As soon as he clicked that debug link or the detail link, he was intentionally accessing information without authorized accessNo he was not, he was accessing information because he did not know what it was (not explicit enough) and have been authorized to do it by Gmail. In both cases you are quoting, there is work done on the user part to access the information, in this case there is not.",
+                "children": [
+                  {
+                    "author": "TheDong",
+                    "text": "That was work. For example, he clicked the skull and crossbones icon after already knowing it was likely to give debug information. After seeing that it did, he looked at more information.The initial load had no intent, but all exploration afterwards probably did. He stated himself that he thought it was debug information. If he only realized that Google did not intend him to have that information after he finished screenshotting everything, maybe he's in the clear for intent.Again, this is similar to Weev. Weev found a url which AT&T gave him that had a number in it. He knew AT&T didn't intend him to change the number (just like this author knew Google didn't intend him to see the links), but he changed the number anyways (and this user clicked the links anyways).I don't see the fundamental difference here.",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "cookiecaper",
+                "text": "That there is no legal definition of \"authorized access\" is the problem with the CFAA. One could argue that if the website is sending the data to your computer, you're authorized to access it, and that's the end of it. That'd definitely be the most favorable interpretation for the tech community. Unfortunately, in many cases, extrapolations like those you've invoked are used instead: \"He knew he wasn't supposed to have it\", \"we told him to go away\", etc.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "glibgil",
+        "text": "Was the article edited to remove the code you are talking about? All I see are screenshots of logs. Those are logs, not code.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "defenestration",
+    "text": "An icon of a skull with bones was used for the debugger. That, in combination with the 'Spy' components, is giving users an eerie feeling. Note to myself: don't be funny in debugmode",
+    "children": [
+      {
+        "author": "rdtsc",
+        "text": "Yeah being cute in error or debug messages doesn't work as intended sometimes. I've seen uncomfortable moments when customers called after experiencing downtime / data loss and were reading back logs that contained cute and snarky terminology.",
+        "children": [
+          {
+            "author": "spb",
+            "text": "> Remember: your \"funny\" documentation is going to seem a hell of a lot less funny when the functionality it's joking about isn't working.https://twitter.com/stuartpb/status/508235714287259648",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "dbalan",
+        "text": "If you are building debug interfaces in the app instance, makes sense to design the wording as the end customer would see it.We'll make mistakes, its better to be proactive.\n(another eg: vine shipping iOS apps with debug enabled)",
+        "children": []
+      },
+      {
+        "author": "cookiecaper",
+        "text": "Yes. You should always assume that your test and debug strings will leak some day, because they probably will. As boring as it gets, they should at least be professional.",
+        "children": []
+      },
+      {
+        "author": "yongjik",
+        "text": "Eh, you're talking about a company that once named its ad serving system SmartASS.You can be professional and have fun at the same time.  (Or at least most Google engineers believe so.)",
+        "children": [
+          {
+            "author": "rasz_pl",
+            "text": "At least they didnt call \"customer experience\" service SpyNet",
+            "children": []
+          },
+          {
+            "author": "tomtoise",
+            "text": "Some genius at one place I worked decided to call our new SIEM offering 'INASS'. They were completely serious. Company head didn't see anything wrong with it, so for a few months we were offering INASS as a service. Can't remember what it stood for now, but luckily one of my higher-ups got them to change it to something more reasonable.",
+            "children": [
+              {
+                "author": "dreeko_",
+                "text": "it gets even funnier when you put the two together!, (SIEM(IN))ASS",
+                "children": [
+                  {
+                    "author": "tomtoise",
+                    "text": "Yeah, I had to leave a few meetings to 'get a drink of water' when we were discussing this. I wasn't the only person in the room who did. We got a lot of odd looks from seniors in that meeting. Perhaps it's only a millennial thing to find SIEM INASS funny?",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "author": "philbarr",
+            "text": "I once headed up the As-Supported Structure team, and a friend of mine got to choose his own team name so he called it the Technical Information Team.This whilst we were working on a product called the A????????? [0] Information Delivery System. We actually laughed on the conference call when they told us but they weren't joking so someone had to use that super-polite voice you use when telling your boss he's been an obvious moron and explain.[0] Name of company ommitted :)",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "derefr",
+        "text": "You can be funny without being eerie. Reddit has a bit of always-on debug text hidden under a \u03c0 as an homage to The Net, and I don't think anyone gets creeped out by that.",
+        "children": []
+      },
+      {
+        "author": "forrestthewoods",
+        "text": "Halo 2 was delayed because a picture of someone's butt was used in error pop-ups and was included on disc.\"Mooning Steve Ballmer: How a Bungie dev's butt may have cost Microsoft $500K\" http://www.polygon.com/2015/4/14/8382089/bungie-butt-microso...",
+        "children": [
+          {
+            "author": "mootothemax",
+            "text": "A colleague from 15+ years ago had an unfortunate habit of using filenames like \"poo\" or \"shit\" for writing debug output.One morning, the inevitable happened: a very angry client phoned up complaining that his site was swearing at him.It turned out that the debug log had filled up, causing the site to crash on load, displaying only a single line:CANNOT OPEN SHITThe lessons you learn early on in your career.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "vassy",
+        "text": "A friend of mine works at an insurance company and used Testicle as a test name. It wasn't that funny when a customer called his workplace asking why he got a letter that starts with \"Hello Mr Testicle\".",
+        "children": [
+          {
+            "author": "chdir",
+            "text": "D\u00e9j\u00e0 vu : https://github.com/karma-runner/karma/issues/376",
+            "children": []
+          },
+          {
+            "author": "philbarr",
+            "text": "I used to work at a place where a guy used, \"Hello Fuckers\" as test data. Our manager got a very angry call from a customer who printed out a 300 page report with, \"Hello Fuckers\" at the end of every line.",
+            "children": [
+              {
+                "author": "vijayr",
+                "text": "I know I am not supposed to, but I laughed at this one :pOne of my former colleagues used to put weird error messages (made up words mostly, but really funny to pronounce). One of these messages escaped QA and went to a customer - but this was a nice guy, and he called up and asked what that word means (it was a while ago, can't remember the word now).We didn't have anything to do one afternoon, so we searched google maps for names of funny places - there is a town called Hell. Imagine going there and reading the sign \"Welcome to Hell\". Good times were had at that job :p",
+                "children": []
+              },
+              {
+                "author": "dogma1138",
+                "text": "10 years ago I built an internal system for tickets (really old school VB and internal access db) for helpdesk & ISM the internal error code for closed tickets due to user error was id10t it was an internal joke until they decided to pull data from it into the new CA unicenter system which then lead to a bunch of quite important people's names appear with the column next to it saying id10t on the big 50\" plasma screens in the new NOC/IT operations center.",
+                "children": []
+              },
+              {
+                "author": "sgdread",
+                "text": "I had idea to use something like this in our test data, but then decided to use \"John Malkovich\" instead. Indeed, it worked really good when test system accidentally sent data to prod system: everyone was immediately alerted, but nobody were offended.",
+                "children": []
+              }
+            ]
+          },
+          {
+            "author": "eitally",
+            "text": "I had a Brazilian group in my previous job, and one of the teams ran global SQA.  You could not imagine the frequency with which we talked about testes (= tests in PT).",
+            "children": []
+          },
+          {
+            "author": "Pxtl",
+            "text": "I always tell my team: never do dirty or offensive jokes in code or test data or filenames.  It will be seen by someone important.  This has happened many times.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "jakejake",
+        "text": "In a moment of pure debugging hell and hate, I put an alert with the text \"WTF!\" for a condition that should never occur. I could never get it to reproduce and, due to some distraction, I checked in the code with the alert still there.I probably don't have to mention who got that alert while working one day.  The president of the company, of course! Luckily for me it was not a customer-facing function & they found it funny.",
+        "children": [
+          {
+            "author": "dev360",
+            "text": "I have a habit of doing print(\"fuck\")/raise Exception(\"fuck\") ... Will not stop until I get caught - so far, so good.",
+            "children": []
+          },
+          {
+            "author": "ddalex",
+            "text": "I used to do the same thing. Then, the error that spelled \"This should never happen!\" started to pop up. A couple of years after the original code was written.Now, older and wiser, I include full stack trace and my  explicit assumptions on all errors - orders of magnitude easier to debug than cryptic error messages. Treat your future self kindly !",
+            "children": [
+              {
+                "author": "72deluxe",
+                "text": "I put asserts in code for things that shouldn't happen. Sometimes I put them in debug mode only for friendlier behaviour.",
+                "children": []
+              },
+              {
+                "author": "jakejake",
+                "text": "I usually have error logging/reporting with full stack trace. This was a quick one-off that I definitely didn't mean to commit! One web app that I worked on years ago would save the entire session state of the user on error. We had a dev tool that would allow us to jump in with all of our session state all set exactly as this user on the exact spot where they had the error. It was pretty great for reproducing most errors except one pesky one that would show up in the logs randomly.Finally, one day I accidentally triggered that annoying error by doing a specific sequence of things and then clicking the browser back button a few times, then doing another specific sequence. That was a day of celebration!",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "jakejake",
+        "text": "Probably wasn't an attempt at being funny, but more just named after desktop debugging tools for inspecting threads and such that have \"spy\" as part of the name.The skull, perhaps was just having some fun, though!",
+        "children": []
+      },
+      {
+        "author": "mikegerwitz",
+        "text": "For one of my company's web apps (that customers use), for internal development, if too many errors occur within 1 second, it shows a \"You're in deep shit :O!\" dialog and starts pulsing the page background red.  It brings some humor to an absolutely terrible situation.But the build strips it for production during minification along with a bunch of other development-only code that will never make it in.Just be careful, and have fun.  It's what hacking's all about. :)",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "courtneypowell",
+    "text": "I experienced the same issue today. Entire screen was blank with the exception of the page header. I was only able to access my mail in an incognito browser.",
+    "children": []
+  },
+  {
+    "author": "nodesocket",
+    "text": "I'm guessing just one or a small number of servers were in debug mode by accident, thus like winning the lottery that your request hits a debug server.",
+    "children": []
+  },
+  {
+    "author": "sauere",
+    "text": "I experienced the exact same issue on a paid Google Apps for Business account yesterday evening around 11pm CET.Creeped me out, i assumed it was some Browser Plugin gone rouge.",
+    "children": [
+      {
+        "author": "tajen",
+        "text": "Did you deactivate all your browser plugins since? I activate them on demand and keep them off most of the time (especially browser screenshot tools and syntax coloration of json).",
+        "children": []
+      },
+      {
+        "author": "WCityMike",
+        "text": "You never know, a little mascara and rouge can make those Browser Plugins look really nice.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "nishantmodak",
+    "text": "I can see this in my inbox too!",
+    "children": []
+  },
+  {
+    "author": "tedchs",
+    "text": "FYI this is a known issue: https://support.google.com/a/answer/6166309?hl=en",
+    "children": []
+  }
+]

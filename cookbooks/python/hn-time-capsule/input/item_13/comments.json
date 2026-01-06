@@ -1,0 +1,485 @@
+[
+  {
+    "author": "Bahamut",
+    "text": "Awesome work by the TypeScript team - they have been moving very fast to improve TypeScript over the course of this year, and I am impressed by the amount of effort Microsoft has poured into this. Using TS now is pretty nice, and has already paid dividends at work in catching some subtle bugs",
+    "children": []
+  },
+  {
+    "author": "lukasm",
+    "text": "Polymorphic this Typing seems like a major change with many possible corner cases. I think Dart .. operator is a better solution    newModel.setupBase().setupAdvanced();\n\nbecomes    newModel..setupBase()..setupAdvanced();",
+    "children": [
+      {
+        "author": "Arnavion",
+        "text": "That assumes setupBase(), etc are either void-returning or return the this-instance (newModel). It won't work if each method returns a new instance, such as methods of immutable collections.Edit: Since this is hard to google for, this is called the \"cascade operator\". The given example is equivalent to:    newModel.setupBase(); newModel.setupAdvanced();\n\nThat is, it ignores the result of the method and runs the remaining part of the statement with the LHS of the operator.",
+        "children": [
+          {
+            "author": "mythz",
+            "text": "> That assumes setupBase(), etc are either void-returning or return the this-instance (newModel).This is Incorrect, it doesn't assume anything. Dart's method cascades just returns the receiver, it doesn't matter what the method returns, it's value is ignored and receiver is returned instead.http://news.dartlang.org/2012/02/method-cascades-in-dart-pos...Since the return value is ignored, it's only useful for methods with side-effects.",
+            "children": [
+              {
+                "author": "spion",
+                "text": "It assumes you have a stateful, side-effectful API when you could instead have an API that returns new immutable objects of the same type",
+                "children": [
+                  {
+                    "author": "spankalee",
+                    "text": "In that case instead of cascades you just use regular invocation.",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "author": "Arnavion",
+                "text": ">This is Incorrect, it doesn't assume anything. Dart's method cascades just returns the receiver, it doesn't matter what the method returns, it's value is ignored and receiver is returned instead.... which would only be useful if the method was void-returning or returned the this-instance, i.e., it didn't return a new instance and left the LHS unmodified.",
+                "children": [
+                  {
+                    "author": "mythz",
+                    "text": "> which would only be useful if the method was void-returning or returned the this-instanceSimply untrue, there are plenty of times methods have side-effects that return something other than void or itself, e.g:  - Incrementing a value and returning the current value\n  - Inserting or Updating rows and returning the number of rows affected\n  - Setting an entry and returning whether there was an existing entry or not",
+                    "children": [
+                      {
+                        "author": "Arnavion",
+                        "text": "The example I was responding to was about \"setupBase\" and \"setupAdvanced\"...",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "author": "sjrd",
+            "text": "> It won't work if each method returns a new instance, such as methods of immutable collections.TS' this type does not allow that either. You have to return `this`, and nothing else.This can be explained by inheritance. If you extend a class with a method returning a `this` type, but not returning `this`, somehow you should be forced to override that method. But you probably don't want that.Also, the `this` type introduced by TS is basically equivalent to Scala's `this.type`.",
+            "children": [
+              {
+                "author": "Arnavion",
+                "text": "D'oh! You're right of course.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "carterehsmith",
+    "text": "To me, this appears to be the way to go. Javascript + Typescript. Rather than deciding on weak (dynamic) typing vs strong typing, you pick both - incremental typing, as allowed by Typescript.Want to bang up a quick solution, as in MVP?\nUse bare-bones Javascript, it is all valid Typescript. So you get dynamic typing. And if you do not care about strong typing, you can just stop right there.But if you, some day, for whatever reason, decide that you feel like strong typing: good - you do not need to rewrite your app in a different language - just go back to your code and add some type info, here and there, at your leisure. As you do that, you get all the benefits of static typing, ie compiler showing you obvious type-related errors, correct keyword-completion, exact refactorings, etc etc.Looks like the best of both worlds.",
+    "children": [
+      {
+        "author": "TazeTSchnitzel",
+        "text": "Can TypeScript do runtime enforcement at the boundaries between typed and untyped code, though?",
+        "children": [
+          {
+            "author": "swax",
+            "text": "No, and you wouldn't want the overhead. You can turn on warnings though if you want to make sure all your code is typed on compile. After compiling all type definitions are stripped and you're left with plain javascript.",
+            "children": [
+              {
+                "author": "msoad",
+                "text": "How do you enable warnings?",
+                "children": [
+                  {
+                    "author": "DCoder",
+                    "text": "swax is probably referring to the compiler option \"noImplicitAny\", which can literally turn variables whose type is not explicitly specified and cannot be inferred from their declaration as errors, instead of assuming they have the transparent `any` type.",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "author": "wildmusings",
+            "text": "This is a neat idea.  Even with a significant perf hit, it could be used during development, testing, and debugging.  You should propose this to the Typescript team! https://github.com/Microsoft/TypeScript/issues",
+            "children": [
+              {
+                "author": "TazeTSchnitzel",
+                "text": "I recall some paper from people who had already implemented it.Edit: It might have been this one: http://research.microsoft.com/apps/pubs/?id=224900",
+                "children": []
+              }
+            ]
+          },
+          {
+            "author": "pspeter3",
+            "text": "You can add type safe guards which uses reflection at runtime.",
+            "children": []
+          },
+          {
+            "author": "richdougherty",
+            "text": "Something like this?\"Safe TypeScript: Safe and Efficient Gradual Typing for TypeScript\"http://research.microsoft.com/apps/video/default.aspx?id=226...",
+            "children": [
+              {
+                "author": "TazeTSchnitzel",
+                "text": "That was precisely the paper I was thinking of.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "yesimahuman",
+        "text": "We've been using it over at Ionic, and that's exactly what we've found as well. Types are great...but they're overhead that most apps don't need on day one. When you just want to get something up and running you can skip them. Once you dig in and really build out the application, you can add them and get a bunch of great benefits (type safety, autocompletion, \"free\" API documentation, etc.).On top of that, tsc is possibly the fastest/easiest to use transpiler out there, which helps.",
+        "children": [
+          {
+            "author": "devsquid",
+            "text": "You consider typing to be an over head? Do you really reuse variables within a scope to refer to different types? I feel like that would produce confusing to read and use code.IMO dynamic typing is hard to work with and slows things down. \"Auto-typing\" or type inference like in Swift, Kotlin, or Dart is the most amazing thing ever. It gives you the safety of static types and the \"speed\" of coding of dynamic types.",
+            "children": [
+              {
+                "author": "dietrichepp",
+                "text": "I think the overhead here is the programmer time spent specifying the types in a program, which is why everyone loves type inference.This is a common communication error: when you read \"typing\" you think \"static type system\", but when the parent wrote \"typing\" it almost certainly meant \"explicit type annotations\".",
+                "children": [
+                  {
+                    "author": "devsquid",
+                    "text": "No I understand, which is why I think type inference is a much better solution than dynamic typing. I use Python and JS often and I am constantly looking up types of arguments for functions and what their return types is. JSDoc helps, but its pretty tedious. I think dynamic typing is much slower to actually code in.",
+                    "children": [
+                      {
+                        "author": "yesimahuman",
+                        "text": "Personally, I agree with you that, once you know the type system, you're more productive with it. However, TypeScript is new, and can be difficult to transition to for some people. One example is dealing with some gotcha's like adding new properties to things like window: http://stackoverflow.com/questions/12709074/how-do-you-expli...",
+                        "children": [
+                          {
+                            "author": "devsquid",
+                            "text": "Is the type system that different from Javascript? I remember looking at it back around 1.0 days and it seemed like basically the same as Javascript, which was one of the reasons I decided not to pursue implementing it in my work.",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "author": "fsloth",
+                    "text": "\"I think the overhead here is the programmer time spent specifying the types in a program\"There are different overheads on program structure and verbosity which goes way beyond type annotations, depending on the language used and the style of the particular developer.For example, in dynamic languages, a single container such as a list can contain any entities and functions can accept any entity as a parameter.Java and C# can achieve this same using just object handles - but in other statically typed languges one either implements several containers and functions, or uses or creates an algebraic datatype using the language native typing (i.e. Scala, F#, etc) or invents ones own which is then utilizes in the container signature or function definition.",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "ahoge",
+        "text": "> Want to bang up a quick solution, as in MVP? Use bare-bones JavascriptActually, adding the bare minimum of type annotations (fields & function signatures) and type casts (e.g. casting whatever you get from querySelector into the concrete type of element) results in fewer key presses, because you can auto-complete everything and because you get additional machine-assistance like call tips and type checks.So, you'll be actually faster if you add some types. Type inference does cover quite a lot. In practice, you'll need very few annotations and casts.This Dart demo, for example, only needed a single type cast to be fully typed:https://dartpad.dartlang.org/e23e4d137570c652591e",
+        "children": [
+          {
+            "author": "devsquid",
+            "text": "Man type inference is so nice.",
+            "children": []
+          },
+          {
+            "author": "tkubacki",
+            "text": "WOW ! this code is impressive - do you have more examples like this?",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "haberman",
+        "text": "How is this different from using Facebook Flow? I have been using Flow on a JavaScript project, along with Babel for ES6, and enjoying the experience quite a lot.",
+        "children": [
+          {
+            "author": "dietrichepp",
+            "text": "Typescript is older (2012 vs 2014), more mature and stable (v1.7 vs v0.x), has better tooling support (autocompletion in Visual Studio), is easier to install (you only need NPM), has better documentation, and is easier to Google (try searching for \"flow\" online!).  There are also plenty of common libraries with Typescript annotations, so you can just use e.g. Phaser and Typescript together without any extra work.  Other than that Flow and Typescript are fairly similar.  Perhaps someone who has used Flow can explain what makes it different from Typescript.",
+            "children": [
+              {
+                "author": "strmpnk",
+                "text": "Flow offers some interesting control over things like optional types (nullable) and intelligent understanding of type tests in conditionals or calls to libraries like invariant. I've had these sorts of features catch quite a few bugs in my editor before even running a single test.Flow is also based on a daemon which continuously monitors your code. As such, it incrementally checks your modules allowing it to be extremely fast once started.I ended up using flow since it fit with the language feature set I was using with Babel (JSX in react code being one example). Since then, I've grown to enjoy the flow based typing and the rather good support for optional and non-optional types.Looking at the code lately seems to show some interesting stuff in the pipeline too. Taint tracking seems like a very useful one that I'd love to implement and seems like a natural extension of the code-flow based type system.Flow could definitely use more documentation and more example code but I found the community on IRC extremely helpful and polite so perhaps it's not a bad time to start if you're willing to do a little reading on the site first: http://flowtype.org/docs/getting-started.html",
+                "children": [
+                  {
+                    "author": "spion",
+                    "text": "TypeScript has type guards, which covers #1. Also has custom type guards, which lets you write your own checks that constrain union types.TypeScript also has a language services server which runs as a daemon, lets you submit incremental edits to it and supports services such as autocomplete, rename refactoring and pretty much anything you see in visual studio or visual studio code.But yes, the type system has a couple of unfortunate flaws that are relics from its beginnings (cant express non-nullable types).",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "author": "curveship",
+            "text": "Also worth noting is that Flow is Mac and Linux only, no Windows support.  We're a mixed platform shop, so that excludes Flow.",
+            "children": []
+          },
+          {
+            "author": "aikah",
+            "text": "Flow doesn't run on Windows and isn't written in Javascript.",
+            "children": []
+          },
+          {
+            "author": "Keats",
+            "text": "We compared Flow and Typescript for our projects, you can see the articles https://blog.wearewizards.io/flow-and-typescript-part-1-flow and https://blog.wearewizards.io/flow-and-typescript-part-2-type...TL;DR: Flow inference is super nice but community and tooling is lacking compared to TypeScript imo so we ended up using TS",
+            "children": [
+              {
+                "author": "mercer",
+                "text": "Thank you for the links. I've been looking into both and also ended up with TypeScript, but for no particular good reason. These articles are helpful!",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "imakesnowflakes",
+        "text": ">To me, this appears to be the way to go. Javascript + Typescript.This is exactly how I feel. Typescript is amazing,  It feels simple and powerful at the same time. It appears too good to be true, and I will never write plain java script again.",
+        "children": []
+      },
+      {
+        "author": "ryan-allen",
+        "text": "When I bang something up, I'll use Visual Studio 2015 and Typescript from the get-go, now that I'm used to it I find it much faster due to the Intellisense on all my code, and all the browser code too (and anything else I add typings for [1]).I find it way, way, way more productive than plain old JS development without an IDE.[1] https://github.com/DefinitelyTyped/DefinitelyTypedEDIT: I always turn off optional any types, so everything has to be type annotated, even if that means I simply cast to an explicit <any>. I find that non trivial problems in JS become so much easier in TS due to the compiler and built-in refactoring tools. I can't think of anything negative to say about TS at all!!!",
+        "children": []
+      },
+      {
+        "author": "lmm",
+        "text": "The thing I found is that the safety benefits of static typing are pretty all-or-nothing. If your whole program is typed, you can maintain a much smaller level of test coverage and have the same defect rate (or alternatively you can maintain a much lower defect rate with the same level of test coverage). But untyped parts are \"infectious\": a type error in one part of a program can show up a long way away, having silently propagated through your generic code until it hit something that made very concrete use of the value. So if even 10% of the code is untyped, you end up needing the same test coverage you would in a dynamic language.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "TazeTSchnitzel",
+    "text": "> This type can be used in classes and interfaces to represent some type that is a subtype of the containing type (rather than the containing type itself)Could that not be achieved by having covariant return types instead?",
+    "children": [
+      {
+        "author": "Arnavion",
+        "text": "Sure, but that would require every subtype to override every method of the base type with a narrower return type, and do nothing except delegate to the base type in the body. It would be tedious boilerplate.Since the base type's implementation already returns `this`, it makes sense to be able to annotate the method as returning `this` and get the benefit automatically.",
+        "children": [
+          {
+            "author": "TazeTSchnitzel",
+            "text": "Ah, yes, that's a problem. In PHP, there's been some debate as to whether or not to support `static` (similar in function to TypeScript's `this`) as a return type, and that's one of the arguments in favour.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "dfabulich",
+    "text": "I missed it when I first read the blog post, so I figure it's worth emphasizing: the new async/await support is only available on JavaScript engines that already support \"function*\" generator functions: Node 4, Firefox, and Chrome, but not Safari or IE/Edge.Supporting async/await in ES5/ES3 is on the roadmap for TypeScript v2.0. https://github.com/Microsoft/TypeScript/wiki/roadmap",
+    "children": [
+      {
+        "author": "ahoge",
+        "text": "Edge 13 does support generators.http://kangax.github.io/compat-table/es6/",
+        "children": []
+      },
+      {
+        "author": "scanr",
+        "text": "You could also have a TypeScript to babel to ES5 workflow e.g.: http://gurustop.net/blog/2015/10/27/babel-typescript-compile...",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "netcraft",
+    "text": "Can you compile TS from inside of JS or TS? something like `babel.transformFile`, that gives you back the compiled code?",
+    "children": [
+      {
+        "author": "freditup",
+        "text": "Yes, you can: https://github.com/Microsoft/TypeScript/wiki/Using-the-Langu...",
+        "children": [
+          {
+            "author": "DCoder",
+            "text": "There are some subtle behavioural differences between the Language Service and the regular compiler, for example: https://github.com/Microsoft/TypeScript/issues/5243",
+            "children": [
+              {
+                "author": "freditup",
+                "text": "Good clarification. Perhaps the compiler API is the better choice here? I'm not fully aware of the differences / divisions between the two. https://github.com/Microsoft/TypeScript/wiki/Using-the-Compi...",
+                "children": [
+                  {
+                    "author": "DCoder",
+                    "text": "Interesting, I honestly don't know if that makes a difference.",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "trevordev",
+    "text": "Typescript has became my favorite language. The option of having types when you need them is great and the addition of async/await make working with promises a lot nicer. Ever since I've been able to use experimental features and get es6 support with typescript I've never looked back. The only thing lacking now is the tooling. The atom-typescript plugin is the best I've found but I would love to see better integration with other editors. Can't wait to see what comes to typescript next!",
+    "children": [
+      {
+        "author": "aozgaa",
+        "text": "I can't speak to atom, but have you considered Visual Studio Code? That and VS2015 are tightly integrated with the TypeScript compiler and language service (provides autocomplete, type hinting, go-to definition, etc.).For sublime, there is a plugin actively developed by Microsoft [1].For vim, the plugin YouCompleteMe provide autocomplete [2].Also, I haven't tried it, but there's an Emacs-mode, apparently [3].There are also numerous other alternatives I'm unfamiliar with.Hope this helps![1] https://github.com/Microsoft/TypeScript-Sublime-Plugin[2] http://valloric.github.io/YouCompleteMe/#intro[3] https://github.com/aki2o/emacs-tss",
+        "children": [
+          {
+            "author": "MasterScrat",
+            "text": "WebStorm (IntelliJ) support is really good as well.",
+            "children": [
+              {
+                "author": "drinchev",
+                "text": "I'm not sure how this support will be added though. So far the last WebStorm ( which arrived a month ago ) supports 1.6, but definitely not as good as let's say visual code.Example for that is lack of per module definition files .d.ts and package.json typing a property.I'm fairly In a mood to switch to visual code or Atom, since I write exclusively typescript nowadays.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "masonicb00m",
+        "text": "Visual Studio Code is really nice. Feels streamlined, compared to Atom.",
+        "children": []
+      },
+      {
+        "author": "wluu",
+        "text": "One of the atom-typescript guys (basarat) has built his own typescript focused editor: http://www.typescriptbuilder.comIt's built entirely in Typescript and is not based on the Electron shell. Why they built it is mentioned here https://github.com/TypeScriptBuilder/tsb/blob/master/docs/co...",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "ebbv",
+    "text": "I remember when MicroSoft tried to make it's own superscript of JS and people said \"Hey this is a bad idea. Standards are a thing for a reason and we should all stick to them.\" That argument was correct then and it's correct now, IMHO.Where is the objection in 2015? Is it just people are so desensitized by other companies attempts to make JS replacements (that for now compile to JS) that another one just doesn't bug anyone?I realize the temptation for big companies like Microsoft with thousands of devs to roll their own, but when every big company abandons standards to focus on their own little alcove we all suffer.And yeah, I realize you can frame it as they haven't abandoned the standard because TypeScript compiles to JS and yada, yada. But I disagree. If instead of focusing on TypeScript which you can only take advantage of by working in TypeScript, they focused on libraries for JS that we could all use, I think we'd all be better off. And that goes for all large corporations that decide to roll their own solutions instead of sticking to standards.Which is not to say JS can never be replaced, I'd say it's long overdue for replacement. But that's never going to happen by every big company rolling their own thing. Everybody has to come together.",
+    "children": [
+      {
+        "author": "trimbo",
+        "text": "> But that's never going to happen by every big company rolling their own thing. Everybody has to come together.Google has ditched their own and rolled their efforts into Typescript.http://techcrunch.com/2015/03/05/microsoft-and-google-collab...",
+        "children": []
+      },
+      {
+        "author": "dangoor",
+        "text": "There are quite a few differences from the old \"JScript\" days.First of all: TypeScript is liberally licensed open source. JScript was totally proprietary.Another aspect is that TypeScript is seeking to be a strict superset of JavaScript that evolves as JavaScript does (something that wasn't really happening in the JScript days) and is focused on specifically providing static types and tooling for types in JS. It's not a general \"embrace, extend, extinguish\" kind of thing at all, but rather a very targeted tool.TypeScript is really one of the most JavaScript-y languages that compile to JS. Most of the compile-to-JS languages are more radical divergences from JS.JS is not going to be replaced (though WebAssembly[1] will likely become an additional compile target), but compile-to-JS is going to continue to grow in popularity. Already, many people are compiling future-JS to present-day-JS.The browser vendors have found that the standards evolve best when people can actually write code against the standards before the standards are hardened. Compile-to-JS tools help with that. If optional static types and type inference become very popular via TypeScript and Flow, JS itself may evolve to support those features and then we'll have that standard.Microsoft is a better player on the web today than they have ever been before.[1]: https://github.com/WebAssembly/design",
+        "children": [
+          {
+            "author": "spion",
+            "text": "> TypeScript is really one of the most JavaScript-y languages that compile to JS. Most of the compile-to-JS languages are more radical divergences from JS.This is what I've been trying to get across for a while, thanks for the wording. Even CoffeeScript is a much bigger divergence than TypeScript (not only in syntax but in semantics, e.g. scope)",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "wtetzner",
+        "text": "Can't you use TypeScript libraries from plain JS?",
+        "children": [
+          {
+            "author": "mynameisvlad",
+            "text": "Of course, since TS compiles down to JS.",
+            "children": [
+              {
+                "author": "thomasz",
+                "text": "More than that, it compiles to readable JS",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "Sophistifunk",
+        "text": "Having seen pervasive API arity changes that would take 2 hours in Java take a week in Javascript, I couldn't disagree more strongly. Sure, you can write 10x more unit tests to replicate a compile-time type checker, but you basically have to hold a gun to the head of every developer to enforce it. And unless you're the boss, you don't get to hold a gun to your teammates. The compiler does.",
+        "children": [
+          {
+            "author": "netheril96",
+            "text": "I am all for static typing and type inference. But are you sure `tsc` could hold the gun to your teammates? They could just write regular js, which is also valid typescript. They could also throw up their hands and annotate most types with `any`.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "castell",
+        "text": "I upvoted you, because you are right.We would be better off, adding optional typing to JavaScript 6/7. They already added \"class\" syntactic sugar thanks to them.Dart and TypeScript just divide the devs and open code base. It's like finding a great project on Github only to figure out it coded in language XY.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "tlarkworthy",
+    "text": "Polymorphic this is really useful for the 'cannot reference a type twice in the type list' issue you get when doing generics. Since learning it I have used it many times. It's solves many issues like typing a clone method. Awesome addition!",
+    "children": []
+  },
+  {
+    "author": "Nitramp",
+    "text": "We're super happy with TypeScript in Angular, it's working great for us, and having the option (!) to easily use it will be great for Angular users.A note on all the praise for type inference: local type inference is super cool as it saves on a lot of boiler plate (`Foo foo = new Foo(); // foo` anyone?).But global type inference, i.e. across function and module boundaries, has its drawbacks. Apart from performance cost, the most important is IMHO understandability. If you don't have explicit types across module boundaries, it can easily become hard to decide just what a type is supposed to be, e.g. if your code doesn't compile, but the compiler cannot tell you which part of it is wrong, because all the types are inferred. That can easily lead to \"wall of text\" C++ compiler style error messages. Same if some new library version changes type inference patterns, your code might suddenly break in surprising and hard to understand ways.I think TypeScript's (& Go's) choice of local type inference is a good mix of less boilerplate and good understandability, together with gradual typing via `any`.",
+    "children": []
+  },
+  {
+    "author": "hokkos",
+    "text": "That's great but is there any ES6 minification tool that handle ES6 ? Because last time I checked uglify didn't handle generators (and I assume by async to ES6 target they transform it to generators).",
+    "children": [
+      {
+        "author": "flyingmutant",
+        "text": "There is http://rollupjs.org/, which is quite young though.",
+        "children": [
+          {
+            "author": "hokkos",
+            "text": "It uses babel, so it uses regenerator ( https://github.com/facebook/regenerator ) and then uglify probably.It will be great when typescript can do it natively because it knows at lot more before the being translated to javascript : https://github.com/Microsoft/TypeScript/issues/8",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "stewbrew",
+    "text": "I'd like to see a thorough comparison of typescript, haxe, scala.js, and also gopherjs. Which (statically typed) language/compiler provides the best experience for developers who want to develop \"native\" programs (I include here jvm and node) and javascript for the web with one language using the same libraries?",
+    "children": [
+      {
+        "author": "astrafoo",
+        "text": "http://www.scala-js.org/ has a nice comparison between JavaScript, ECMAScript 6, TypeScript and Scala.I'm not sure there is much substance to develop \"native\" programs in TypeScript/Haxe/... they don't have an ecosystem outside the web, while Scala has tons of mature libraries, access to all the Java stuff ever written, and runs on the best, mature, well-supported, high-performance runtime you can get.",
+        "children": [
+          {
+            "author": "stewbrew",
+            "text": "ts has the node ecosystem, and haxe provides easy access to node/pyton/c++/java libs. gopherjs is able to compile a significant amount of the go standard lib -- I don't know if this is true for arbitrary go libs too.Thanks for the reference.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "pluma",
+    "text": "TypeScript isn't competing with Flow, it's also competing with Babel. I still don't understand why MS keeps wasting energy on implementing ES.next features in their transpiler when there's already an established modular open source solution available. I understand why it started that way but even FB stopped using their own transpiler (JSX) once Babel gained traction.",
+    "children": [
+      {
+        "author": "lukasm",
+        "text": "because TypeScript is a super set of ES.",
+        "children": [
+          {
+            "author": "pluma",
+            "text": "That would have been an argument when Babel was still 6to5.Babel supports all kinds of extensions to ES including ES proposals and extensions like JSX or type annotations.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "MasterScrat",
+        "text": "> I still don't understand why MS keeps wasting energy on implementing ES.next features in their transpiler when there's already an established modular open source solution available.Isn't this like asking why there still are people \"wasting energy\" on promise libraries now that several well-established ones exist?Isn't it good for us developers to have more choice?",
+        "children": [
+          {
+            "author": "pluma",
+            "text": "The problem is that using TypeScript locks you into TSC.TypeScript solves one fairly specific problem: adding type annotations and static type checking to JavaScript. In this regard it competes with Flow.But unlike Flow it ships its own transpiler. So if you want support for any new feature you have to wait for the TypeScript team to implement it or you have to abandon TypeScript altogether.Compare this to how Facebook dealt with JSX. JSX solved one fairly specific problem: adding syntactic sugar for nested `React.createElement` calls.Facebook used to provide their own JSX transpiler with support for various experimental features. This had the same problems as using TSC does now. So instead they just replaced their transpiler with Babel using the JSX plugin.In other words, no matter what new features other plugins add to Babel in the future, JSX only has to deal with transpiling JSX.It's not about diversity, it's about separation of concerns. TSC is for TypeScript primarily but it makes things messy by adding all kinds of unrelated crap it has to support to compete with Babel. That creates a lot of potential for subtle differences and bugs.I'm not talking about the features TypeScript adds, specifically. The ES proposals are likely going to end up in the ES standard eventually (unless they are dropped in which case you likely don't want to be using them anymore anyway), translating \"future ES\" to \"current ES\" (or \"previous ES\" as most Babel plugins produce code that works fine in ES3 environments) is an entirely separate problem from translating \"proprietary extension X\" (like JSX or TS) to some flavour of ES.But that's the crux of the problem, really: TS isn't intended to be an extension to ES. It's conceived as an entirely separate language that just shares a common subset. It diverged after ES5 and carried on separately. It belongs in the same category as CoffeeScript or LiveScript or ClojureScript, not the same category as JSX or Flow.",
+            "children": [
+              {
+                "author": "jbrantly",
+                "text": "You don't actually have to use the transpiler features of TypeScript if you set `--target` appropriately. And Flow has the same problems regarding language features. Flow doesn't just magically understand all JS features now and forever. When new stuff comes out it has to be added to Flow, same with TypeScript.Edit: To be clear though, I agree with you about the TS transpiler. I think TypeScript's strength is in its static type checking, not in its transpiling.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "Keats",
+        "text": "You can use TypeScript just for the types and hand the es6 files to Babel after.Also TypeScript existed before Babel and there are some features not supported by Babel (modules, public/private). See this issue for more details https://github.com/Microsoft/TypeScript/issues/1641",
+        "children": [
+          {
+            "author": "pluma",
+            "text": "That issue is back from when Babel was still called 6to5.Babel didn't support JSX, decorators or type annotations. Now it does. Babel 6 is even more modular, lending itself even more to extension than Babel 5 did before.There's nothing stopping MS from adding TS extensions to Babel.",
+            "children": [
+              {
+                "author": "Keats",
+                "text": "I'm guessing Microsoft is not keen on starting from scratch for no visible benefits for them. You could try opening another issue to see if they changed their minds though",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "MasterScrat",
+    "text": "Tangential question: which IDE are you using for TypeScript?I'm quite happy with WebStorm on OSX but I am wondering if a switch to Visual Studio may be worth it.",
+    "children": []
+  }
+]

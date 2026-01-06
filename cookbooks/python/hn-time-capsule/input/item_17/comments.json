@@ -1,0 +1,67 @@
+[
+  {
+    "author": "iaw",
+    "text": "This was a really helpful article, thank you for posting it. I've been cognizant of these issues for some time but I hadn't seen any articles encapsulating them so cleanly. Thank you.",
+    "children": []
+  },
+  {
+    "author": "mathgenius",
+    "text": "I spent a few months recently on a tough ML project, and pretty much got my ass kicked the entire time. It seemed like every hurdle that I overcome was met with another as I turned up the \"voltage\". I came to regard every decision that I made (this includes all kinds of hyperparameters, but also design decisions) with extreme suspicion. I don't really think there is a convincing way around this: any kind of optimization has a context outside of which the optimization no longer makes sense. And so one tries to include this context, but this turns into a meta-optimization with a meta-context assumed, and so-on in infinite regress. I guess I am agreeing with the author: \"if two algorithms achieve the same performance on a task, the one with less hyperparameter optimization is generally preferable.\"It really seems like there should be more of a theory around these issues. Even a dreadfully abstract and/or terse VC-dimension-scariness level of a theory.I keenly await the author's next post.",
+    "children": [
+      {
+        "author": "wbeckler",
+        "text": "There are some formal methods and rules of thumb for avoiding trouble in this regard. Take a look at bayesian and entropy-based maximization strategies. Hyperparameter optimization can be looked at using either strategy. Also take a look at https://en.wikipedia.org/wiki/Minimum_description_lengthThere's definitely a lot of theory, but it hasn't yet been turned into readily usable R libraries.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "venuzr",
+    "text": "Basic question(s) as I am not a data scientist but have just taken a machine learning course (https://www.coursera.org/learn/machine-learning/ )Won't trying different combinations of hyper parameters/lambda (over a small range) help us arrive better instead of manually tuning it?  Or is that what the author meant by manual tuning?",
+    "children": [
+      {
+        "author": "rjbwork",
+        "text": "I'm not a data scientist per se, but I've been working with some (boss and co-worker) to get some stuff operationalized and into production, so I've been responsible for generating inputs, helping analyze/visualize outputs, and building linear optimization models, so I've got some very basic experience.As I understand it, one of the pitfalls of automatic tuning is that it becomes hard to account for seasonality and you will likely end up with useless parameters - for instance a customer ID is rarely a good parameter to optimize on, even as a categorical variable, except in very specific cases.  It is probably a proxy variable for one or more other ones that you need to tease out of the rest of the data.(warning, potentially me talking nonsense coming up) Automatic tuning is no substitute for a talented analyst who knows the data well and understands the goal.  But if you've got hundreds to millions of parameters, you may not have another choice really.",
+        "children": []
+      },
+      {
+        "author": "dasboth",
+        "text": "Depends what you're tuning. If it's something like the number of trees in a random forest, definitely do that automatically. If it's the number of clusters in a clustering problem, that's where you'd be asking an expert something like \"how many distinct groups of customers do you think we should try to split them into?\" and go from there. But even in that scenario, the expert's opinion might just be your starting point for automatic tuning.",
+        "children": []
+      },
+      {
+        "author": "dswalter",
+        "text": "Author here: whether the hyperparameter tuning is done automatically or manually is not as important for what I was trying to say here.  But yes, any of {grid-search, random-search, bayesian-optimization, etc} is likely to be more effective than manually tuning to squeeze out those last ounces of performance.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "stdbrouw",
+    "text": "I think you really get into this sort of mess when you want to squeeze the last ounce of predictive performance out of an algorithm (or ensemble of algorithms). When you just want performance that is better than a plain old regression, I've found that just picking sane defaults for some hyperparameters (e.g. RBF kernel for SVM) and doing a small grid search for others (e.g. slack parameter for SVM, cost-complexity for trees) works very well.In Python this is easy enough with scikit-learn, and in R the caret package makes semi-automatic tuning really easy.So the question becomes: how far do we really need to go to create business value, and does it actually make sense to go all Kaggle on the problem?",
+    "children": [
+      {
+        "author": "dasboth",
+        "text": "I'm only a data science student at the moment so I don't have much \"real world\" experience with machine learning, but this is what I would have thought. If you're trying to get quick value from a dataset, you can probably run a \"vanilla\" random forest or something and get pretty good results. Then, if you want to use it in production somehow, you can go back and \"go all Kaggle\" (I like the expression!) on it.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "dasboth",
+    "text": "This is a well-written article, and the concepts are explained clearly, thanks for sharing. I'd just like to add a caveat.When the author says \"if a researcher runs 400 experiments on the same train-test splits\" - then depending on what he means by 'test' set, that researcher is wrong. In pretty much all machine learning literature I've come across, it's drilled into you that you never look at your held-out test set until the very end. Hyperparameter optimisation and/or model selection happens on the training set and only when you've tuned your hyperparameters and selected your best model do you run the model on your test set to see how it's done.Once you've run the model on the test set once, you can't go back to tweak your model because you're introducing bias and you no longer have any data left that your model's never seen before.To avoid overfitting, you can use cross-validation to effectively re-use your training set and create multiple training/validation splits. (As an aside, I find it frustrating how liberally different sources switch between 'validation set' and 'test set', it's really confusing).",
+    "children": [
+      {
+        "author": "dswalter",
+        "text": "OP here: I probably should have made it clearer that the using the same train-test splits is verboten.Your second and third paragraphs are also exactly correct. I attempted to make those points in the post, but you've done so more effectively here.",
+        "children": [
+          {
+            "author": "dasboth",
+            "text": "Yeah I just thought it was worth hammering it home, especially because of some literature's use of \"test set\" to mean \"validation set\" which can really throw off a beginner like myself.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+]

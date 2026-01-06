@@ -1,0 +1,83 @@
+[
+  {
+    "author": "laarc",
+    "text": "Terra seemed promising when I ran across it a month ago. Does anyone know if it's possible to use LuaJIT's ffi module while writing Terra code?What I mean is, there is a large body of existing code that I'd like to run alongside Terra. But if the choice is Terra xor LuaJIT, this becomes difficult.",
+    "children": [
+      {
+        "author": "an_ko",
+        "text": "You might be looking for http://terralang.org/api.html \u00a7 Managing Terra Values from Lua.  Quoting:> We provide wrappers around LuaJIT\u2019s FFI API that allow you to allocate and manipulate Terra objects directly from Lua.",
+        "children": []
+      },
+      {
+        "author": "corysama",
+        "text": "You can use Lua, Terra or both at runtime. The Lua part is LuaJIT including the ffi.  The Terra part is LLVM and can link directly to C (maybe C++?).  Lua can be used as a metaprogramming system to produce a static Terra .o or exe.  Or Lua can be used as a runtime that can JIT and invoke Terra functions on the fly.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "an_ko",
+    "text": "As an experiment, I've tried replacing C with Terra for a few projects. It feels like C++, except without the constant guilt. Having a proper hygienic macro system (instead of C's very limited string-replacement \"macros\" or C++ template hell) is a really helpful abstraction, and the compile-time stuff you can do can basically act as a build system.So I got excited and planned to use it to make a game, but although it can import existing C libraries [1], it can't import global variables, constants, or macros that take arguments, which puts a whole lot of existing libraries just out of reach.This doesn't seem to have stopped Leonard Ritter from using it for Nowhere anyway, though being a crazy genius, he seems to have written his whole environment from scratch. [2] [3][1]: http://terralang.org/api.html#c-backwards-compatibility\n[2]: http://blog.duangle.com/2015/01/conspire-programming-environ...\n[3]: https://bitbucket.org/duangle/nonelang/src",
+    "children": [
+      {
+        "author": "nickpsecurity",
+        "text": "\"Having a proper hygienic macro system (instead of C's very limited string-replacement \"macros\" or C++ template hell) is a really helpful abstraction, and the compile-time stuff you can do can basically act as a build system.\"Exactly. I long ago came to the conclusion that any modern systems language should have a hygienic, macro system to balance productivity/maintenance against performance. Just makes things so much easier. That morons can abuse it is no reason not to have it in the language as they abuse everything haha.",
+        "children": []
+      },
+      {
+        "author": "shahbazac",
+        "text": "How is terra's performance? You sort of compared it to C++, can it actually be compared with C++ in terms of latency performance?",
+        "children": [
+          {
+            "author": "an_ko",
+            "text": "Very good. I didn't benchmark it myself, but the language is designed for high-performance computing, and the authors' PLDI paper [1] shows it is competitive. Given that at the lowest levels, Terra basically reimplements C, and both compile to LLVM IR, similar performance is unsurprising to me.The main point that gives Terra an edge is that its macro system makes implementing and testing potential optimisations easier.[1]: http://terralang.org/pldi071-devito.pdf \u00a7 6. Evaluation",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "haberman",
+    "text": "Previous discussion: https://news.ycombinator.com/item?id=5702793",
+    "children": [
+      {
+        "author": "rch",
+        "text": "Have a quick look at the 'past' link below the article title. It's a handy new feature.",
+        "children": [
+          {
+            "author": "nickpsecurity",
+            "text": "Didn't know it was there. Thanks for the tip!",
+            "children": []
+          },
+          {
+            "author": "haberman",
+            "text": "Interesting, but I don't think it's useful because it doesn't actually tell you if previous discussion exists or not until you actually click it.  I'm not going to click \"past\" on every story for the 1% chance that it will actually have results.For it to be useful (to me at least), it should only show up if previous discussion exists, and it should be more prominent.",
+            "children": [
+              {
+                "author": "mturmon",
+                "text": "Insightful comment.I thought the \"past\" link was cool when it was pointed out to me.  Sometimes past discussions are superior to the current one.But in practice, I almost never use \"past\", except when I'm pretty sure I have seen the piece before.  Your suggestion might fix the issue.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "nickpsecurity",
+    "text": "Site is down right now. Here's Wayback Machine:https://web.archive.org/web/20150424222319/http://terralang....",
+    "children": []
+  },
+  {
+    "author": "badwolf93",
+    "text": "there's nothing wrong with Lua",
+    "children": []
+  },
+  {
+    "author": "Sleaker",
+    "text": "This looks very cool, my only concern is that luajit is lagging behind LUA and is in need of a new maintainer, how bound to luajit is terra for JIT compilation features? Is it something the terra developers are going to help with?",
+    "children": []
+  }
+]

@@ -1,0 +1,253 @@
+[
+  {
+    "author": "degenerate",
+    "text": ">> Adobe will release an HTML5 video player for desktop browsersWill this be some kind of Adobe AIR wrapper application to play \"packaged\" HTML5 games, similar to how the desktop SWF player opens swf files? I can't imagine a need for this except for offline content (such as installation intro screens when you pop in a driver CD, or download a standalone kid's game).",
+    "children": [
+      {
+        "author": "andrebalza1",
+        "text": "I would expect a DRM-compliant video component in it",
+        "children": []
+      },
+      {
+        "author": "thefederale",
+        "text": "it's a video player. http://blogs.adobe.com/primetime/2015/11/adobe-primetimes-co...",
+        "children": [
+          {
+            "author": "warfangle",
+            "text": "Yeah. Looks like an html5 version of ye olde OSMF combined with a delivery platform.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "muglug",
+    "text": "Big move, but it's curious that they're still positioning themselves for all-vector output when, animation-wise, that style looks pretty dated.",
+    "children": [
+      {
+        "author": "Raphmedia",
+        "text": "I don't see cartoons, animes and animated graphs dying anytime soon.Take a look at some of Adam Phillips work if you want to see some glorious flash animations.",
+        "children": [
+          {
+            "author": "muglug",
+            "text": "They're great! But they're great in spite of Flash's limitations, not because Flash is a great tool for animators. Adam Phillips' built-for-Flash examples are also fairly old.A bunch of basic tooling present in other animation systems, like virtual cameras, motion blur & particle effects are missing.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "georgechen",
+        "text": "The current My Little Pony TV show (and the 3 feature length films) is still primarily put together via Flash 8.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "angvp",
+    "text": "Just kill effing flash!",
+    "children": [
+      {
+        "author": "wyattjoh",
+        "text": "Here was me hoping that this was them announcing EOL for Flash all together.",
+        "children": [
+          {
+            "author": "WorldMaker",
+            "text": "I was also hoping that maybe at least they might officially take ownership of something like Mozilla's Shumway \"Flash in HTML5\" runtime and helping existing Flash users migrate away from Flash the plugin.",
+            "children": [
+              {
+                "author": "bobajeff",
+                "text": "Or OpenFL/haxe.",
+                "children": []
+              }
+            ]
+          },
+          {
+            "author": "fenomas",
+            "text": "It's basically been in maintenance mode for years. All EOL would mean is no more security fixes - why would that be a good thing?",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "soccerdave",
+        "text": "There is a still huge industry of web games (99% of them in Flash) because that is still the best technology to write cross-platform games in the browser.  Kongregate, Armor Games, millions of people playing games on Facebook.",
+        "children": [
+          {
+            "author": "benologist",
+            "text": "I wouldn't exactly call it a huge industry, it's been shrinking for years as indie devs shifted focus to mobile and steam.  FGL.com the main marketplace for monetizing flash games has scheduled shutdowns [1] of all their flash services to focus on their mobile services, they also announced their ad revenue as one of very few providers was collectively down to $50/day [2] when they announced that was shutting down last month.[1] https://www.fgl.com/blog/2015/11/fgl-to-drop-support-of-cert...[2] https://www.fgl.com/blog/2015/11/fgl-will-no-longer-support-...",
+            "children": [
+              {
+                "author": "soccerdave",
+                "text": "Flash games are easily a multi-Billion dollar a year industry.  You mention games shifting towards Steam.  I'm pretty sure that there are a lot of games on Steam that are still created in Flash.  Flash (through Air sdk) provides an amazing way to target web and all major mobile platforms with the same code base.Also, I wouldn't judge popularity by money made through ads.  The industry has long since shifted to in app purchases.",
+                "children": [
+                  {
+                    "author": "benologist",
+                    "text": "Can you show any Flash games making heaps of money?  I have games of my own on both Kongregate and Armor Games from late last decade / early this decade, the business models behind that type of flash game (which was mostly licensing and ads) has almost entire disappeared and not been replaced.",
+                    "children": [
+                      {
+                        "author": "soccerdave",
+                        "text": "Here are a bunch making anywhere from $50k per day to a whole lot more.  You may need to be Facebook logged in to view them.https://www.facebook.com/games/query/top-grossing/Edit:  Also, I believe Kongregate has a whole ton of games with In-App Purchases.  I don't have any experience publishing on there but I do have experience on Facebook.",
+                        "children": [
+                          {
+                            "author": "benologist",
+                            "text": "Facebook games are also declining, from Zynga at their peak to collectively less revenue than Candy Crush Saga on iOS.http://www.businessinsider.com/facebook-payments-revenue-dec...",
+                            "children": [
+                              {
+                                "author": "soccerdave",
+                                "text": "While it has declined, it is still almost a billion dollar industry on its own just on Facebook.  You asked for \"examples of games making heaps of money\" and I included links to a bunch of them.",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "author": "pjmlp",
+                "text": "Flash compiles to native code for mobile OSes.",
+                "children": []
+              },
+              {
+                "author": "freditup",
+                "text": "Just to clarify, when you say \"shutdowns of all their flash services\" this means they shut down their distribution system that was for distributing your game to portals automatically as well as one other service. They didn't shut down the flash game marketplace or stop all flash-related activities.",
+                "children": [
+                  {
+                    "author": "benologist",
+                    "text": "Ads (FGL Ads, announced shutdown in a separate post 1 or 2 weeks ago, follows the shutdown ~a year ago of the former largest ad company in this space Mochimedia), in-game services (Gamersafe leaderboards, achievements etc), and distribution (Flash Game Distribution).  The marketplace is the only thing staying up although it's massively declined too and now has 0 people working on it after layoffs a few weeks ago.",
+                    "children": [
+                      {
+                        "author": "freditup",
+                        "text": "You're right in illustrating how things are winding down - I just wanted to point out it wasn't a complete shutdown of all things Flash. Ads were never as big a component of the flash game industry they are in mobile apps: sponsorship and mtx were the kings.",
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "zwetan",
+        "text": "if you can not beat it, kill it?3 things1) it's a platform: the flash platform2) inside this platform you can find many runtimes: Flash player, Adobe AIR, Redtamarin ( https://github.com/Corsaair/redtamarin )3) you program those runtimes with a programming language: ActionScript 3.0as long as there are runtimes to run programs it not gonna dieenjoy ;)",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "jamescun",
+    "text": "While it is good to see Adobe listening to customers, but I can't help the niggling feeling this is closing the stable door after the horse has bolted.",
+    "children": [
+      {
+        "author": "mmanfrin",
+        "text": "The horse bolted, joined a herd, sired offspring, those offspring grew up, the world stopped riding horses, cars became commonplace, roads and railways went up. Then Adobe saw the stable door was ajar.",
+        "children": [
+          {
+            "author": "angersock",
+            "text": "Wait, flash is stable now?!",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "fenomas",
+        "text": "Adobe changed course to \"HTML5 is the future\" several years ago - late or not, the stable door's been closed for quite a while.With that said, the fact that Flash-The-Animation-Tool is getting renamed is fairly big for animators who use it. Adobe hasn't done much with the tool over the past few years and many (well, me anyway) wouldn't have been all that shocked to see it EOL'ed or left to languish in maintenance mode. The fact that they're rebranding it suggests to me that the execs decided they still wanted a vector/timeline animation tool even in a post-SWF world, and to invest in that direction. In a sense changing the name is just shedding baggage, but they wouldn't have done it just to let the tool die under different branding.(former Adobe employee, all content pure speculation)",
+        "children": [
+          {
+            "author": "aikah",
+            "text": "I get the \"negative image\" of Flash thing. But it's a dumb decision from a marketing stand point. Customers want stable tools , not EOL'ed tools like Flash IDE (soon) or Adobe Edge Animate which has just been discontinued. The trust is broken and selling is about trust.It means that Adobe doesn't really believe in all these products. I took  part in a  new Director Beta 2/3 years ago but the product was never released.Adobe just don't know what the hell they are doing, people should be really careful about using any web authoring tool from them.At the same time it creates a good market opportunity for small vendors, I hope some cease this opportunity.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "cft",
+    "text": "I think in the normal human language this announcement means that while the new IDE will support Flash compiling, Flash is being switched into maintenance/security fixes only mode.",
+    "children": [
+      {
+        "author": "whatever_dude",
+        "text": "The VM/player has been like that for a couple of years. Their change list[1] has dwindling features, and their roadmap[2] makes it clear there's nothing coming in the future.[1] http://www.adobe.com/devnet/articles/flashplayer-air-feature...[2] http://www.adobe.com/devnet/flashplatform/whitepapers/roadma...",
+        "children": [
+          {
+            "author": "andrewbinstock",
+            "text": ">their roadmap makes it clear there's nothing coming in the future.In fact, the roadmap makes the opposite clear. Not only have they maintained a steady stream of quarterly upgrades and new releases, but they specifically committed to continuing to do so: \"Adobe is continuing to develop and improve both Flash Player and AIR. As we progress forward and commit items to our quarterly releases, we will update the release timing for these features in this document. In 2015, we will continue the attention that we give...\"",
+            "children": []
+          },
+          {
+            "author": "zwetan",
+            "text": "OK, let's see those \"dwindling features\" of the last couple yearsyou have:Workers for Android, Support Android x86, Support for iOS x64, Workers for iOS, Support iOS 9, Mac OS X 64bitand soon (in beta): Windows 64bit, Support for Android TVIt's simple, every quarter since 2011, Adobe release a planed Flash player and AIR version update.here the list: http://www.adobe.com/devnet/articles/flashplayer-air-feature...and they don't even include everything (for ex: AIR v19 added support for iOS workers)you can see more details in the release notes: https://helpx.adobe.com/flash-player/flash-player-releasenot...if you read the v19 release notes\nhttps://helpx.adobe.com/flash-player/release-note/fp_19_air_...just scroll down to the part that list \"Released Versions\" that's 15 runtimes and 4 SDK.So \"dwindling\" you say ? nope, not even close to it, quite the opposite in fact.",
+            "children": [
+              {
+                "author": "whatever_dude",
+                "text": "It is dwindling. Compare it to previous versions. Things like workers took 3 releases to mature. Previous point releases would add a lot more, not just in terms of features, but in terms of language features.It is in maintenance mode, and new features almost seem like a side project that produces results randomly.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "bobajeff",
+    "text": "\"Flash continues to be used in key categories like web gaming and premium video, where new standards have yet to fully mature.\"Can anyone elaborate on this? I can maybe understand premium video but games? What does the Flash runtime have that isn't mature yet in Web APIs?",
+    "children": [
+      {
+        "author": "jaequery",
+        "text": "Remember games like Farmville? They are all Flash-based. I don't think any of them have or even have plans to move over to HTML5 yet afaik. Flash made game development really easy with it's combination of AS and the wysiwyg interface for tweening and timeline motions. Currently, I don't think theres a definitive equivalent for HTML5 yet.",
+        "children": [
+          {
+            "author": "bobajeff",
+            "text": "Those things sound tooling related not runtime related (which Adobe was talking about).",
+            "children": []
+          },
+          {
+            "author": "cpeterso",
+            "text": "Some of the Facebook game developers may be able to use Unity's WebGL game tools as an alternative to Flash.",
+            "children": [
+              {
+                "author": "pjmlp",
+                "text": "Except that in 2015, there are still more places where Flash runs than WebGL.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "ebbv",
+        "text": "It's horsecrap. It's mostly just a case of companies with poor quality games that continue to be cash cows not wanting to put in the effort to port to HTML5 (because it wouldn't serve much purpose anyway, since their customer base are generally people who don't know anything about standards and probably instally any plugin they're prompted to install.)",
+        "children": [
+          {
+            "author": "babuskov",
+            "text": "Players are rapidly moving away from the web. The casual ones play their games on mobile and hard core ones are back on PC. Developers know this and that's why you can see a huge influx of Flash-like games on mobile and somewhat on PC (Steam Greenlight is full of those).",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "yoklov",
+        "text": "Context2D is slow and lacks a lot of features present in flash. It's not even really close.If you're willing to put in the (large amount of) legwork, WebGL solves this, but it works on far fewer machines (even assuming up to date browsers) than flash -- well, if you discount mobile at least, not that WebGL on mobile works very well across the board.Flash also was able to give you much better guarantees about things looking identical across browsers. This takes a lot more work when doing game UIs in HTML/CSS, to the point where my recommendation would be not to use HTML/CSS for games where this matters.HTML5 audio element is very unreliable (it plays when it feels like) and limited. WebAudio theoretically should be better, but in practice you get pops and skips fairly frequently (depends on browser, etc).There are other things too, but it's been a while since I did any work in flash/actionscript. Those are the ones that immediately come to mind.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "puppetmaster3",
+    "text": "Adobe lost the trust of it's community when Adobe killed Flash. THE END.",
+    "children": [
+      {
+        "author": "aikah",
+        "text": "Agreed. But the Flash community needs to learn that hard lesson that any proprietary tech is bad in the long run, Macromedia may have been a different breed but Adobe just wanted to cash in on Flash and ultimately destroyed it.And by the way thanks Elop /s Macromedia, Nokia, what a track record...Ironically projects like Haxe will survive all that Fiasco, unfortunately, there was never a push for an Opensource flash authoring tool that could have replaced Adobe's.",
+        "children": []
+      }
+    ]
+  }
+]

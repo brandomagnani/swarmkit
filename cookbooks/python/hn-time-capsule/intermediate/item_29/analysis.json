@@ -1,0 +1,57 @@
+{
+  "title": "Flash, HTML5 and Open Web Standards",
+  "summary": "This November 2015 Adobe blog post announced a strategic shift away from Flash toward HTML5, explaining that Flash would transition to maintenance mode and that Adobe would focus on HTML5 video players and other open web standards. The Hacker News discussion (45 comments) featured intense debate about whether this marked the end of Flash, with some commenters arguing Flash still had viable use cases in gaming and premium video, while others celebrated what they saw as the inevitable death of an outdated plugin. Key tensions included: defenders of the Flash gaming industry (claiming billions in revenue), skeptics who saw Flash as already dying, technical discussions about whether HTML5 was truly ready to replace Flash, and broader questions about Adobe's ability to manage the transition.",
+  "what_happened": "Adobe completely discontinued Flash Player support on December 31, 2020. All major web browsers (Chrome, Firefox, Safari, Edge) removed Flash support entirely by January 26, 2021. Windows removed Flash from the OS in January 2021. Flash games, which some commenters argued were a multi-billion dollar industry in 2015, largely disappeared. While some Flash games were converted to HTML5, most were simply abandoned or lost to history. The web gaming industry did eventually transition to HTML5/WebGL and then increasingly to native mobile apps (iOS/Android) and Steam. YouTube's transition to HTML5 (completed in 2015) proved prescient\u2014mobile gaming became dominant, making the browser-based Flash gaming that 2015 commenters debated largely irrelevant by 2020. The animation tool 'Flash' was rebranded to 'Animate' and continues to exist, but the Flash Player plugin is completely gone.",
+  "most_prescient": {
+    "user": "benologist",
+    "reason": "Correctly predicted that the Flash gaming industry was already in decline and would continue shrinking. Provided concrete evidence (FGL marketplace shutdowns, declining ad revenue) that the 'multi-billion dollar industry' narrative was already wrong in 2015. The actual outcome matched their prediction precisely\u2014Flash games essentially disappeared by 2020 rather than thriving as defenders claimed."
+  },
+  "most_wrong": {
+    "user": "soccerdave",
+    "reason": "Insisted Flash games were a 'multi-Billion dollar a year industry' and defended the ongoing viability of Flash game platforms like Kongregate and Facebook games. This proved drastically wrong\u2014by 2020 most Flash games were gone, platforms shut down or converted to HTML5, and the gaming industry had moved to mobile and Steam. Even the Facebook games they cited became largely irrelevant."
+  },
+  "notable_aspects": "1) The debate between soccerdave and benologist about Flash gaming's viability is a perfect case study in missing industry disruption signals. 2) Several commenters hoped Adobe would simply kill Flash rather than 'close the stable door after the horse has bolted,' showing Flash's already-tarnished reputation in 2015. 3) The prescience gap: some commenters (like fenomas) seemed to understand Flash was already in maintenance mode for years before this 2015 announcement, while others still fought to defend its future. 4) yoklov's technical analysis about Context2D being slow and WebGL having compatibility issues was accurate but ultimately irrelevant\u2014mobile-first development made browser gaming on desktop fade away regardless. 5) The comment about My Little Pony still using Flash 8 (2005-era technology) in 2015 is oddly charming\u2014that show probably had to similarly move off Flash later.",
+  "grades": {
+    "benologist": {
+      "grade": "A+",
+      "rationale": "Provided accurate, data-driven analysis of Flash gaming's decline. Cited specific business failures (FGL shutdowns, Mochimedia closure) with actual business metrics. Correctly predicted the direction of the industry without being smug about it."
+    },
+    "soccerdave": {
+      "grade": "F",
+      "rationale": "Made bold claims about a 'multi-billion dollar industry' that were contradicted by the evidence even in 2015, and completely wrong by 2020. Doubled down when challenged with data rather than reconsidering. Their Facebook games example later became a symbol of the entire era's decline."
+    },
+    "fenomas": {
+      "grade": "A",
+      "rationale": "Understood that Flash had been in maintenance mode for years and accurately predicted that EOL just meant losing security fixes. Provided insider perspective (former Adobe employee) that Flash tooling would survive rebranding. This proved accurate\u2014Animate continues while Flash Player is gone."
+    },
+    "aikah": {
+      "grade": "B+",
+      "rationale": "Correctly identified the problem: Adobe's pattern of killing products (Edge Animate, others mentioned) breaks trust with developers. Predicted this would create market opportunities for other vendors. This broadly came true\u2014alternatives like Haxe, OpenGL, and WebGL ecosystems flourished."
+    },
+    "WorldMaker": {
+      "grade": "B",
+      "rationale": "Suggested Adobe take ownership of Mozilla's Shumway (Flash-in-HTML5 runtime) to help migration. While Adobe didn't do this, the sentiment was right\u2014Flash-to-HTML5 conversion tools and preservation efforts eventually happened, just not with Adobe leading."
+    },
+    "whatever_dude": {
+      "grade": "A-",
+      "rationale": "Accurately assessed that Flash Player/AIR had been in maintenance mode for years with dwindling features. The roadmap showed stagnation, not future development. This was correct, though the counterargument about continued quarterly releases had some merit."
+    },
+    "yoklov": {
+      "grade": "B-",
+      "rationale": "Provided legitimate technical critiques of HTML5 in 2015: slow Canvas2D, WebGL compatibility issues, poor HTML5 audio. These were valid, but ignored the bigger trend\u2014mobile platforms made desktop browser games less relevant than they assumed."
+    },
+    "bobajeff": {
+      "grade": "C+",
+      "rationale": "Asked reasonable technical questions about what Flash offered that HTML5 lacked, but didn't dig deep enough to find answers. The distinction between tooling and runtime issues was worth exploring but was left hanging."
+    },
+    "jaequery": {
+      "grade": "C",
+      "rationale": "Mentioned Farmville as key Flash game example without recognizing it was already fading by 2015. Social gaming had peaked years earlier. The observation about lack of HTML5 equivalent was somewhat valid but missed the bigger picture of industry shift."
+    },
+    "ebbv": {
+      "grade": "B",
+      "rationale": "Correctly identified that companies with poor games weren't motivated to port to HTML5, and that casual players would install any plugin. This was accurate in 2015, though the follow-up (that mobile would make this irrelevant) wasn't explicitly stated."
+    }
+  },
+  "score": 9
+}

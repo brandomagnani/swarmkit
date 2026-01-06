@@ -1,0 +1,205 @@
+[
+  {
+    "author": "bitwize",
+    "text": "For some reason I like the idea of Bell Labs being in the hands of Nokia (not Microkia).",
+    "children": [
+      {
+        "author": "dharma1",
+        "text": "That's one of the coolest parts of this deal. I hope they make the most of the incredible research at Bell Labs!",
+        "children": [
+          {
+            "author": "samfisher83",
+            "text": "Bell labs was funded by one of the biggest monopolies ever. I find it hard to believe the new bell labs will have that kind of resources.",
+            "children": []
+          },
+          {
+            "author": "spinchange",
+            "text": "Sadly, Bell Labs really hasn't been the amazing R&D \"idea factory\" it was known as throughout the 20th century for at least 30 years or more. Alcatel-Lucent is many, many, many generations (and iterations) removed from the same R&D entity that developed the transistor, radar, lasers, communications satellites, wireless telephony, transatlantic cables, etc., etc.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "Simorgh",
+        "text": "I like the idea too.However it is worth noting that Bell Labs' hey day was a while back [1].YC's Request for Startups makes a reference to Bell Labs, 'Bell Labs worked a long time ago but would probably not work in today\u2019s world'. I suppose the key word is 'probably'. No one knows what will happen tomorrow, but certainly Nokia and Bell Labs have their work cut out.[1] http://www.wired.com/2014/09/coupland-bell-labs/",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "hkmurakami",
+    "text": "I had no idea they had sold their mapping unit.They bought Navteq in 2007 for $8.1B and sold that to automakers in 2015 for $3.1B [1]. I guess they needed a warchest to have a chance at succeeding in their turnaround (and considering their manufacturing roots, they'd have a hard time having a non-manufacturing-centric identity I imagine), but I'm surprised they couldn't get a higher price tag from a player in the smartphone market.[1] http://www.nytimes.com/2015/08/04/technology/german-carmaker...",
+    "children": [
+      {
+        "author": "Aoyagi",
+        "text": "Well, from what I heard it wasn't profitable. Amusingly enough, the navigation in my Cadillac is now maintained by a company owned by the German car makers.",
+        "children": [
+          {
+            "author": "Nux",
+            "text": "That used to mean something, now it means something else. ;-)",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "danieltillett",
+    "text": "Maybe they should go back to making gumboots [1].1. https://en.wikipedia.org/wiki/Nokia",
+    "children": [
+      {
+        "author": "ceduic",
+        "text": "They still do, kinda [1]. The footwear business was spun off from the main company in 1990. [2]1. http://nokianjalkineet.fi/2. https://en.wikipedia.org/wiki/Nokian_Footwear",
+        "children": [
+          {
+            "author": "danieltillett",
+            "text": "Time to buy it back :)",
+            "children": [
+              {
+                "author": "ptaipale",
+                "text": "With the unrest growing again in Europe, the good old \"Nokia Youth Leader\" product line (rubber batons for police) also has a market.http://www.naurulokki.com/kuvat/missa-sana-ei-auta-siella-ta...\n\"When words are not enough, you need NOKIA rubber batons\"(a genuine advert from 1920's)Knowing a lot of guys in Nokia, they are not too happy about the ALU deal (mostly because of the French connection and experiences) but I see the business sense.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "annnnd",
+    "text": "I think this is a great deal - for Alcatel Lucent. Hardware networking equipment is mostly going to become commodity (with SDN). Some networking equipment will stay expensive, but that will be a smaller market. I don't see what Nokia sees in this deal...On the other hand Nokia can still turn things around once they get back the right to use the name in phones (afaik the name was sold to MS for a limited period). If they stop inventing new OS every month (and stick to stock Android) they could be a huge player.",
+    "children": [
+      {
+        "author": "creshal",
+        "text": "Is there really a market for yet another whitebox Android vendor?",
+        "children": [
+          {
+            "author": "notatoad",
+            "text": "No, Nokia just wants to license their brand to some other whitebox Android vendor.  They've got a lot of good western brand recognition that can be valuable to one of the Chinese oems on the verge of global expansion.",
+            "children": []
+          },
+          {
+            "author": "bad_user",
+            "text": "I believe yes, there's plenty of room and making Android phones is the one thing Nokia didn't do. The Lumia line was of great value, my wife received one as a gift, but the one thing we both couldn't stand was the OS. Windows Phone is what killed it.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "TheLogothete",
+        "text": "They won't be able to use the name for phones again. The motivation behind that part of the contract was different.",
+        "children": [
+          {
+            "author": "vidarh",
+            "text": "They won't be able to use the Lumia and Asha names again, but they've specifically stated that from 2016 they will be licensing phone designs and the Nokia name to third parties to produce cellphones.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "vidarh",
+        "text": "Nokias networking division is profitable, and Alcatel-Lucent fills out the product range of that division and removes a major competitor and brings the combined company to a similar size as Huawei. That's what they see in that deal.The type of networking equipment these guys are doing is a very long way from being affected by SDN. Nobody buys this equipment from them because they can't do similar stuff with off the shelf computers if they tried really hard. They buy because it is seen as a low risk option.",
+        "children": [
+          {
+            "author": "personjerry",
+            "text": "Can you explain why their hardware functionality is a long ways off from being replicated by SDN?",
+            "children": [
+              {
+                "author": "vidarh",
+                "text": "That's not what I said. The point I was making is that replicating their hardware functionality is a small part of the puzzle. Their customers are buying solutions and trust, not just hardware. So even if you replicate everything, they still have a business.That said, there is plenty of high end networking gear that is hard to replace without getting into similar price territory. If you're going to be handling throughput in the tens of Gbps per line card, with high enough availability to require everything (CPU, line cards, RAM) to be hot-swappable, you may be able to do that with PC's, but you're going to be looking at high end, high margin specialist servers of the type you won't be buying in a local store.And even assuming you can save on the server, you'll still be paying for line cards and network cards that are produced in small quantities and that are high margin as well.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "author": "csn",
+        "text": "Maybe they'll buy Jolla (which is not doing great atm), get old Nokia engineers back and continue with Sailfish OS. Alien Dalvik is great for Android software compatibility but a push for official recognition from Google for Play services and such would definitely help.Independent operating systems is a good thing imo, but interoperability is crucial for them to coexist like browsers.",
+        "children": [
+          {
+            "author": "Brakenshire",
+            "text": "I think they'd be much better off launching an independent Android store, with CyanogenMod, which doesn't rely on Play Services. Signing up to Play Services basically means signing up to being an Android OEM manufacturer.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "mrweasel",
+        "text": ">Hardware networking equipment is mostly going to become commodity (with SDN)How is it a commodity? Very few companies are making mobile phone networking equipment. And now one of those few companies is buying another one. That leaves: Nokia, Ericson, Huawei, ZTE and Motorola. If you're a European country or the US, you might not want to buy from two of these.",
+        "children": [
+          {
+            "author": "annnnd",
+            "text": "I said: ... is mostly going to become commodity ...Speculation of course.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "aianus",
+    "text": "Why don't public companies ever just give up and cash out the stockholders?It can't imagine what it must feel like to go to work at Blackberry every day just so you can destroy a little more value :/",
+    "children": [
+      {
+        "author": "cromulent",
+        "text": "Why would you \"give up\" on yearly sales of over 10B and profit over 13%? Seems like a good business to me.",
+        "children": []
+      },
+      {
+        "author": "xorcist",
+        "text": "Give up? Because you got one competitor from China?Why don't Cisco just \"give up\"?",
+        "children": [
+          {
+            "author": "darkr",
+            "text": "Because they're doing nearly $10B/year in profit on $50B in revenue?",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "tajano",
+        "text": "I began working at Nokia after they sold the phone business. It's not a place where people were just clocking in and out; there ws a strong effort and opportunity (born of necessity) to innovate. It was exciting.I suppose there are a limited number of examples of big companies with declining market share that successfully turn the ship around, but a few notable examples come to mind. Shareholders can always sell if they don't want to go along for the ride.",
+        "children": []
+      },
+      {
+        "author": "hkmurakami",
+        "text": "This is (was?) the largest company in Finland. It employs tens of thousands of people and directly factors into the country's well being. You can't just shut it down in a snap. (sort of like how you can't just sell Blackberry to anyone due to national security reasons)",
+        "children": [
+          {
+            "author": "fulafel",
+            "text": "This is long past. In the height of the dotcom bubble in 2000 they contributed ~4% to Finland's GDP, but aren't currently very significant. See http://www.wired.co.uk/news/archive/2013-10/04/finland-and-n...They do still seem to employ 5000+ in Finland according\nto their website. And probably left quite some cash in Finland in the company's hey day when global investors got into the stock.",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "PMan74",
+        "text": "I think Nokia have reinvented themselves a few times (they started out in rubber, right?). If they's opted just to pack it in they would not have become the giant they did.In addition I'd assume the major shareholders in Nokia & BB have had sight of and a say in the plans to try turn things around. And they think that it's a better bet than simply turning off the lights and distributing whatever cash those companies have on hand.",
+        "children": [
+          {
+            "author": "ptaipale",
+            "text": "They actually started out as a wood pulp mill (powered by rapids at a river called Nokia) in 1868. This expanded to a paper factory in 1880 and a cellulose factory in 1885 and later on a rubber factory, and then a cable factory, and the telecoms came up as a spin-off of cable manufacturing (starting with modems).The pulp mill site looks like this today:\nhttp://tinyurl.com/nokianvirtaI worked in a Nokia R&D house that was built in Espoo in 1975; it had been constructed with a 10 tons per square meter load rating in three floors so that \"if this silly electronics thing doesn't take off, we can always bring in the cable machines.\"The name Nokia comes from the name of the river, which in turn supposedly comes from a reference to \"noki\" (soot) as it is a pre-historic trading site of black skins of fur.",
+            "children": []
+          },
+          {
+            "author": "dagw",
+            "text": "they started out in rubber, right?They stated in wood pulp.  Rubber came some 30 years later.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "fulafel",
+    "text": "Previous discussion: https://news.ycombinator.com/item?id=9379582",
+    "children": []
+  },
+  {
+    "author": "nabla9",
+    "text": "This looks like well executed deal for good reasons.Nokia and Alcatel-Lucent have little product overlap but significant customer overlap. This deal produces value for their current and future customers.Nokia bought Alcatel-Lucent cleanly. It was not merge or fusion. Some managers are kept, but Nokia is clearly in charge.",
+    "children": []
+  }
+]

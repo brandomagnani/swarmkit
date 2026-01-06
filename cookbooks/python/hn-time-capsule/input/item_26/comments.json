@@ -1,0 +1,127 @@
+[
+  {
+    "author": "ryanmcbride",
+    "text": "If they don't call it 'Diamond-Nine' I'm going to be disappointed.",
+    "children": [
+      {
+        "author": "SCAQTony",
+        "text": "I prefer \"Blood Carbon\" ;-)",
+        "children": []
+      },
+      {
+        "author": "FrankenPC",
+        "text": "There was a discovery a while back of a planet composed mostly of diamond.  Maybe diamond-nine accidentally formed and turned everything around it to solid diamond :)",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "gooseus",
+    "text": "I know very little about materials, but would I be right to assume this is a genuinely amazing and revolutionary discovery that should impact everyday people in the relatively near future (10 years)?",
+    "children": []
+  },
+  {
+    "author": "lifeisstillgood",
+    "text": "tl;dr - Q-Carbon is formed using \"elemental carbon\" laid on a substrate then hit with laser at 4000 degrees (not room temperature then) but at room pressure.It is ferromagnetic (\"we did not even know that was possible\" - you and me both) and it glows when subject to energy - looking like your next TV will be made of diamond.Seems that material\nScience still has power to amaze us",
+    "children": [
+      {
+        "author": "yetihehe",
+        "text": "Welcome to the Diamond Age.They make diamond at room pressure, but researchers didn't say what they use to cover their substrate. If vapor deposition, it's not \"room conditions\" anymore.",
+        "children": []
+      },
+      {
+        "author": "venomsnake",
+        "text": "Carbon is a gift that keeps on giving. And the most we do with it is burn it ...",
+        "children": [
+          {
+            "author": "vixen99",
+            "text": "So much for organic chemistry and the multitudinous industries thereby spawned then!",
+            "children": []
+          }
+        ]
+      },
+      {
+        "author": "FrankenPC",
+        "text": "Knowing what I know now, if I could go back in time and choose a career, I'd go into materials science.  That's where the biggest bang for the buck always is.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "troels",
+    "text": "\"In addition, Q-carbon is harder than diamond\"I was under the impression diamonds were pretty much the hardest known material. If that's so, then I imagine that this alone is the most significant part of their discovery?",
+    "children": [
+      {
+        "author": "timlyo",
+        "text": "Hardest natural maybe, but not the hardest man made.[1] https://en.wikipedia.org/wiki/Superhard_material",
+        "children": [
+          {
+            "author": "gnoway",
+            "text": "This is splitting hairs a little bit IMO. Diamond is the hardest material. We can make diamond synthetically that can be harder than naturally-occurring diamond, but it's still diamond.",
+            "children": [
+              {
+                "author": "lexicality",
+                "text": "As is this - it's all just carbon in the end.",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "Animats",
+    "text": "This sounds like a major breakthrough.  Maybe we get a new semiconductor material out of this.Unfortunately, it's on phys.org and in materials science, where overhyped major breakthroughs in surface chemistry (referred to as \"nanotechnology\") happen regularly. Note that the picture of some diamonds has absolutely nothing to do with the new development.The actual paper [1] is more useful. They are doing this in ordinary air, not under an inert gas or something.  They're getting an amorphous diamond film, not a single crystal, and may be able to get diamond powder. That's nice, but synthetic diamond powder is only $140/Kg on Alibaba.[1] http://scitation.aip.org/content/aip/journal/aplmater/3/10/1...",
+    "children": [
+      {
+        "author": "the8472",
+        "text": "> They're getting an amorphous diamond filmIf I'm reading the paper correctly the amorphous state is the metastable phase. Once nucleated it's just polycrystalline diamonds,.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "queeerkopf",
+    "text": "I tried locating the paper \"Novel Phase of Carbon, Ferromagnetism and Conversion into Diamond\" by Jagdish Narayan and Anagh Bhaumik which is given as one of the sources for the artikel and was supposedly published yesterday. I can't find it though :(The DOI doesn't check out and it's not on the Journal of Applied Physics homepage. Can anyone point me to it?",
+    "children": [
+      {
+        "author": "skeesicks",
+        "text": "I noticed the same thing, though it looks like the DOI works correctly now. There must have been some delay in the online publication going live.",
+        "children": []
+      }
+    ]
+  },
+  {
+    "author": "saalweachter",
+    "text": "Between the dinky laser and the STP, this reminds me of the magic radios from A Fire Upon The Deep -- the idea of a technology that could be built by a (moderately) low-tech civilization, but not designed or invented by them.",
+    "children": []
+  },
+  {
+    "author": "dschiptsov",
+    "text": "Did they sell it?)",
+    "children": []
+  },
+  {
+    "author": "such_a_casual",
+    "text": "Can someone explain what they are trying to say with the whole, \"room temperature\" thing.>The carbon is then hit with a single laser pulse lasting approximately 200 nanoseconds. During this pulse, the temperature of the carbon is raised to 4,000 Kelvin (or around 3,727 degrees Celsius)Are they trying to say that they can make diamonds at STP as opposed to creating a controlled environment in a box?",
+    "children": [
+      {
+        "author": "mkingston",
+        "text": "I guess that's what they're saying. Contrast with:From https://en.wikipedia.org/wiki/Synthetic_diamondSynthetic diamond is also widely known as HPHT diamond or CVD diamond after the two common production methods (referring to the high-pressure high-temperature and chemical vapor deposition crystal formation methods, respectively)And from https://en.wikipedia.org/wiki/Synthetic_diamond#Chemical_vap...Unlike HPHT, CVD process does not require high pressures, as the growth typically occurs at pressures under 27 kPa.[...]and optimizing the substrate temperature (about 800 \u00b0C)",
+        "children": [
+          {
+            "author": "such_a_casual",
+            "text": "Thank you for the detailed response. As a layman, the article really confused me.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "author": "ChuckMcM",
+    "text": "Thanks for the link, I've added it to my notebook.I like how they don't know much about how it works but they have filed two provisional patents :-) Reminds me of the early days of Radio in some regards.There are a lot of theoretically interesting things you can make out of carbon if you can arrange it \"just so.\" The trick is always finding ways to do that at scale. I was fascinated by the carbon nanotube stuff and set about to build some, and while it is \"easy\" to build nanotubes, it is \"hard\" to build a specific kind of nanotube, or a nanotube of a specific length, or one with specific properties. All the ways of making them that I explored could make pretty much any kind (single/double walled, conductive/non-conductive). And you can pull one out and say \"look here is this cool structure\" but there wasn't any way to make a few hundred thousand without going blind looking through a microscope.",
+    "children": []
+  }
+]

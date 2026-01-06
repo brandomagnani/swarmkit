@@ -1,0 +1,49 @@
+{
+  "title": "Leaving the Mac App Store",
+  "summary": "In December 2015, Sketch (the popular macOS design tool by Bohemian Coding) announced it was leaving the Mac App Store after being a flagship app. The article and 401 comments discussed three main pain points: Apple's slow week-long app review process, strict technical limitations from sandboxing restrictions, and lack of upgrade pricing. The 235-person discussion thread covered broader issues with the Mac App Store ecosystem, including how it had stifled independent macOS development, the contrast with Apple's superior iOS app store, and whether developers could succeed selling outside the store. Many commenters defended developers exiting, while others debated whether this signaled Apple's abandonment of macOS in favor of iOS.",
+  "what_happened": "Sketch's gamble paid off spectacularly. The company thrived selling directly for nearly a decade, becoming one of the most successful macOS applications. However, the most dramatic plot twist came in 2023 when Sketch returned to the Mac App Store after 8 years\u2014validating critics who said Apple's negligence of the platform was unacceptable. In the 2024-2025 period, Sketch became increasingly dominant, winning the Apple Design Award in 2024 and shipping major feature releases including Stacks (auto-layout functionality) in 2025. The bigger story: while some indie developers struggled post-App Store exodus, Sketch proved that a professional tool with direct sales could dominate its category. Meanwhile, the 2010s design tool landscape shifted dramatically with Figma's emergence as a web-based collaborative alternative. Unlike the commenters' fears about web tools, Figma succeeded not by displacing Sketch's Mac dominance but by capturing a different market (real-time collaboration, web-native workflows). Sketch adapted by adding its own web collaboration features and maintained strong market presence.",
+  "most_prescient": {
+    "user": "milen",
+    "reason": "In one of the few forward-looking comments, milen articulated the core truth: 'Apple has completely lost the goodwill of Mac developers' and that indie developers were fleeing to direct sales and alternative platforms. This diagnosis proved accurate\u2014the Mac App Store continued to stagnate, prompting not just Sketch but many professional apps to pursue direct distribution. Milen also correctly predicted this would become a widespread exodus, not an isolated incident, even when others were skeptical about developers' ability to succeed outside the store."
+  },
+  "most_wrong": {
+    "user": "glossyscr",
+    "reason": "Glossyscr's confident assertion that 'Sketch was the killer app of the entire MAS' and 'there's nothing equal for that price on Windows' severely underestimated the competitive landscape. While technically accurate in 2015, Figma emerged within months (launched publicly in 2016) and ultimately captured significant market share by pioneering collaborative web-based design. Additionally, the assumption that nothing competitive existed on Windows proved naive\u2014Adobe XD, Affinity Designer, and other tools developed substantially. This comment perfectly captures the pre-Figma hubris about Sketch's unassailable position."
+  },
+  "notable_aspects": "1) **The API prediction**: The user 'api' presciently worried Apple was trying to 'kill OSX and take everything toward iOS, totally jailed everything.' This echoed throughout 2015 but proved partially wrong\u2014macOS remained open and actually strengthened in 2020s as Apple's professional creative tool platform of choice. 2) **The Jasber redemption arc**: Jasber's comment about successfully selling outside the App Store using Paddle proved validating\u2014many indie developers followed this path successfully. 3) **The prescience about sandboxing**: Multiple commenters correctly identified sandboxing as the core technical limitation forcing developers out. This tension remained unresolved for years, validating their concerns. 4) **Missing Figma**: Remarkably, no commenter mentions Figma or anticipates a web-based design tool threat\u2014it wasn't yet publicly available in December 2015, making it a blind spot for everyone. 5) **App Store return surprise**: The 2023 return to App Store wasn't predictable from this thread; it suggests Apple did eventually improve their app review and distribution infrastructure enough to be worth returning to.",
+  "grades": {
+    "milen": {
+      "grade": "A",
+      "rationale": "Correctly diagnosed the core problem (Apple's negligence driving away developers), predicted the exodus accurately, and understood that direct sales could work for professional tools. The only reason not A+ is being generally pessimistic about indie developers' chances rather than recognizing some would thrive."
+    },
+    "VeryVito": {
+      "grade": "A-",
+      "rationale": "Correctly identified the Mac App Store as harmful to indie development and accurately characterized its 'pump-and-dump' incentive structure. However, somewhat pessimistic about developer prospects; didn't anticipate how successfully many would transition to direct sales."
+    },
+    "glossyscr": {
+      "grade": "C-",
+      "rationale": "Made an overconfident prediction about Sketch's competitive moat while missing the imminent threat from Figma (launching publicly within months). The comment reads as industry-leading today, but demonstrated significant blind spots about the competitive landscape."
+    },
+    "ThomPete": {
+      "grade": "B+",
+      "rationale": "Accurately diagnosed the sandbox limitations as a major problem and shared real-world frustrations with them. Showed good understanding of the strategic choice to leave for alternatives like Paddle. However, didn't deeply explore what this meant for professional software's future in the macOS ecosystem."
+    },
+    "Jasber": {
+      "grade": "A",
+      "rationale": "Provided valuable, practical evidence that the assumption 'nobody buys outside the App Store' was false. This anecdotal evidence turned out to be prophetic\u2014many successful indie developers proved the direct sales model works well, especially for tools with enough value proposition."
+    },
+    "kybernetyk": {
+      "grade": "B",
+      "rationale": "Articulated genuine developer pain points around review delays and rejection processes accurately. However, pessimistic overall tone missed the possibility that many developers could successfully escape the App Store's constraints and thrive on their own terms."
+    },
+    "song": {
+      "grade": "B-",
+      "rationale": "Correctly expressed frustration with the iOS/App Store model and predicted they'd switch to Linux if forced into it. This anxiety was legitimate but ultimately overstated\u2014while some did leave, the broader ecosystem adapted rather than collapsed."
+    },
+    "api": {
+      "grade": "B-",
+      "rationale": "Worried about Apple 'killing OSX' and turning everything iOS-like. This concern was partially prescient (Apple did focus heavily on iOS), but missed that Apple would eventually invest substantially in macOS as a creative professional platform, making OSX increasingly powerful rather than constrained."
+    }
+  },
+  "score": 8
+}

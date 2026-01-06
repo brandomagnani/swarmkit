@@ -1,0 +1,45 @@
+{
+  "title": "Why CardDAV took so long",
+  "summary": "In December 2015, Fastmail published a detailed blog post explaining the long journey to implement CardDAV (contacts sync standard) support. The post, authored by Fastmail's Bron Gondwana, outlined the technical challenges of building CardDAV support into their email/calendar platform. The discussion highlighted both appreciation for Fastmail's commitment to open standards and broader concerns about the difficulty of running independent mail servers, email deliverability issues, and the trade-offs between using professional services like Fastmail versus self-hosting. Commenters praised Fastmail's quality and responsiveness while debating whether open standards are worth the complexity trade-off.",
+  "what_happened": "CardDAV adoption has succeeded more than failed over the past decade, but not uniformly. By 2024-2025, CardDAV became the standard contact synchronization protocol for iOS, macOS, and has been adopted by major tech companies. Google added CardDAV support (though with OAuth 2.0-only restrictions after 2023). Apple has supported CardDAV natively on iOS and macOS for years. Fastmail successfully completed and continues to maintain CardDAV support as of 2025. The broader email self-hosting ecosystem that many commenters debated has continued to decline\u2014individuals and small businesses increasingly rely on professional services. The prediction that email standardization would be important proved correct: CalDAV and CardDAV are now widely recognized as essential for interoperability across platforms.",
+  "most_prescient": {
+    "user": "hedgehog",
+    "reason": "Correctly identified that running your own mail server is miserable due to complexity and instead chose to use professional service (Fastmail since 2006). This proved prescient as the decade showed increasing consolidation toward professional email providers despite open standards efforts. The commenters debating self-hosting mail servers in 2015 were mostly fighting a losing battle that would only get worse by 2025."
+  },
+  "most_wrong": {
+    "user": "josteink",
+    "reason": "Criticized Fastmail's pragmatic approach of creating workarounds to Apple's bugs rather than waiting for Apple to fix them upstream, comparing them unfavorably to OpenBSD's purity-focused approach. History proved Fastmail's pragmatism correct\u2014making things work for users now is more valuable than waiting for upstream perfection. The workarounds enabled CardDAV to work reliably in production while Apple eventually improved their implementation."
+  },
+  "notable_aspects": "The discussion included a fascinating debate about the viability of self-hosting email that proved prescient: multiple commenters (danieltillett, shocks, oever) detailed the mounting difficulty of getting self-hosted email delivered to major providers' inboxes, a problem that only intensified over the next decade. The thread also featured Fastmail employees (brongondwana, robn_fastmail) actively engaging with users about feature gaps like contact photos, demonstrating the company's commitment to open communication. One commenter (eridius) complained about auto-added contacts cluttering their CardDAV addressbook\u2014this problem remained largely unresolved even in 2025 based on the thread discussion.",
+  "grades": {
+    "brongondwana": {
+      "grade": "A+",
+      "rationale": "As Fastmail's CTO/developer, he demonstrated both technical competence and honest communication about the challenges of implementing standards-based protocols. The detailed explanation of CardDAV's complexity proved accurate, and Fastmail successfully shipped the feature, which has continued working well for a decade."
+    },
+    "hedgehog": {
+      "grade": "A",
+      "rationale": "Simple but correct prediction that professional email services are superior to self-hosting for users who value reliability. Events proved this massively\u2014the email hosting landscape has only consolidated further toward large providers."
+    },
+    "danieltillett": {
+      "grade": "A-",
+      "rationale": "Accurately described the increasing difficulty of running self-hosted mail servers due to deliverability issues and spam filtering. While anecdotal, this narrative was confirmed by broader industry trends showing individual mail server viability declining significantly."
+    },
+    "josteink": {
+      "grade": "C-",
+      "rationale": "Wrong to criticize pragmatism in favor of code purity. Fastmail's approach of working around Apple bugs to ship working software for users proved far better than the alternative of waiting for upstream fixes. This represents a misunderstanding of engineering trade-offs."
+    },
+    "teekert": {
+      "grade": "C",
+      "rationale": "Overly optimistic about the ease of running a mail server ('apt-get install mail-stack-delivery'). While technically possible, the subsequent years proved that even with automation, deliverability and maintenance remain significant hurdles that most users cannot manage successfully."
+    },
+    "eridius": {
+      "grade": "B+",
+      "rationale": "Raised a valid concern about auto-added contacts in CardDAV that did warrant fixing. The feature request was reasonable and pointed out a UX problem, though the issue wasn't as critical as some of the deliverability and standards-compliance challenges being discussed."
+    },
+    "sz4kerto": {
+      "grade": "A",
+      "rationale": "Succinctly identified why Fastmail is valuable: they fix things properly for individual users. This captured the core value proposition that kept Fastmail successful for the decade\u2014treating edge cases seriously."
+    }
+  },
+  "score": 7
+}

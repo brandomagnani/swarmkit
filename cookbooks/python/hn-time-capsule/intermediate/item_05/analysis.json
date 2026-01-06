@@ -1,0 +1,65 @@
+{
+  "title": "Google Deceptively Tracks Students' Internet Browsing, EFF Says in FTC Complaint",
+  "summary": "In December 2015, the Electronic Frontier Foundation (EFF) filed an FTC complaint alleging that Google violated its Student Privacy Pledge by collecting and mining students' browsing data, search terms, and other personal information through the default Chrome Sync feature on Chromebooks sold to schools. The complaint focused on Google tracking student data without proper parental consent despite promising not to. The discussion revealed a fundamental tension: commenters debated whether Google's data collection was legitimate (for sync/product improvement) or deceptive (for monetization), whether students had enough agency to consent, and whether privacy concerns were justified or FUD.",
+  "what_happened": "Over the next decade, the EFF's 2015 complaint did not result in a direct FTC settlement on the student privacy pledge violation. However, Google faced multiple lawsuits and settlements related to student data collection: (1) In 2024, Google settled a class action suit for $8.75 million over unlawful collection of Illinois students' biometric data (voiceprints and facial templates) from Google Workspace for Education/G Suite for Education platforms on Chromebooks (covering data from March 26, 2015 onward); (2) A separate Chrome privacy class action lawsuit was revived by the Ninth Circuit in August 2024, sending it to trial on the question of whether a reasonable user would understand Google's data collection practices\u2014this case involves Chrome users who disabled sync but claim Google still tracked them. Google's practices around student data collection faced increasing legal scrutiny, regulatory pressure, and industry criticism, validating the core concerns the EFF raised about deceptive practices and lack of transparency.",
+  "most_prescient": {
+    "user": "pdkl95",
+    "reason": "pdkl95 repeatedly identified the core legal and ethical issues that would later become the basis for settlements: (1) the danger of collecting and retaining data about minors with no clear responsibility/liability framework, noting 'data stays around forever, while 2nd graders eventually grow up'; (2) the need for legal liability when companies hold data, predicting this would incentivize better security; (3) the principle that companies shouldn't reserve the right to use data for future purposes not yet conceived. This prescience was validated by the 2024 biometric data settlement which focused exactly on unlawful collection without consent, and the ongoing Chrome lawsuit about whether users actually consented to data collection practices."
+  },
+  "most_wrong": {
+    "user": "kllrnohj",
+    "reason": "kllrnohj represented the position that the EFF's complaint lacked evidence and substance, repeatedly asking 'where is the evidence of data mining vs. just syncing?' and characterizing concerns as 'conspiracy theories' and 'nebulous' claims. This turned out to be wrong on multiple counts: (1) the biometric data collection was indeed proven to be unlawful (resulting in $8.75M settlement), (2) the Chrome tracking lawsuit was revived by the Ninth Circuit in 2024, suggesting plaintiffs had legitimate claims about deceptive practices, (3) Google's own later actions (disabling settings by default, changing policies) tacitly acknowledged the concerns were valid. The dismissal of privacy concerns as unsubstantiated conspiracy theories proved to be badly mistaken."
+  },
+  "notable_aspects": "1. The prescience of pdkl95's 'data stays around forever' argument became literally true\u2014the 2024 settlement covered biometric data collected starting from March 26, 2015, showing how long Google retained student data.\n\n2. The tension between functionality and privacy proved unresolvable: commenters defending the sync feature as legitimate kept missing the point that the problem wasn't sync itself, but unauthorized use of synced data. The 2024 Chrome lawsuit essentially resolved this by focusing on whether users actually understood what they were consenting to.\n\n3. The debate about whether Google 'gets a pass' due to its perceived benevolence (represented by Zhenya comparing it favorably to Apple) now seems quaint given that privacy advocates eventually got concrete legal wins after a decade of litigation.\n\n4. asuffield (a Google SRE at the time) defended the company's transparency efforts and questioned whether any amount of disclosure would satisfy skeptics. The subsequent 2024 Ninth Circuit ruling essentially said yes\u2014the issue was that Google's disclosures failed the 'reasonable person' standard, validating the skeptics.\n\n5. chestnut-tree's lament about 'how perfectly normal tracking has become' has proven tragically prescient\u2014by 2024, the litigation landscape had to specifically define what 'reasonable user' understanding means because the ecosystem had normalized surveillance.\n\n6. The comment thread shows remarkable diversity of opinion that largely predicted the legal battles to come: privacy advocates vs. tech-friendly pragmatists, and the courts ultimately sided with the privacy side.",
+  "grades": {
+    "pdkl95": {
+      "grade": "A",
+      "rationale": "Identified multiple layers of the actual problems (data liability, consent, future use) that became the basis for real settlements and litigation a decade later."
+    },
+    "kllrnohj": {
+      "grade": "F",
+      "rationale": "Dismissed concerns as conspiracy theories and demanded evidence that was later provided in court settlements and successful appeals. Fundamentally wrong about the legitimacy of privacy concerns."
+    },
+    "chestnut-tree": {
+      "grade": "A-",
+      "rationale": "Accurately predicted that tracking would become normalized and that student privacy was especially at risk. Correctly identified the lack of transparency as the core issue, which is exactly what the 2024 Ninth Circuit ruling focused on."
+    },
+    "CaptSpify": {
+      "grade": "A",
+      "rationale": "Consistently pushed back against arguments defending Google, noted trust issues predating the NSA leaks, and questioned why data collection should be acceptable. This skeptical stance was vindicated by the settlements."
+    },
+    "gmisra": {
+      "grade": "A-",
+      "rationale": "Identified that the core issue was lack of transparency and ability to make informed choices, predicted legal intervention would be needed\u2014all of which came true. However, slightly wrong about Google eventually providing transparency voluntarily."
+    },
+    "arebop": {
+      "grade": "C",
+      "rationale": "Made reasonable points about data-driven product improvement being normal, but underestimated how important explicit consent and clear boundaries would become in later litigation. The Ninth Circuit ultimately sided against Google's position here."
+    },
+    "ryanhuff": {
+      "grade": "B+",
+      "rationale": "Correctly identified that syncing is different from data mining and that students lack agency in the decision, which became key points in litigation. Understood the consent problem better than many."
+    },
+    "asuffield": {
+      "grade": "C-",
+      "rationale": "As a Google employee, defended the company's transparency efforts and suggested skeptics couldn't be satisfied. The Ninth Circuit's 2024 ruling suggested the skeptics had a point about disclosure adequacy after all."
+    },
+    "thomaskcr": {
+      "grade": "D",
+      "rationale": "Argued that Google should get credit for the functionality Chromebooks provide and didn't see how data mining could be worth the risk. The fact that there were actual profitable opportunities (evident from the litigation) proved this assessment too optimistic."
+    },
+    "bduerst": {
+      "grade": "D+",
+      "rationale": "Repeatedly invoked FUD and irrational fear, compared privacy concerns to Y2K paranoia. The $8.75M settlement and 2024 appellate success suggest privacy concerns were rational, not paranoid."
+    },
+    "Zhenya": {
+      "grade": "C",
+      "rationale": "Defended Google by comparison to Apple's better practices, but this comparison actually proved the point\u2014Apple's stronger privacy stance was exactly what should have been required of Google, as later litigation confirmed."
+    },
+    "Joof": {
+      "grade": "B",
+      "rationale": "Thoughtfully explored the externalities and long-term risks of data collection, correctly framed it as a systems-level risk management problem. Prescient about needing proactive solutions rather than waiting for problems to materialize."
+    }
+  },
+  "score": 8
+}

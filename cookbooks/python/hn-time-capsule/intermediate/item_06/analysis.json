@@ -1,0 +1,61 @@
+{
+  "title": "WhatsApp is Blocking Telegram Links",
+  "summary": "In December 2015, WhatsApp (owned by Facebook) was discovered to be deliberately blocking links to Telegram on Android devices. Users could not create clickable links to Telegram URLs; they appeared as plain text and couldn't be copy-pasted. Code analysis confirmed this was intentional, with Telegram domains listed under a 'BAD_HOSTS' filter. The incident sparked a 226-comment discussion on HN about monopolistic behavior, Facebook's competitive practices, the security of messaging apps, and whether alternatives like Signal or Telegram offered better options than WhatsApp. Many users expressed frustration with Facebook's acquisition of WhatsApp in 2014 for $19B and feared it would lead to surveillance and degradation of the service.",
+  "what_happened": "Despite initial expectations that Telegram would gain significantly from the Streisand Effect, WhatsApp remained dominant over the following decade. WhatsApp rolled out end-to-end encryption in April 2016 (just months after this article), which helped preserve its position. However, the concerns about Facebook's control proved justified in some respects: in August 2016, WhatsApp announced it would begin sharing limited user data with Facebook (contradicting prior claims to EU regulators that this was technologically impossible). Facebook's 2020 privacy policy changes for WhatsApp sparked massive user exodus to Telegram in 2021. Despite this, WhatsApp maintained its status as the dominant global messaging app through 2025. The FTC launched a major antitrust case against Facebook in 2020, specifically challenging the Instagram and WhatsApp acquisitions and Facebook's 'buy rather than compete' strategy. However, in November 2025\u2014a decade later\u2014Judge James E. Boasberg ruled that Meta did not illegally monopolize personal social networking, allowing Facebook to keep WhatsApp and Instagram. The link-blocking incident itself was never officially acknowledged by Facebook or WhatsApp and appeared to be quietly discontinued.",
+  "most_prescient": {
+    "user": "downandout",
+    "reason": "Called out that this was a clear precedent for anticompetitive behavior, noting Facebook's pattern of buying competitors and now crushing their ability to grow. Predicted this could justify blocking all competing messengers using security pretexts. This proved prescient: the incident became part of the FTC's actual antitrust case filed 5 years later in 2020, and the 'buy rather than compete' strategy became central to the legal arguments about monopolistic practices."
+  },
+  "most_wrong": {
+    "user": "fabian2k",
+    "reason": "Suggested this was likely an automated anti-spam system triggered by accident, arguing intentional blocking 'doesn't seem like a good idea' because it would generate publicity for Telegram. This was definitively proven wrong by decompiled code showing it was clearly intentional targeting of Telegram domains specifically. More broadly, fabian2k underestimated Facebook's willingness to take anticompetitive actions regardless of PR consequences."
+  },
+  "notable_aspects": "1) The discussion features an extensive technical debate about APK decompilation, Java bytecode, and variable names in compiled Android code\u2014a fascinating deep-dive into reverse engineering. 2) Multiple commenters mentioned Facebook's Telegram Facebook page being taken down, extending the censorship beyond just WhatsApp links. 3) There's irony in users discussing whether to switch to Signal (recommended by Snowden) vs Telegram, with most concluding Telegram had better UX and multi-device support\u2014a critique of Signal that remained valid for years. 4) One commenter (halviti) noted the blocking had been ongoing for a week or more at the time of posting, suggesting it wasn't a brief glitch. 5) The discussion predates the 2021 WhatsApp privacy backlash by 6 years, showing concerns about Facebook's control were well-founded.",
+  "grades": {
+    "rms_returns": {
+      "grade": "A",
+      "rationale": "Correctly identified that FB's acquisition of WhatsApp was 'very ill-timed' and that the company was aware of better alternatives like Telegram. Predicted that ignorance about security issues would diminish, allowing competition. The actual outcome (major privacy policy changes leading to user exodus to Telegram in 2021) validated this analysis."
+    },
+    "downandout": {
+      "grade": "A+",
+      "rationale": "Most prescient commenter. Correctly identified this as establishing a dangerous precedent for anticompetitive behavior and predicted the pattern would continue. This incident became central to the FTC's actual antitrust case against Meta filed in 2020, making this analysis remarkably accurate."
+    },
+    "halviti": {
+      "grade": "A",
+      "rationale": "Noted the blocking had been sustained for a week or more (not a brief glitch), called it 'a direct attack,' and correctly reasoned that phone number-based spam blocking would be more effective than link blocking. The block's persistence and intentionality supported this analysis. Also correctly predicted users would switch to Telegram as a result."
+    },
+    "corv": {
+      "grade": "B+",
+      "rationale": "Simple observation that the blocking wasn't surprising given Facebook ownership proved correct. However, didn't dig deeper into implications or predict Facebook's broader strategic pattern, which limited the insight."
+    },
+    "fabian2k": {
+      "grade": "D",
+      "rationale": "Suggested this was likely an automated system and argued intentional blocking wouldn't make sense for PR reasons. Definitively proven wrong by decompiled code showing intentional targeting. Also underestimated Facebook's willingness to prioritize competitive advantage over PR."
+    },
+    "jsprogrammer": {
+      "grade": "B",
+      "rationale": "Cited Facebook's SEC filings claiming WhatsApp users had only 7 years of useful life. This suggested prescient thinking about Facebook's timeline pressure, though the actual strategy (linking, surveillance, privacy changes) differed from what might have been expected."
+    },
+    "HappyTypist": {
+      "grade": "A",
+      "rationale": "Correctly identified that Signal was the technically superior option with better cryptography endorsed by Snowden and Bruce Schneier. However, this insight didn't influence adoption\u2014most people continued using WhatsApp and Telegram due to network effects, making it correct but practically irrelevant."
+    },
+    "vamur": {
+      "grade": "C+",
+      "rationale": "Claimed Facebook was 'in trouble' with people moving to Telegram. This was premature\u2014WhatsApp actually maintained dominance through 2025 despite the privacy issues. The statement captured sentiment but not reality."
+    },
+    "izacus": {
+      "grade": "A",
+      "rationale": "Identified large tech companies attacking competition by leveraging primary products (Amazon blocking Chromecast, Facebook censoring Telegram links) and predicted regulatory intervention. The FTC case filed 5 years later proved this analysis prescient about the need for antitrust action."
+    },
+    "legohead": {
+      "grade": "B-",
+      "rationale": "Predicted Microsoft-style antitrust trouble ahead and that 'we the people' would eventually act through markets and regulations. Partially correct\u2014antitrust case was filed\u2014but overestimated market forces' ability to punish Facebook, as Meta won the 2025 trial and kept WhatsApp."
+    },
+    "plusquamperfekt": {
+      "grade": "B+",
+      "rationale": "Advocated pragmatically for using multiple secure messengers by order of preference (Signal, Threema, Telegram). The strategy of 'digital osmosis' to push secure messaging was reasonable, though adoption didn't follow as hoped. Also made correct observations about privacy concerns."
+    }
+  },
+  "score": 8
+}

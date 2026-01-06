@@ -1,0 +1,19 @@
+[
+  {
+    "author": "sevensor",
+    "text": "Neural networks are obviously the hot thing in AI right now.  From my perspective as an outsider, this paper has a great lit review.",
+    "children": [
+      {
+        "author": "tlarkworthy",
+        "text": "And author",
+        "children": [
+          {
+            "author": "skosuri",
+            "text": "Just looked up the author and found this: http://www.aaaivideos.org/2013/06_task_relevant_roadmaps/The eyes are so creepy.",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+]

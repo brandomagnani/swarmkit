@@ -1,0 +1,21 @@
+{
+  "title": "Using Wayland from Rust, Part 1",
+  "summary": "In December 2015, levans published a blog post about using Wayland with Rust, describing work on wayland-rs crates for Wayland client development in Rust. The post was one of the early explorations of Wayland bindings for the newly-released Rust 1.0 language. At this time, Rust had only just achieved 1.0 stability (May 2015) and the ecosystem was still very early. Wayland was still a niche project with limited adoption - X11 dominated the Linux desktop. The HN discussion was minimal, with only one comment visible pointing to a Reddit thread.",
+  "what_happened": "Over the next decade, both Rust and Wayland achieved mainstream adoption and maturity. Rust evolved from an experimental language to a trusted systems programming language used in critical infrastructure, with a thriving ecosystem. Wayland transitioned from a niche replacement project to the default display server for major Linux distributions. By 2024-2025, Fedora and Ubuntu dropped X11 support entirely in favor of Wayland-only sessions. Notably, levans' early work contributed to the wayland-rs ecosystem, which evolved into the Smithay project - a framework for building Wayland compositors in pure Rust. System76's COSMIC desktop environment (released 2024) demonstrated that complex, production-ready Wayland desktop environments could be written entirely in Rust. The wayland-rs library matured from thin C bindings to a pure Rust implementation of the Wayland protocol.",
+  "most_prescient": {
+    "user": "kibwen",
+    "reason": "While not making specific predictions, kibwen's action of cross-posting to the Rust community on Reddit demonstrated understanding that Wayland-Rust integration would be of genuine interest to the broader Rust ecosystem - a prescient move given how Wayland+Rust would eventually become central to modern Linux desktop development."
+  },
+  "most_wrong": {
+    "user": "kibwen",
+    "reason": "This is difficult to assess definitively as there is only one visible comment in the thread. Any conclusions about being 'most wrong' would be speculative. The commenter's action of pointing to Reddit discussion was reasonable and neutral rather than making falsifiable claims."
+  },
+  "notable_aspects": "The extreme sparseness of the discussion (only 1 comment visible) is itself notable - despite ranking #24 on HN and getting 89 points, there was virtually no community discussion. This contrasts sharply with how central Wayland and Rust have become to Linux development. The timing is remarkable: published just 7 months after Rust 1.0 and during the height of skepticism about both Wayland adoption timelines and Rust's viability for systems programming. The article foreshadowed developments that would take nearly a full decade to materialize.",
+  "grades": {
+    "kibwen": {
+      "grade": "B+",
+      "rationale": "Demonstrated good community management by cross-posting to relevant communities. Neutral stance was appropriate given the speculative nature of the technology at the time. No bold predictions to grade, but the action to spread information to the Rust community proved valuable in retrospect."
+    }
+  },
+  "score": 7
+}
