@@ -23,6 +23,12 @@ env/
 !cookbooks/typescript/hn-time-capsule/intermediate/**
 !cookbooks/typescript/hn-time-capsule/output/
 !cookbooks/typescript/hn-time-capsule/output/*
+!cookbooks/python/cre-portfolio/input/
+!cookbooks/python/cre-portfolio/input/**
+!cookbooks/python/cre-portfolio/intermediate/
+!cookbooks/python/cre-portfolio/intermediate/**
+!cookbooks/python/cre-portfolio/output/
+!cookbooks/python/cre-portfolio/output/*
 
 # IDE
 .idea/

@@ -14,7 +14,6 @@ def load_rent_rolls(pdf_dir: str) -> list[dict]:
     Returns:
         List of file maps, each with rent_roll.pdf
     """
-    shutil.rmtree("input", ignore_errors=True)
     shutil.rmtree("intermediate", ignore_errors=True)
     shutil.rmtree("output", ignore_errors=True)
 
