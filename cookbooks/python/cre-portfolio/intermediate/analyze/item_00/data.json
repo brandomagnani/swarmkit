@@ -1,0 +1,77 @@
+{
+  "property_name": "Westfield Tower",
+  "as_of_date": "2026-01-06",
+  "total_sf": 638396.0,
+  "occupied_sf": 529702.0,
+  "vacant_sf": 108694.0,
+  "occupancy_rate": 0.8297,
+  "tenant_count": 35,
+  "annual_base_rent": 19530943.05,
+  "avg_rent_psf": 36.87,
+  "walt_years": 2.02,
+  "largest_tenant": "3M Company",
+  "largest_tenant_pct": 0.0537,
+  "rollover_12mo_sf": 63783.0,
+  "rollover_12mo_pct": 0.1204,
+  "rollover_24mo_sf": 133238.0,
+  "rollover_24mo_pct": 0.2515,
+  "near_term_expirations": [
+    {
+      "tenant_name": "Lyft Inc.",
+      "sf": 12079.0,
+      "annual_rent": 221170.92,
+      "expiration_date": "2026-01-24"
+    },
+    {
+      "tenant_name": "Bank of America",
+      "sf": 17184.0,
+      "annual_rent": 456385.8,
+      "expiration_date": "2026-04-01"
+    },
+    {
+      "tenant_name": "Bristol-Myers Squibb",
+      "sf": 15136.0,
+      "annual_rent": 545491.8,
+      "expiration_date": "2026-08-24"
+    },
+    {
+      "tenant_name": "SpaceX",
+      "sf": 4460.0,
+      "annual_rent": 948323.16,
+      "expiration_date": "2026-08-31"
+    },
+    {
+      "tenant_name": "Apple Inc.",
+      "sf": 14924.0,
+      "annual_rent": 638006.64,
+      "expiration_date": "2026-12-08"
+    },
+    {
+      "tenant_name": "Palantir Technologies",
+      "sf": 16344.0,
+      "annual_rent": 305816.88,
+      "expiration_date": "2027-03-03"
+    },
+    {
+      "tenant_name": "Credit Suisse",
+      "sf": 17935.0,
+      "annual_rent": 399853.56,
+      "expiration_date": "2027-07-24"
+    },
+    {
+      "tenant_name": "3M Company",
+      "sf": 19326.0,
+      "annual_rent": 1048863.72,
+      "expiration_date": "2027-09-27"
+    },
+    {
+      "tenant_name": "PepsiCo Inc.",
+      "sf": 15850.0,
+      "annual_rent": 746661.0,
+      "expiration_date": "2028-01-02"
+    }
+  ],
+  "risk_flags": [
+    "High vacancy: 17.0%"
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "property_name": "RENT ROLL",
+  "as_of_date": "2026-01-06",
+  "total_units": 8,
+  "total_sf": 84240.0,
+  "tenants": [
+    {
+      "tenant_name": "JP Morgan Chase",
+      "unit": "101RA",
+      "sf": 7955.0,
+      "lease_start": "2013-11-10",
+      "lease_end": "2024-11-04",
+      "monthly_rent": 139040.37,
+      "annual_rent": 1668484.44,
+      "rent_psf": 209.76,
+      "status": "occupied"
+    },
+    {
+      "tenant_name": "JP Morgan Chase",
+      "unit": "202",
+      "sf": 2904.0,
+      "lease_start": "2013-11-10",
+      "lease_end": "2024-11-04",
+      "monthly_rent": 149975.85,
+      "annual_rent": 1799710.2,
+      "rent_psf": 619.77,
+      "status": "occupied"
+    },
+    {
+      "tenant_name": "Williams-Sonoma Stores",
+      "unit": "102RC",
+      "sf": 3231.0,
+      "lease_start": "2012-12-24",
+      "lease_end": "2026-12-08",
+      "monthly_rent": 105969.17,
+      "annual_rent": 1271630.04,
+      "rent_psf": 393.6,
+      "status": "occupied"
+    },
+    {
+      "tenant_name": "Williams-Sonoma Stores",
+      "unit": "201",
+      "sf": 22322.0,
+      "lease_start": "2012-12-24",
+      "lease_end": "2026-12-08",
+      "monthly_rent": 330402.65,
+      "annual_rent": 3964831.8,
+      "rent_psf": 177.61,
+      "status": "occupied"
+    },
+    {
+      "tenant_name": "It'Sugar LLC",
+      "unit": "104",
+      "sf": 1989.0,
+      "lease_start": "2016-10-17",
+      "lease_end": "2026-04-11",
+      "monthly_rent": 48860.17,
+      "annual_rent": 586322.04,
+      "rent_psf": 294.78,
+      "status": "occupied"
+    },
+    {
+      "tenant_name": "VACANT",
+      "unit": "103RD",
+      "sf": 6425.0,
+      "lease_start": "",
+      "lease_end": "",
+      "monthly_rent": 0.0,
+      "annual_rent": 0.0,
+      "rent_psf": 0.0,
+      "status": "vacant"
+    },
+    {
+      "tenant_name": "VACANT",
+      "unit": "A",
+      "sf": 20687.0,
+      "lease_start": "",
+      "lease_end": "",
+      "monthly_rent": 0.0,
+      "annual_rent": 0.0,
+      "rent_psf": 0.0,
+      "status": "vacant"
+    },
+    {
+      "tenant_name": "VACANT",
+      "unit": "B",
+      "sf": 18727.0,
+      "lease_start": "",
+      "lease_end": "",
+      "monthly_rent": 0.0,
+      "annual_rent": 0.0,
+      "rent_psf": 0.0,
+      "status": "vacant"
+    }
+  ]
+}

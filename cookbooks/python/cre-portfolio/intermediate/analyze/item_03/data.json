@@ -1,0 +1,515 @@
+{
+  "property_name": "Westfield Tower-Off, Los Angeles",
+  "as_of_date": "2026-01-06",
+  "total_sf": 1301607.0,
+  "occupied_sf": 1301607.0,
+  "vacant_sf": 0.0,
+  "occupancy_rate": 1.0,
+  "tenant_count": 100,
+  "annual_base_rent": 46095362.65,
+  "avg_rent_psf": 35.41,
+  "walt_years": -13.24,
+  "largest_tenant": "t0004981",
+  "largest_tenant_pct": 0.0289,
+  "rollover_12mo_sf": 1004233.0,
+  "rollover_12mo_pct": 0.7715,
+  "rollover_24mo_sf": 1039704.0,
+  "rollover_24mo_pct": 0.7988,
+  "near_term_expirations": [
+    {
+      "tenant_name": "t0006247",
+      "sf": 25535.0,
+      "annual_rent": 996080.62,
+      "expiration_date": "1983-10-23"
+    },
+    {
+      "tenant_name": "t0004392",
+      "sf": 17672.0,
+      "annual_rent": 714952.2,
+      "expiration_date": "1984-08-03"
+    },
+    {
+      "tenant_name": "t0008583",
+      "sf": 7866.0,
+      "annual_rent": 298682.93,
+      "expiration_date": "1985-11-04"
+    },
+    {
+      "tenant_name": "t0008576",
+      "sf": 17133.0,
+      "annual_rent": 519793.99,
+      "expiration_date": "1985-12-24"
+    },
+    {
+      "tenant_name": "t0004258",
+      "sf": 1278.0,
+      "annual_rent": 43866.14,
+      "expiration_date": "1986-04-21"
+    },
+    {
+      "tenant_name": "t0003603",
+      "sf": 2456.0,
+      "annual_rent": 109612.75,
+      "expiration_date": "1988-02-26"
+    },
+    {
+      "tenant_name": "t0001489",
+      "sf": 10941.0,
+      "annual_rent": 367578.01,
+      "expiration_date": "1988-07-15"
+    },
+    {
+      "tenant_name": "t0008874",
+      "sf": 5081.0,
+      "annual_rent": 191289.53,
+      "expiration_date": "1990-05-24"
+    },
+    {
+      "tenant_name": "t0008828",
+      "sf": 12477.0,
+      "annual_rent": 486563.3,
+      "expiration_date": "1990-06-16"
+    },
+    {
+      "tenant_name": "t0002142",
+      "sf": 5748.0,
+      "annual_rent": 164287.78,
+      "expiration_date": "1990-12-12"
+    },
+    {
+      "tenant_name": "t0009504",
+      "sf": 12817.0,
+      "annual_rent": 560388.17,
+      "expiration_date": "1991-07-05"
+    },
+    {
+      "tenant_name": "t0001421",
+      "sf": 19627.0,
+      "annual_rent": 712810.62,
+      "expiration_date": "1991-12-18"
+    },
+    {
+      "tenant_name": "t0008292",
+      "sf": 12935.0,
+      "annual_rent": 475677.42,
+      "expiration_date": "1993-02-21"
+    },
+    {
+      "tenant_name": "t0003333",
+      "sf": 6971.0,
+      "annual_rent": 190054.99,
+      "expiration_date": "1993-08-19"
+    },
+    {
+      "tenant_name": "t0004061",
+      "sf": 3646.0,
+      "annual_rent": 131922.6,
+      "expiration_date": "1994-09-23"
+    },
+    {
+      "tenant_name": "t0004863",
+      "sf": 11673.0,
+      "annual_rent": 326664.09,
+      "expiration_date": "1995-03-24"
+    },
+    {
+      "tenant_name": "t0007464",
+      "sf": 10333.0,
+      "annual_rent": 462402.99,
+      "expiration_date": "1995-09-02"
+    },
+    {
+      "tenant_name": "t0001741",
+      "sf": 2324.0,
+      "annual_rent": 80997.7,
+      "expiration_date": "1996-02-02"
+    },
+    {
+      "tenant_name": "t0005211",
+      "sf": 16119.0,
+      "annual_rent": 535583.96,
+      "expiration_date": "1996-10-06"
+    },
+    {
+      "tenant_name": "t0007020",
+      "sf": 21753.0,
+      "annual_rent": 822081.84,
+      "expiration_date": "1998-04-15"
+    },
+    {
+      "tenant_name": "t0006330",
+      "sf": 10634.0,
+      "annual_rent": 495222.96,
+      "expiration_date": "1998-06-29"
+    },
+    {
+      "tenant_name": "t0002938",
+      "sf": 23857.0,
+      "annual_rent": 768425.45,
+      "expiration_date": "1999-02-18"
+    },
+    {
+      "tenant_name": "t0009505",
+      "sf": 24640.0,
+      "annual_rent": 854174.47,
+      "expiration_date": "1999-05-01"
+    },
+    {
+      "tenant_name": "t0003592",
+      "sf": 20224.0,
+      "annual_rent": 793002.77,
+      "expiration_date": "1999-10-25"
+    },
+    {
+      "tenant_name": "t0009300",
+      "sf": 4684.0,
+      "annual_rent": 163950.43,
+      "expiration_date": "2000-09-21"
+    },
+    {
+      "tenant_name": "t0003234",
+      "sf": 6136.0,
+      "annual_rent": 243437.99,
+      "expiration_date": "2001-11-30"
+    },
+    {
+      "tenant_name": "t0003486",
+      "sf": 10351.0,
+      "annual_rent": 252650.02,
+      "expiration_date": "2002-02-21"
+    },
+    {
+      "tenant_name": "t0004981",
+      "sf": 28655.0,
+      "annual_rent": 1331291.25,
+      "expiration_date": "2002-02-22"
+    },
+    {
+      "tenant_name": "t0008081",
+      "sf": 10842.0,
+      "annual_rent": 410281.56,
+      "expiration_date": "2002-06-28"
+    },
+    {
+      "tenant_name": "t0008432",
+      "sf": 25632.0,
+      "annual_rent": 964572.41,
+      "expiration_date": "2002-10-09"
+    },
+    {
+      "tenant_name": "t0009352",
+      "sf": 9066.0,
+      "annual_rent": 414379.02,
+      "expiration_date": "2003-10-02"
+    },
+    {
+      "tenant_name": "t0007336",
+      "sf": 14662.0,
+      "annual_rent": 582618.1,
+      "expiration_date": "2003-12-07"
+    },
+    {
+      "tenant_name": "t0009303",
+      "sf": 25050.0,
+      "annual_rent": 722002.68,
+      "expiration_date": "2004-04-25"
+    },
+    {
+      "tenant_name": "t0005554",
+      "sf": 18972.0,
+      "annual_rent": 537238.26,
+      "expiration_date": "2004-05-21"
+    },
+    {
+      "tenant_name": "t0009379",
+      "sf": 23417.0,
+      "annual_rent": 692897.81,
+      "expiration_date": "2004-10-30"
+    },
+    {
+      "tenant_name": "t0006076",
+      "sf": 10196.0,
+      "annual_rent": 322755.53,
+      "expiration_date": "2005-06-18"
+    },
+    {
+      "tenant_name": "t0006849",
+      "sf": 13985.0,
+      "annual_rent": 405568.52,
+      "expiration_date": "2006-03-03"
+    },
+    {
+      "tenant_name": "t0001494",
+      "sf": 15122.0,
+      "annual_rent": 445144.64,
+      "expiration_date": "2006-04-16"
+    },
+    {
+      "tenant_name": "t0001054",
+      "sf": 15702.0,
+      "annual_rent": 570813.91,
+      "expiration_date": "2006-08-08"
+    },
+    {
+      "tenant_name": "t0002227",
+      "sf": 12390.0,
+      "annual_rent": 454107.0,
+      "expiration_date": "2006-08-22"
+    },
+    {
+      "tenant_name": "t0001921",
+      "sf": 7746.0,
+      "annual_rent": 212307.96,
+      "expiration_date": "2006-09-11"
+    },
+    {
+      "tenant_name": "t0006014",
+      "sf": 5268.0,
+      "annual_rent": 139828.93,
+      "expiration_date": "2006-12-02"
+    },
+    {
+      "tenant_name": "t0005696",
+      "sf": 11708.0,
+      "annual_rent": 291392.58,
+      "expiration_date": "2007-01-15"
+    },
+    {
+      "tenant_name": "t0008008",
+      "sf": 12714.0,
+      "annual_rent": 516832.11,
+      "expiration_date": "2007-06-28"
+    },
+    {
+      "tenant_name": "t0003875",
+      "sf": 15699.0,
+      "annual_rent": 539314.72,
+      "expiration_date": "2007-12-07"
+    },
+    {
+      "tenant_name": "t0008551",
+      "sf": 1559.0,
+      "annual_rent": 56667.96,
+      "expiration_date": "2008-07-23"
+    },
+    {
+      "tenant_name": "t0007422",
+      "sf": 6364.0,
+      "annual_rent": 227033.32,
+      "expiration_date": "2009-08-24"
+    },
+    {
+      "tenant_name": "t0001027",
+      "sf": 17115.0,
+      "annual_rent": 699038.26,
+      "expiration_date": "2010-07-12"
+    },
+    {
+      "tenant_name": "t0006919",
+      "sf": 7646.0,
+      "annual_rent": 249096.57,
+      "expiration_date": "2010-11-16"
+    },
+    {
+      "tenant_name": "t0004128",
+      "sf": 8049.0,
+      "annual_rent": 213793.78,
+      "expiration_date": "2010-12-21"
+    },
+    {
+      "tenant_name": "t0001449",
+      "sf": 28154.0,
+      "annual_rent": 952728.6,
+      "expiration_date": "2011-01-16"
+    },
+    {
+      "tenant_name": "t0008019",
+      "sf": 4836.0,
+      "annual_rent": 162603.55,
+      "expiration_date": "2011-08-30"
+    },
+    {
+      "tenant_name": "t0005968",
+      "sf": 3990.0,
+      "annual_rent": 164896.38,
+      "expiration_date": "2011-11-03"
+    },
+    {
+      "tenant_name": "t0007837",
+      "sf": 19044.0,
+      "annual_rent": 457262.81,
+      "expiration_date": "2012-03-03"
+    },
+    {
+      "tenant_name": "t0005779",
+      "sf": 1981.0,
+      "annual_rent": 79803.02,
+      "expiration_date": "2012-05-06"
+    },
+    {
+      "tenant_name": "t0007924",
+      "sf": 16407.0,
+      "annual_rent": 415077.5,
+      "expiration_date": "2012-07-27"
+    },
+    {
+      "tenant_name": "t0003616",
+      "sf": 24831.0,
+      "annual_rent": 826095.72,
+      "expiration_date": "2012-09-21"
+    },
+    {
+      "tenant_name": "t0009100",
+      "sf": 14270.0,
+      "annual_rent": 502949.89,
+      "expiration_date": "2013-01-23"
+    },
+    {
+      "tenant_name": "t0002387",
+      "sf": 15100.0,
+      "annual_rent": 498731.81,
+      "expiration_date": "2013-08-15"
+    },
+    {
+      "tenant_name": "t0006158",
+      "sf": 9170.0,
+      "annual_rent": 330090.87,
+      "expiration_date": "2015-02-02"
+    },
+    {
+      "tenant_name": "t0006534",
+      "sf": 25391.0,
+      "annual_rent": 729419.4,
+      "expiration_date": "2015-04-01"
+    },
+    {
+      "tenant_name": "t0003524",
+      "sf": 10602.0,
+      "annual_rent": 435761.88,
+      "expiration_date": "2015-11-22"
+    },
+    {
+      "tenant_name": "t0007625",
+      "sf": 2793.0,
+      "annual_rent": 106070.0,
+      "expiration_date": "2016-11-15"
+    },
+    {
+      "tenant_name": "t0002591",
+      "sf": 5267.0,
+      "annual_rent": 241511.45,
+      "expiration_date": "2017-01-07"
+    },
+    {
+      "tenant_name": "t0002205",
+      "sf": 11151.0,
+      "annual_rent": 269395.2,
+      "expiration_date": "2018-10-07"
+    },
+    {
+      "tenant_name": "t0005588",
+      "sf": 26463.0,
+      "annual_rent": 1066519.1,
+      "expiration_date": "2019-06-15"
+    },
+    {
+      "tenant_name": "t0001875",
+      "sf": 9793.0,
+      "annual_rent": 420341.73,
+      "expiration_date": "2020-05-12"
+    },
+    {
+      "tenant_name": "t0004759",
+      "sf": 2933.0,
+      "annual_rent": 137230.76,
+      "expiration_date": "2021-07-19"
+    },
+    {
+      "tenant_name": "t0008221",
+      "sf": 25667.0,
+      "annual_rent": 798558.02,
+      "expiration_date": "2021-12-22"
+    },
+    {
+      "tenant_name": "t0005711",
+      "sf": 14114.0,
+      "annual_rent": 487980.71,
+      "expiration_date": "2022-07-18"
+    },
+    {
+      "tenant_name": "t0007496",
+      "sf": 22693.0,
+      "annual_rent": 727460.83,
+      "expiration_date": "2022-12-11"
+    },
+    {
+      "tenant_name": "t0009185",
+      "sf": 10175.0,
+      "annual_rent": 414035.87,
+      "expiration_date": "2023-05-14"
+    },
+    {
+      "tenant_name": "t0008050",
+      "sf": 5736.0,
+      "annual_rent": 193923.59,
+      "expiration_date": "2023-08-19"
+    },
+    {
+      "tenant_name": "t0004991",
+      "sf": 4186.0,
+      "annual_rent": 196426.7,
+      "expiration_date": "2023-12-13"
+    },
+    {
+      "tenant_name": "t0008122",
+      "sf": 11001.0,
+      "annual_rent": 303267.01,
+      "expiration_date": "2024-04-12"
+    },
+    {
+      "tenant_name": "t0001301",
+      "sf": 5541.0,
+      "annual_rent": 229296.13,
+      "expiration_date": "2025-04-04"
+    },
+    {
+      "tenant_name": "t0001207",
+      "sf": 12053.0,
+      "annual_rent": 474122.4,
+      "expiration_date": "2025-04-04"
+    },
+    {
+      "tenant_name": "t0003815",
+      "sf": 2264.0,
+      "annual_rent": 87325.4,
+      "expiration_date": "2025-10-13"
+    },
+    {
+      "tenant_name": "t0003643",
+      "sf": 5907.0,
+      "annual_rent": 157758.21,
+      "expiration_date": "2025-10-29"
+    },
+    {
+      "tenant_name": "t0006313",
+      "sf": 10250.0,
+      "annual_rent": 306391.55,
+      "expiration_date": "2026-12-10"
+    },
+    {
+      "tenant_name": "t0005718",
+      "sf": 24619.0,
+      "annual_rent": 604436.01,
+      "expiration_date": "2027-04-20"
+    },
+    {
+      "tenant_name": "t0006097",
+      "sf": 10852.0,
+      "annual_rent": 409869.66,
+      "expiration_date": "2027-06-29"
+    }
+  ],
+  "risk_flags": [
+    "High near-term rollover: 77.2% in 12 months"
+  ]
+}

@@ -1,6 +1,25 @@
-"""Prompts for HN Time Capsule analysis."""
+"""Prompts for Hacker News Time Capsule analysis."""
 
-ANALYZE = """Analyze this HN article from 10 years ago.
+import json
+
+
+def FETCH(files, idx):
+    config = json.loads(files["config.json"])
+    rank = config["rank"]
+    date = config["date"]
+    return f"""Fetch Hacker News article rank {rank} from {date}.
+
+Source: news.ycombinator.com/front?day={date}
+Comments API: hn.algolia.com/api/v1/items/{{item_id}}
+
+Write code to download and parse.
+
+Save to output/:
+- meta.json: rank, title, url, hn_url, points, author, comment_count, item_id
+- article.txt: article content (text only, HTML stripped)
+- comments.json: comment thread (strip HTML from text)"""
+
+ANALYZE = """Analyze this Hacker News article from 10 years ago.
 
 Files in context/:
 - meta.json: article metadata
@@ -15,7 +34,7 @@ With 10 years of hindsight:
 5. Grade commenters
 6. Rate how interesting this retrospective is
 
-Save only result.json to output/ (no other files)."""
+Save a single output/result.json following the provided schema."""
 
 RENDER = """Create a beautiful HTML dashboard from all analyses.
 

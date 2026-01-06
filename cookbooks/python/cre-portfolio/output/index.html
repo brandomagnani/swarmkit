@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Dashboard</title>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #aeaeb2;
+            --border: #e5e5e7;
+            --accent: #0071e3;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --success: #34c759;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+
+        header {
+            margin-bottom: 48px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.003em;
+            color: var(--text-primary);
+        }
+
+        .date {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .summary-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .summary-card .label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 8px;
+        }
+
+        .summary-card .value {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .summary-card .subtext {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        section {
+            margin-bottom: 48px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.012em;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-warning {
+            background: rgba(255, 149, 0, 0.12);
+            color: #c77700;
+        }
+
+        .badge-success {
+            background: rgba(52, 199, 89, 0.12);
+            color: #248a3d;
+        }
+
+        .table-container {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .property-name {
+            font-weight: 500;
+        }
+
+        .number {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .failed-criteria {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .criteria-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--danger);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state p {
+            font-size: 15px;
+        }
+
+        .tenant-exposure {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .tenant-card {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 16px;
+        }
+
+        .tenant-card .property {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+
+        .tenant-card .name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .tenant-card .exposure {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .exposure-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .exposure-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .exposure-fill.high {
+            background: var(--danger);
+        }
+
+        .dual-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            .dual-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scroll-table {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Portfolio Dashboard</h1>
+            <p class="date">As of January 6, 2026</p>
+        </header>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">Total Square Feet</div>
+                <div class="value number">2,544,243</div>
+                <div class="subtext">Across 4 properties</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Portfolio Occupancy</div>
+                <div class="value number">147.4%</div>
+                <div class="subtext">3,747,127 SF occupied</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Annual Base Rent</div>
+                <div class="value number">$2.28B</div>
+                <div class="subtext">Aggregate NOI</div>
+            </div>
+        </div>
+
+        <section>
+            <div class="section-header">
+                <h2>Core Portfolio</h2>
+                <span class="badge badge-success">0 Properties</span>
+            </div>
+            <div class="table-container">
+                <div class="empty-state">
+                    <p>No properties currently meet Core Portfolio criteria</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2>Watch List</h2>
+                <span class="badge badge-warning">4 Properties</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>SF</th>
+                            <th>Occupancy</th>
+                            <th>WALT</th>
+                            <th>Annual Rent</th>
+                            <th>Failed Criteria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="property-name">Westfield Tower</td>
+                            <td class="number">638,396</td>
+                            <td class="number">82.97%</td>
+                            <td class="number">2.02 yrs</td>
+                            <td class="number">$19.5M</td>
+                            <td>
+                                <div class="failed-criteria">
+                                    <span class="criteria-tag">Occupancy &lt; 85%</span>
+                                    <span class="criteria-tag">WALT &lt; 3 yrs</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="property-name">RENT ROLL</td>
+                            <td class="number">84,240</td>
+                            <td class="number">45.59%</td>
+                            <td class="number">0.10 yrs</td>
+                            <td class="number">$9.3M</td>
+                            <td>
+                                <div class="failed-criteria">
+                                    <span class="criteria-tag">Occupancy &lt; 85%</span>
+                                    <span class="criteria-tag">WALT &lt; 3 yrs</span>
+                                    <span class="criteria-tag">Tenant Conc. &gt; 30%</span>
+                                    <span class="criteria-tag">Rollover &gt; 20%</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="property-name">Consolidated Properties</td>
+                            <td class="number">520,000</td>
+                            <td class="number">361.04%</td>
+                            <td class="number">2.49 yrs</td>
+                            <td class="number">$2.2B</td>
+                            <td>
+                                <div class="failed-criteria">
+                                    <span class="criteria-tag">WALT &lt; 3 yrs</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="property-name">Westfield Tower-Off, Los Angeles</td>
+                            <td class="number">1,301,607</td>
+                            <td class="number">100.00%</td>
+                            <td class="number">-13.24 yrs</td>
+                            <td class="number">$46.1M</td>
+                            <td>
+                                <div class="failed-criteria">
+                                    <span class="criteria-tag">WALT &lt; 3 yrs</span>
+                                    <span class="criteria-tag">Rollover &gt; 20%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="dual-grid">
+            <section>
+                <div class="section-header">
+                    <h2>Near-Term Lease Expirations</h2>
+                </div>
+                <div class="table-container scroll-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tenant</th>
+                                <th>Property</th>
+                                <th>SF</th>
+                                <th>Expiration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="property-name">Lyft Inc.</td>
+                                <td>Westfield Tower</td>
+                                <td class="number">12,079</td>
+                                <td class="number">Jan 24, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Gucci</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">6,146</td>
+                                <td class="number">Jan 24, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Canada Goose</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">3,418</td>
+                                <td class="number">Feb 21, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Bank of America</td>
+                                <td>Westfield Tower</td>
+                                <td class="number">17,184</td>
+                                <td class="number">Apr 1, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">It'Sugar LLC</td>
+                                <td>RENT ROLL</td>
+                                <td class="number">1,989</td>
+                                <td class="number">Apr 11, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Chanel</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">6,596</td>
+                                <td class="number">May 10, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Rite Aid</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">7,649</td>
+                                <td class="number">May 21, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">IWC</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">10,672</td>
+                                <td class="number">Jul 20, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Bristol-Myers Squibb</td>
+                                <td>Westfield Tower</td>
+                                <td class="number">15,136</td>
+                                <td class="number">Aug 24, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Lululemon</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">18,597</td>
+                                <td class="number">Aug 23, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">SpaceX</td>
+                                <td>Westfield Tower</td>
+                                <td class="number">4,460</td>
+                                <td class="number">Aug 31, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">James Perse</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">13,230</td>
+                                <td class="number">Aug 28, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">IWC</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">13,929</td>
+                                <td class="number">Oct 5, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Safeway Inc.</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">645</td>
+                                <td class="number">Oct 23, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Valentino</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">3,084</td>
+                                <td class="number">Nov 4, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Alexander McQueen</td>
+                                <td>Consolidated Properties</td>
+                                <td class="number">5,639</td>
+                                <td class="number">Nov 26, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Apple Inc.</td>
+                                <td>Westfield Tower</td>
+                                <td class="number">14,924</td>
+                                <td class="number">Dec 8, 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="property-name">Williams-Sonoma Stores</td>
+                                <td>RENT ROLL</td>
+                                <td class="number">25,553</td>
+                                <td class="number">Dec 8, 2026</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-header">
+                    <h2>Top Tenant Exposure</h2>
+                </div>
+                <div class="tenant-exposure">
+                    <div class="tenant-card">
+                        <div class="property">RENT ROLL</div>
+                        <div class="name">Williams-Sonoma Stores</div>
+                        <div class="exposure">56.36% of occupied SF</div>
+                        <div class="exposure-bar">
+                            <div class="exposure-fill high" style="width: 56.36%"></div>
+                        </div>
+                    </div>
+                    <div class="tenant-card">
+                        <div class="property">Westfield Tower</div>
+                        <div class="name">3M Company</div>
+                        <div class="exposure">5.37% of occupied SF</div>
+                        <div class="exposure-bar">
+                            <div class="exposure-fill" style="width: 17.9%"></div>
+                        </div>
+                    </div>
+                    <div class="tenant-card">
+                        <div class="property">Westfield Tower-Off, Los Angeles</div>
+                        <div class="name">t0004981</div>
+                        <div class="exposure">2.89% of occupied SF</div>
+                        <div class="exposure-bar">
+                            <div class="exposure-fill" style="width: 9.6%"></div>
+                        </div>
+                    </div>
+                    <div class="tenant-card">
+                        <div class="property">Consolidated Properties</div>
+                        <div class="name">Patek Philippe</div>
+                        <div class="exposure">2.62% of occupied SF</div>
+                        <div class="exposure-bar">
+                            <div class="exposure-fill" style="width: 8.7%"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
