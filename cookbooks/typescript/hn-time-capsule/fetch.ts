@@ -155,17 +155,19 @@ function fetchComments(itemId: string): Comment[] {
 }
 
 function fetchArticleContent(url: string): string {
+    const unavailable = "[Article unavailable - analyze based on meta.json and comments.json]";
+
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        return "";
+        return unavailable;
     }
 
     const skipPatterns = [".pdf", "youtube.com", "youtu.be", "twitter.com", "x.com"];
     if (skipPatterns.some((p) => url.includes(p))) {
-        return "";
+        return unavailable;
     }
 
     const html = curlGet(url);
-    if (!html) return "";
+    if (!html) return unavailable;
 
     // Simple HTML to text extraction
     let text = html
@@ -183,13 +185,18 @@ function fetchArticleContent(url: string): string {
         .replace(/\s+/g, " ")
         .trim();
 
+    // Check for 404 or too short
+    if (text.length < 100 || text.includes("404") || text.includes("Not Found")) {
+        return unavailable;
+    }
+
     // Truncate to 15000 chars
     if (text.length > 15000) {
         const truncateAt = text.lastIndexOf(". ", 14500);
         text = text.slice(0, truncateAt > 0 ? truncateAt + 1 : 15000) + "\n\n[TRUNCATED]";
     }
 
-    return text.length > 100 ? text : "";
+    return text;
 }
 
 export function fetchHnDay(day: string, limit?: number): FileMap[] {

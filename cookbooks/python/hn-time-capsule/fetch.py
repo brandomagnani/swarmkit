@@ -148,10 +148,11 @@ def fetch_comments(item_id: str) -> list[dict]:
 
 
 def fetch_article_content(url: str) -> str:
+    unavailable = "[Article unavailable - analyze based on meta.json and comments.json]"
     if not url.startswith(('http://', 'https://')):
-        return "[Not a web URL]"
+        return unavailable
     if any(x in url for x in ['.pdf', 'youtube.com', 'youtu.be', 'twitter.com', 'x.com']):
-        return "[Skipped: PDF, video, or social media]"
+        return unavailable
     try:
         html = _curl_get(url)
         text = re.sub(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL)
@@ -159,9 +160,11 @@ def fetch_article_content(url: str) -> str:
         text = re.sub(r'<[^>]+>', ' ', text)
         text = unescape(text)
         text = re.sub(r'\s+', ' ', text).strip()
+        if len(text) < 100 or '404' in text or 'Not Found' in text:
+            return unavailable
         return text[:15000] if len(text) > 15000 else text
-    except Exception as e:
-        return f"[Error: {e}]"
+    except:
+        return unavailable
 
 
 def fetch_hn_day(date: str, limit: int | None = None) -> list[dict]:
