@@ -25,7 +25,7 @@ class Analysis(BaseModel):
 
 
 swarm = Swarm(SwarmConfig(
-    concurrency=10,
+    concurrency=10,                     # max parallel sandboxes
     retry=RetryConfig(max_attempts=3),  # 2 retries
 ))
 

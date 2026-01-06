@@ -22,7 +22,7 @@ const AnalysisSchema = z.object({
 });
 
 const swarm = new Swarm({
-    concurrency: 10,
+    concurrency: 10,                  // max parallel sandboxes
     retry: { maxAttempts: 3 },  // 2 retries
 });
 
