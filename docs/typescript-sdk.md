@@ -897,6 +897,18 @@ const swarm = new Swarm({
 
 > **Defaults**: `agent`, `timeoutMs`, `mcpServers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
 
+| Option | Default | Notes |
+|--------|---------|-------|
+| `agent.type` | `'claude'` | Auto-resolved from env |
+| `agent.model` | per type | `'opus'` (claude), `'gpt-5.2'` (codex), etc. |
+| `concurrency` | `4` | Max parallel sandboxes |
+| `timeoutMs` | `3_600_000` | 1 hour per worker |
+| `workspaceMode` | `'knowledge'` | or `'swe'` |
+| `tag` | `'swarm'` | Observability prefix |
+| `retry` | `undefined` | Set here or per-operation |
+| `verify` | `undefined` | Per-operation only |
+| `mcpServers` | `undefined` | Set here or per-operation |
+
 **Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Authentication](#11-authentication)):
 
 ```ts

@@ -907,6 +907,18 @@ swarm = Swarm(SwarmConfig(
 
 > **Defaults**: `agent`, `timeout_ms`, `mcp_servers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `best_of`). Pass these options to individual operations to override.
 
+| Option | Default | Notes |
+|--------|---------|-------|
+| `agent.type` | `'claude'` | Auto-resolved from env |
+| `agent.model` | per type | `'opus'` (claude), `'gpt-5.2'` (codex), etc. |
+| `concurrency` | `4` | Max parallel sandboxes |
+| `timeout_ms` | `3_600_000` | 1 hour per worker |
+| `workspace_mode` | `'knowledge'` | or `'swe'` |
+| `tag` | `'swarm'` | Observability prefix |
+| `retry` | `None` | Set here or per-operation |
+| `verify` | `None` | Per-operation only |
+| `mcp_servers` | `None` | Set here or per-operation |
+
 **Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Authentication](#11-authentication)):
 
 ```python
