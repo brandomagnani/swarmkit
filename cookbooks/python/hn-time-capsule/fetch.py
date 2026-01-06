@@ -6,6 +6,7 @@ import subprocess
 from dataclasses import dataclass
 from html import unescape
 from html.parser import HTMLParser
+from pathlib import Path
 
 
 def _curl_get(url: str) -> str:
@@ -170,8 +171,8 @@ def fetch_hn_day(date: str, limit: int | None = None) -> list[dict]:
         articles = articles[:limit]
 
     items = []
-    for article in articles:
-        items.append({
+    for i, article in enumerate(articles):
+        item = {
             'meta.json': json.dumps({
                 'rank': article.rank,
                 'title': article.title,
@@ -183,5 +184,13 @@ def fetch_hn_day(date: str, limit: int | None = None) -> list[dict]:
             }, indent=2),
             'article.txt': fetch_article_content(article.url),
             'comments.json': json.dumps(fetch_comments(article.item_id), indent=2),
-        })
+        }
+        items.append(item)
+
+        # Save to input/ for inspection
+        item_dir = Path(f"input/item_{i:02d}")
+        item_dir.mkdir(parents=True, exist_ok=True)
+        for name, content in item.items():
+            (item_dir / name).write_text(content)
+
     return items

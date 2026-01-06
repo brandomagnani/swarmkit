@@ -3,6 +3,7 @@
  */
 
 import { execSync } from "child_process";
+import { mkdirSync, writeFileSync } from "fs";
 
 type FileMap = Record<string, string>;
 
@@ -197,25 +198,29 @@ export function fetchHnDay(day: string, limit?: number): FileMap[] {
 
     const toProcess = limit ? articles.slice(0, limit) : articles;
 
-    for (const article of toProcess) {
-        const meta = {
-            rank: article.rank,
-            title: article.title,
-            url: article.url,
-            hn_url: article.hn_url,
-            points: article.points,
-            author: article.author,
-            comment_count: article.comment_count,
+    for (let i = 0; i < toProcess.length; i++) {
+        const article = toProcess[i];
+        const item: FileMap = {
+            "meta.json": JSON.stringify({
+                rank: article.rank,
+                title: article.title,
+                url: article.url,
+                hn_url: article.hn_url,
+                points: article.points,
+                author: article.author,
+                comment_count: article.comment_count,
+            }, null, 2),
+            "article.txt": fetchArticleContent(article.url),
+            "comments.json": JSON.stringify(fetchComments(article.item_id), null, 2),
         };
+        items.push(item);
 
-        const articleText = fetchArticleContent(article.url);
-        const comments = fetchComments(article.item_id);
-
-        items.push({
-            "meta.json": JSON.stringify(meta, null, 2),
-            "article.txt": articleText,
-            "comments.json": JSON.stringify(comments, null, 2),
-        });
+        // Save to input/ for inspection
+        const itemDir = `input/item_${i.toString().padStart(2, "0")}`;
+        mkdirSync(itemDir, { recursive: true });
+        for (const [name, content] of Object.entries(item)) {
+            writeFileSync(`${itemDir}/${name}`, content);
+        }
     }
 
     return items;

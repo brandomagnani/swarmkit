@@ -43,7 +43,7 @@ pipeline = (
 
 async def main():
     print("Fetching HN data...")
-    items = fetch_hn_day("2015-12-01", limit=30)  # top 30 HN articles from 10 years ago 
+    items = fetch_hn_day("2015-12-01", limit=10)  # top 30 HN articles from 10 years ago 
     print(f"Processing {len(items)} articles...")
     result = await pipeline.run(items)
 
