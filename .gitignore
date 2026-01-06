@@ -12,6 +12,8 @@ env/
 **/output/*
 !cookbooks/python/hn-time-capsule/output/
 !cookbooks/python/hn-time-capsule/output/*
+!cookbooks/typescript/hn-time-capsule/output/
+!cookbooks/typescript/hn-time-capsule/output/*
 
 # IDE
 .idea/
