@@ -1,0 +1,289 @@
+[
+  {
+    "id": 10659856,
+    "author": "JoshTriplett",
+    "text": "The title seems misleading; from the sounds of things, these weren't \"mining companies\" in the first place, they were scams from the start. To be a mining company, they'd have to actually do mining. Instead, it sounds like their primary product was the money coming in from people buying their product, which is the definition of a pyramid scheme.Quoting the relevant bits of the ruling:35. Second, contrary to its stated reason for existence, no mining actually occurred through ZenMiner\u2019s ZenCloud interface. Though customers paid for equipment that they believed they were directing to mine in various pools available through the ZenCloud interface, and also paid for hosting services, very few pieces of the mining equipment purchased by customers actually existed in a ZenMiner datacenter. Most customers paid for a phantom piece of equipment that neither GAW Miners nor ZenMiner owned. Ne ither GAW Miners nor ZenMiner was directing customers\u2019 computing power to any pools at all, much less the ones customers believed they were choosing.37. Cloud Hosted Mining customers were entitled to request that the computer equipment they had purportedly purchased be sent to them, but neither GAW Miners nor ZenMiner owned that equipment to ship.49. By October 2014, GAW Miners had oversold Hashlets to an even more extreme degree. It had oversold altcoin-mining Hashlets by at least about 100 times its computing capacity, and bitcoin-mining Hashlets by at least about 5 times its computing capacity.50. Though GAW Miners built a data center that, by November 2014, contained significant computing capacity for mining bitcoin, it made no increases to its computing capacity for mining altcoin.",
+    "points": null,
+    "created_at": "2015-12-01T23:56:39.000Z",
+    "children": [
+      {
+        "id": 10659881,
+        "author": "alvern",
+        "text": "It seems they started as a mining operation, then pivoted to sell shares or futures called \"Hashlets\". The scam started when they oversold these Hashlets and advertised to customers to use a cloud service instead of their physical mining rigs.",
+        "points": null,
+        "created_at": "2015-12-02T00:03:11.000Z",
+        "children": [
+          {
+            "id": 10660515,
+            "author": "gawsuit",
+            "text": "The reason for that is that it turns out that paying for power and cooling is more expensive than not.",
+            "points": null,
+            "created_at": "2015-12-02T02:34:14.000Z",
+            "children": []
+          },
+          {
+            "id": 10660517,
+            "author": "cba9",
+            "text": "Right. At one point in the complaint, they say the company had oversubscribed its mining capabilities but kept selling to 4x IIRC, which rather implies that there was mining capability there in the first place (just much much less than they were selling).",
+            "points": null,
+            "created_at": "2015-12-02T02:34:42.000Z",
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 10659968,
+        "author": "teen",
+        "text": "definition of a ponzi scheme (not pyramid scheme)",
+        "points": null,
+        "created_at": "2015-12-02T00:22:15.000Z",
+        "children": []
+      },
+      {
+        "id": 10659997,
+        "author": "scoot",
+        "text": "Ponzi rather than pyramid scheme, but otherwise I agree.(A ponzi scheme paying current investors from the funds contributed by incoming investors, as distinct from a pyramid scheme where payouts are typically in return for recruitment of others to the scheme.)",
+        "points": null,
+        "created_at": "2015-12-02T00:31:13.000Z",
+        "children": [
+          {
+            "id": 10660375,
+            "author": "JoshTriplett",
+            "text": "Fair enough, though the two are often combined (paying the top of the pyramid from the bottom).",
+            "points": null,
+            "created_at": "2015-12-02T01:58:08.000Z",
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 10660720,
+        "author": "dang",
+        "text": "We changed the title to be less misleading. Submitted title was \"SEC charges Bitcoin companies GAW Miners, ZenMiner as a Ponzi scheme\".",
+        "points": null,
+        "created_at": "2015-12-02T03:28:20.000Z",
+        "children": []
+      }
+    ]
+  },
+  {
+    "id": 10659891,
+    "author": "LukeHoersten",
+    "text": "This is a surprisingly clear and articulate explanation of digital currency mining and how it was used to mask a ponzi scheme by over-issuing securities against it. Well done SEC.",
+    "points": null,
+    "created_at": "2015-12-02T00:05:00.000Z",
+    "children": []
+  },
+  {
+    "id": 10659903,
+    "author": "jimrandomh",
+    "text": "The Bitcoin world seems to have an awful lot of incompetent fraudsters. This particular one is surprising, because I don't see how they thought they could get away with it; the scheme described in the SEC complaint is one that would be guaranteed from the start to unravel, and the perpetrators weren't anonymous.What they did was, they sold shares in a Bitcoin mining operation corresponding to hashing power, and kept selling long after their actual mining equipment had sold out. They then used the revenue from those sales to buy Bitcoin on the open market, and misrepresent those purchased coins as newly-mined coins for withdrawals.Seriously, how could they possibly have thought that would work out?",
+    "points": null,
+    "created_at": "2015-12-02T00:07:04.000Z",
+    "children": [
+      {
+        "id": 10660073,
+        "author": "conistonwater",
+        "text": "Good question. One guess is that the total amount of bitcoins mined by a given device is finite due to obsolescence \u2014 competition from newer faster devices would push returns to zero in the future. So long as the price of bitcoins falls/does not rise, the sale price of the device might be enough to purchase the equivalent number of bitcoins on the open market and still make a profit, and the customers would be none the wiser.There is also another very general problem with selling/buying miners (beyond the general suspicion of bitcoin fraudsters): if you buy a money-printing device from someone, why on Earth would you trust them not to run the money-printing device for themselves? You'd think it only ever makes sense to sell obsolete or broken devices, never the real thing, so why would anyone want to buy any?",
+        "points": null,
+        "created_at": "2015-12-02T00:48:04.000Z",
+        "children": [
+          {
+            "id": 10660433,
+            "author": "nemild",
+            "text": "Just because you have a money making machine doesn't mean you'll necessarily want to keep it for yourself.The businesses (technology providers vs the owner of a current mining machine) are a bit different. A technology provider might have the expertise to manufacture the rigs or run the datacenter. The \"owner\" (quotes because it might be on paper only) provides upfront capital, in exchange for future uncertain returns from mining (uncertain for a host of reasons including the uncertainties of mining success, uncertainties in the speed of depreciation, and uncertainties in the future price of Bitcoin). The technology provider may not want to take these risks - or be unable to provide the capital outlay.This means there's potential value to both parties in making a trade.(The question of whether the technology provider is reneging by running the machine for themselves is obviously a separate question)",
+            "points": null,
+            "created_at": "2015-12-02T02:13:12.000Z",
+            "children": [
+              {
+                "id": 10660659,
+                "author": "xyzzy123",
+                "text": "Yep. Also, your customers might have good ways to steal power (e.g. run a miner under a desk at work).",
+                "points": null,
+                "created_at": "2015-12-02T03:13:28.000Z",
+                "children": []
+              },
+              {
+                "id": 10660814,
+                "author": "conistonwater",
+                "text": "There was another maker of bitcoin miners some time ago that would take people's money, make the miners, run the miners for itself (pushing back the delivery date), then deliver the miners once they stopped making a sufficient profit.What you are saying is generally true, I agree, but the case of (specifically) money-printing machines has the additional complication of having very misaligned incentives, encouraging fraud. For any good other than money (or bitcoin), the producer of machines won't be able to want to do much with them, as you say.\nMoney is unusual in that regard because you don't need to \"use\" it to make money, which removes a high barrier that the machine maker would normally face.So you don't want to \"keep\" the money-printing machine for yourself, the incentive is to sell it for the original price after printing some money with it that you keep for yourself.\nIt doesn't guarantee fraud, merely misaligns incentives to encourage it.Setting up such extreme incentives for fraud is such a terrible idea that I am surprised anybody made business with these companies.A somewhat related, legal, phenomenon would be a payment service provider (e.g., Paypal, IIRC) keeping the payments for a bit longer than necessary to earn interest (by investing the money with varying degrees of risk) on somebody else's money while that money is in transit.",
+                "points": null,
+                "created_at": "2015-12-02T03:51:12.000Z",
+                "children": [
+                  {
+                    "id": 10662892,
+                    "author": "nemild",
+                    "text": "Totally agree - without strong controls (internal or enforced by an external party), there definitely is a large risk of fraud.",
+                    "points": null,
+                    "created_at": "2015-12-02T13:53:32.000Z",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 10660452,
+        "author": "gawsuit",
+        "text": "I've followed this one with amusement for a while. Basically they tried to be legitimate in a sense, until that turned out to be quite expensive, at some point they tried again to be legitimate but again with the same result. There's lots of history you can read up about in the Bitcointalk thread (1500 pages of it), including details like the CEO causing tens of thousands of dollars of damage to a rental property by amongst other things, running a mining operation in his basement.At one point they made a large mining facility in the US, with contracts with the power company to use a certain amount of service. They paid in the millions of dollars for mining hardware and power installation for their own small substation, they then ran it for a few months until the power company cut them off for never paying the power bill which amounted to $350,000 USD[1]. This was responded to as \"a billing dispute\" [2].From my own calculations this farm was never able to be profitable (it always used more in power than it mined), and never covered even a small portion of the hashrate they were supposed to own. At one point they posted a video from within it, filmed without sound and in such a way as to hide the fact that there was only one rack of miners.[3] Many promotional photos were posted of their \"farm\", but none of the hardware is actually plugged in for these photos, so it was probably reboxed and shipped to customers afterwards.[4]The part not mentioned in the SEC complaint is where the CEO flees the US to Dubai, one of the people in Dubai he defrauded of $200,000 from wins a legal battle against him, and the US Government bails him back to the US.[1]: http://www.scribd.com/doc/261395976/Mississippi-Power-vs-GAW...[2]: https://www.cryptocoinsnews.com/wp-content/uploads/2015/04/1...[3]: https://www.youtube.com/watch?v=2ZpZdeJNSV0[4]: https://i.imgur.com/9YTH5mB.jpg",
+        "points": null,
+        "created_at": "2015-12-02T02:19:49.000Z",
+        "children": []
+      },
+      {
+        "id": 10661133,
+        "author": "Animats",
+        "text": "\"The Bitcoin world seems to have an awful lot of incompetent fraudsters.\"Yes, it does.The upside of this is that none of them have been able to break the basic blockchain mechanism and profit from doing so. That's an impressive achievement in computer security. It's the reason that blockchain technology is now being looked at as a way to record transfers of high-value bonds and such.",
+        "points": null,
+        "created_at": "2015-12-02T05:16:51.000Z",
+        "children": [
+          {
+            "id": 10661733,
+            "author": "inoop",
+            "text": "> The upside of this is that none of them have been able to break the basic blockchain mechanism and profit from doing so. That's an impressive achievement in computer security.Not really. Merkle trees aren't exactly new, and neither is the transaction signing mechanism used in Bitcoin. Bitcoin didn't achieve anything novel here.The major new idea Bitcoin brought to the table was proof of work. However, Satoshi couldn't predict mining pools, which has led to the situation Bitcoin is essentially controlled by a small cabal of miners and core devs. This is not the decentralized system Satoshi envisioned.In fact, there have been cases in the past where a single pool actually had >50% of mining power for short periods of time. Since ownership of pools is not exactly transparent, we have no way of knowing if any pool out there is currently at 50%, or if there are multiple pools colluding. The classic argument is that there is no incentive for a 50%+ miner to hurt the network, but then you're trusting a random pool owner with your money, which goes against everything that Bitcoin set out to do.Moreover, a large pool has been known to game satoshi dice by including a double-spend in its next block if it lost, and thus denying the original transaction to go through. Other games like selfish mining can be played as well.Your statement that Bitcoin remains unbroken is not really true. A double spend has been demonstrated during the first big fork (around version 0.8, if memory serves me). It was announced with proof on Bitcointalk. I guess hat since the guy was a white-hat, and returned the money, you're still technically correct in that he did not profit from it.Bitcoin is also notoriously vulnerable to DDOS attacks. We had several big DDOS events this year with Bitcoin transactions being backed up for hours, even days. In one case a company was 'stress testing' the system by filling up the blocks with dust transactions, and in another an attacker found a way to very cheaply fill up blocks with certain types of transactions (sigops).Finally, Bitcoin simply does not scale very well because it's a massively replicated system that records and distributes transactions to every node in the network. This does not scale in number of nodes (network diameter, end-to-end latency) or in number of transactions (bandwidth, blockchain size).All in all, calling Bitcoin an impressive achievement in computer security is a bit of a stretch imho.",
+            "points": null,
+            "created_at": "2015-12-02T08:38:30.000Z",
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 10661687,
+        "author": "jarcane",
+        "text": "It's almost as if a totally unregulated commodities market isn't the magical utopia the neoreactionaries and internet libertarians dreamed of!If only we had centuries of historical precedent to learn from and prevent these sort of mistakes.",
+        "points": null,
+        "created_at": "2015-12-02T08:27:56.000Z",
+        "children": [
+          {
+            "id": 10662366,
+            "author": "geoffbrown2014",
+            "text": "This happens regularly in highly regulated markets as well. Regulation doesnt stop people from being stupid. The beauty of the Blockchain is that it is still intact despite the stupidity. It doesn't depend on fragility of captured regulatory bodies or the honesty of salesmen. Stupids gonna stupid.",
+            "points": null,
+            "created_at": "2015-12-02T11:38:39.000Z",
+            "children": [
+              {
+                "id": 10662645,
+                "author": "rmah",
+                "text": "hahaha, talk about missing the point",
+                "points": null,
+                "created_at": "2015-12-02T13:00:08.000Z",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 10659981,
+    "author": "hughes",
+    "text": "> After selling approximately 2,290 Remember [9/11 Memorial]\nHashlets for a total of approximately $48,000, GAW Miners donated only $10,000 to a 9/11 related charityThat'll go over well with a jury!",
+    "points": null,
+    "created_at": "2015-12-02T00:26:47.000Z",
+    "children": []
+  },
+  {
+    "id": 10660044,
+    "author": "Kinnard",
+    "text": "I'd be careful about the use of the term ponzi scheme.I think it's a rather dangerous example of doublespeak: https://en.wikipedia.org/wiki/DoublespeakSocial Security exactly fits the definition of a Ponzi Scheme[1], has serious sustainability issues[2], and could do far more damage to hundreds of millions of people if it were to collapse.No one is going after the people running Social Security though it is far more dangerous.[1] \"operation where the operator, an individual or organization, pays returns to its investors from new capital paid to the operators by new investors, rather than from profit earned by the operator.\"[2] Social Security is a Ponzie Scheme: https://en.wikipedia.org/wiki/Social_Security_(United_States...",
+    "points": null,
+    "created_at": "2015-12-02T00:41:02.000Z",
+    "children": [
+      {
+        "id": 10660062,
+        "author": "ruddct",
+        "text": "Not to get into a tangent about social security and how the program manages money, but this isn't quite an applicable comparison. Gov't sponsored 'ponzi schemes' can pretty safely be assumed to exist for about as long as the sponsoring government does (or, if they're dissolved, one can pretty safely assume some kind of payout. At least in a revolution-fearing democracy).If the government goes away, your investment into a pension program is probably a pretty low priority. A ponzi scheming company disappearing has a much more direct effect on the people who've invested in it.",
+        "points": null,
+        "created_at": "2015-12-02T00:46:10.000Z",
+        "children": [
+          {
+            "id": 10660074,
+            "author": "drcode",
+            "text": "Social security isn't a Ponzi scheme because it's mandatory.If it was a true Ponzi scheme, you'd have the option not to participate in it./s",
+            "points": null,
+            "created_at": "2015-12-02T00:48:32.000Z",
+            "children": [
+              {
+                "id": 10660209,
+                "author": "Gibbon1",
+                "text": "Social Security is an insurance program. Which is why it's formal name is: Old-Age, Survivors, and Disability Insurance (OASDI). As such it doesn't promise to invest the money paid in at all. 90% of it is just paygo. Money comes in from working stiffs. Money goes out to grandma so she can buy catfood. The remainder is 'invested' in government securities.",
+                "points": null,
+                "created_at": "2015-12-02T01:17:40.000Z",
+                "children": []
+              },
+              {
+                "id": 10660667,
+                "author": "toast0",
+                "text": "There are some options, https://faq.ssa.gov/ics/support/KBAnswer.asp?questionID=3821...Clergy also may have the ability to opt out.",
+                "points": null,
+                "created_at": "2015-12-02T03:15:45.000Z",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 10660165,
+        "author": "cjensen",
+        "text": "The claim that Social Security is a Ponzi scheme is nonsense -- though it seems to fit the definition at first glance, if you think through it far enough you will see it does not fit.Since a Ponzi scheme is defined as an \"investment\", it is therefore voluntary. A Ponzi scheme can only obtain such volunteers if it promises each volunteer investor more than it pays in. It therefore requires an ever-growing pool of investors. Since there is a finite number of people on the planet, a Ponzi scheme must fail at some point.By contrast, Social Security is a mandatory scheme, and the pay-in and pay-out can be dynamically adjusted to ensure that it remains solvent. In particular, no guarantee is made that pay-out will exceed pay-in. Do not mistake the impending Social Security deficit for an inherent outcome of the scheme. The deficit could easily be fixed if politicians on both sides would stop pandering to their bases.",
+        "points": null,
+        "created_at": "2015-12-02T01:07:11.000Z",
+        "children": [
+          {
+            "id": 10660196,
+            "author": "Kinnard",
+            "text": "The fact that it is compulsory while it would allow those who run it to extract more to prevent a collapse, would do nothing to assuage the damage were it to collapse.",
+            "points": null,
+            "created_at": "2015-12-02T01:13:45.000Z",
+            "children": [
+              {
+                "id": 10660216,
+                "author": "vkou",
+                "text": "The fact that the payouts will be adjusted is what will prevent it from collapsing.",
+                "points": null,
+                "created_at": "2015-12-02T01:20:26.000Z",
+                "children": []
+              },
+              {
+                "id": 10660226,
+                "author": "mikeash",
+                "text": "Likewise, the fact that it would do damage if it collapsed has nothing to do with whether or not it's a Ponzi scheme.",
+                "points": null,
+                "created_at": "2015-12-02T01:23:34.000Z",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 10660223,
+        "author": "0xcde4c3db",
+        "text": "The mechanism is similarly structured, but the goals are entirely opposite:An ideal Ponzi scheme pays out all of its income to the organizer and none of its income to the participants.An ideal Social Security scheme pays out all of its income to the participants and none of its income to the organizer.",
+        "points": null,
+        "created_at": "2015-12-02T01:23:05.000Z",
+        "children": []
+      },
+      {
+        "id": 10660883,
+        "author": "jwatte",
+        "text": "That would be true if Social Security was an investment. However, it is a social welfare program and a tax combined into one.In 2040 when the current balance is tipped, that program can become solvent without increasing the tax by reducing payouts by 25%.Meanwhile, the current federal budget is only funded to about 2/3, so there are other programs I'd worth about earlier, if I'd care about programs and the taxes funding them.",
+        "points": null,
+        "created_at": "2015-12-02T04:10:12.000Z",
+        "children": []
+      }
+    ]
+  },
+  {
+    "id": 10660086,
+    "author": "Animats",
+    "text": "That's what the SEC does. About once a week, they shut down some investment scam. This was a straight Ponzi, dressed up, as the SEC says, with techno-jargon.These were some of the people behind Paycoin, too.[1][1] https://bitcoinmagazine.com/articles/death-paycoin-employee-...",
+    "points": null,
+    "created_at": "2015-12-02T00:50:06.000Z",
+    "children": []
+  }
+]
