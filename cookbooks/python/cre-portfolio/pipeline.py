@@ -23,8 +23,9 @@ load_dotenv()
 
 
 swarm = Swarm(SwarmConfig(
-    concurrency=4,                      # max parallel sandboxes
-    retry=RetryConfig(max_attempts=2),  # 1 retry
+    tag='cre-portfolio',
+    concurrency=4,
+    retry=RetryConfig(max_attempts=2),
 ))
 
 pipeline = (
@@ -34,7 +35,7 @@ pipeline = (
         system_prompt=EXTRACT_SYSTEM,
         prompt=EXTRACT,
         schema=RentRollExtract,
-        agent=AgentConfig(type='claude', model='sonnet'),
+        agent=AgentConfig(type='claude', model='haiku'),
     ))
     .map(MapConfig(
         name='analyze',

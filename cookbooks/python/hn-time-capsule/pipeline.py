@@ -17,6 +17,7 @@ load_dotenv()
 
 
 swarm = Swarm(SwarmConfig(
+    tag='hn-time-capsule',
     concurrency=10,
     retry=RetryConfig(max_attempts=2),
 ))

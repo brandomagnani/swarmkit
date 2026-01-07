@@ -3,7 +3,7 @@
 EXTRACT_SYSTEM = """You are a commercial real estate document specialist.
 You extract structured data from rent roll PDFs with perfect accuracy."""
 
-EXTRACT = """Parse the rent roll PDF in context/rent_roll.pdf.
+EXTRACT = """Parse the rent roll PDF in context/.
 Extract every row including vacant units following the provided schema exactly.
 Save a single output/result.json following the provided schema."""
 
@@ -12,11 +12,13 @@ You compute property-level metrics used for portfolio underwriting."""
 
 ANALYZE = """Compute property KPIs from context/data.json.
 
+Data structure: buildings[].tenants[] - iterate through all buildings and their tenants.
+
 Calculate:
-- occupied_sf: sum of sf where status='occupied'
+- occupied_sf: sum of sf where status='occupied' across all buildings
 - vacant_sf: total_sf - occupied_sf
 - occupancy_rate: occupied_sf / total_sf
-- tenant_count: count of occupied tenants
+- tenant_count: count of occupied tenants across all buildings
 - annual_base_rent: sum of annual_rent for occupied tenants
 - avg_rent_psf: annual_base_rent / occupied_sf
 - walt_years: sum(annual_rent * years_remaining) / annual_base_rent, where years_remaining = (lease_end - as_of_date) in years

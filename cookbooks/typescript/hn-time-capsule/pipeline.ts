@@ -12,6 +12,7 @@ import { AnalysisSchema } from "./schema";
 import { saveIntermediate } from "./utils";
 
 const swarm = new Swarm({
+    tag: "hn-time-capsule",
     concurrency: 10,
     retry: { maxAttempts: 2 },
 });

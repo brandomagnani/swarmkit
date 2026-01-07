@@ -9,7 +9,6 @@ from pydantic import BaseModel, Field
 class Tenant(BaseModel):
     tenant_name: str = Field(description="Tenant/company name")
     unit: str = Field(description="Unit or suite number")
-    building_name: Optional[str] = Field(default=None, description="Building name if multi-building portfolio")
     sf: float = Field(description="Leased square feet")
     lease_start: str = Field(description="Lease start date (YYYY-MM-DD or empty if vacant)")
     lease_end: str = Field(description="Lease end date (YYYY-MM-DD or empty if vacant)")
@@ -19,13 +18,17 @@ class Tenant(BaseModel):
     status: str = Field(description="'occupied' or 'vacant'")
 
 
+class Building(BaseModel):
+    building_name: Optional[str] = Field(default=None, description="Building name (null if single-building property)")
+    tenants: list[Tenant] = Field(description="List of tenants and vacant units in this building")
+
+
 class RentRollExtract(BaseModel):
-    source_file: str = Field(description="Source filename from meta.json")
-    property_name: str = Field(description="Property name derived from source_file (e.g., 'Harborview_Retail_Center.pdf' → 'Harborview Retail Center')")
+    property_name: str = Field(description="Property name derived from PDF filename (e.g., 'Harborview_Retail_Center.pdf' → 'Harborview Retail Center')")
     as_of_date: str = Field(description="Rent roll as-of date (YYYY-MM-DD)")
     total_units: int = Field(description="Total number of units/suites")
     total_sf: float = Field(description="Total rentable square feet")
-    tenants: list[Tenant] = Field(description="List of all tenants and vacant units")
+    buildings: list[Building] = Field(description="List of buildings (single-building properties have one entry with building_name=null)")
 
 
 # === ANALYZE SCHEMA ===

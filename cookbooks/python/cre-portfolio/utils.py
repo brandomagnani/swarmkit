@@ -12,7 +12,7 @@ def load_rent_rolls(pdf_dir: str) -> list[dict]:
         pdf_dir: Directory containing rent roll PDF files
 
     Returns:
-        List of file maps, each with rent_roll.pdf
+        List of file maps, each with the PDF under its original filename
     """
     shutil.rmtree("intermediate", ignore_errors=True)
     shutil.rmtree("output", ignore_errors=True)
@@ -25,11 +25,7 @@ def load_rent_rolls(pdf_dir: str) -> list[dict]:
 
     items = []
     for i, pdf in enumerate(pdfs):
-        meta = {"source_file": pdf.name, "index": i}
-        items.append({
-            "rent_roll.pdf": pdf.read_bytes(),
-            "meta.json": json.dumps(meta),
-        })
+        items.append({pdf.name: pdf.read_bytes()})
         print(f"  [{i}] {pdf.name}")
 
     return items
