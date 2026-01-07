@@ -52,9 +52,8 @@ def save_intermediate(results, step_name: str) -> None:
         (item_dir / "status.txt").write_text(r.status)
 
         if r.data:
-            (item_dir / "data.json").write_text(
-                json.dumps(r.data.model_dump(), indent=2)
-            )
+            data = r.data.model_dump() if hasattr(r.data, 'model_dump') else r.data
+            (item_dir / "data.json").write_text(json.dumps(data, indent=2))
 
         if r.error:
             (item_dir / "error.txt").write_text(r.error)
