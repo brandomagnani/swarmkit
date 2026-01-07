@@ -7,10 +7,8 @@ Extracts tenant data from PDFs, computes property-level KPIs (occupancy, WALT, c
 ## Setup
 
 ```bash
-cd cookbooks/python/cre-portfolio
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+cd cookbooks/typescript/cre-portfolio
+npm install
 cp .env.example .env
 # Edit .env with your API key
 ```
@@ -19,7 +17,7 @@ cp .env.example .env
 
 ```bash
 # Place rent roll PDFs in ./input/
-python pipeline.py
+npm start
 ```
 
 Output saved to `./output/index.html`
