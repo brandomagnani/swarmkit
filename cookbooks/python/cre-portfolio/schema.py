@@ -1,5 +1,6 @@
 """Structured output schemas for CRE rent roll analysis."""
 
+from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -8,6 +9,7 @@ from pydantic import BaseModel, Field
 class Tenant(BaseModel):
     tenant_name: str = Field(description="Tenant/company name")
     unit: str = Field(description="Unit or suite number")
+    building_name: Optional[str] = Field(default=None, description="Building name if multi-building portfolio")
     sf: float = Field(description="Leased square feet")
     lease_start: str = Field(description="Lease start date (YYYY-MM-DD or empty if vacant)")
     lease_end: str = Field(description="Lease end date (YYYY-MM-DD or empty if vacant)")
@@ -18,7 +20,8 @@ class Tenant(BaseModel):
 
 
 class RentRollExtract(BaseModel):
-    property_name: str = Field(description="Property/building name")
+    source_file: str = Field(description="Source filename from meta.json")
+    property_name: str = Field(description="Property name derived from source_file (e.g., 'Harborview_Retail_Center.pdf' → 'Harborview Retail Center')")
     as_of_date: str = Field(description="Rent roll as-of date (YYYY-MM-DD)")
     total_units: int = Field(description="Total number of units/suites")
     total_sf: float = Field(description="Total rentable square feet")
