@@ -25,6 +25,12 @@ env/
 !cookbooks/python/cre-portfolio/intermediate/**
 !cookbooks/python/cre-portfolio/output/
 !cookbooks/python/cre-portfolio/output/*
+!cookbooks/typescript/cre-portfolio/input/
+!cookbooks/typescript/cre-portfolio/input/**
+!cookbooks/typescript/cre-portfolio/intermediate/
+!cookbooks/typescript/cre-portfolio/intermediate/**
+!cookbooks/typescript/cre-portfolio/output/
+!cookbooks/typescript/cre-portfolio/output/*
 
 # IDE
 .idea/
