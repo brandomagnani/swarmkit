@@ -26,7 +26,7 @@ pipeline = (
     .map(MapConfig(
         name='fetch',
         prompt=FETCH,
-        agent=AgentConfig(type='claude', model='sonnet')
+        agent=AgentConfig(type='codex', model='gpt-5.2-codex')
     ))
     .map(MapConfig(
         name='analyze',
@@ -47,7 +47,7 @@ async def main():
     shutil.rmtree("output", ignore_errors=True)
 
     date = "2015-12-01"
-    limit = 3
+    limit = 30
 
     items = [{"config.json": json.dumps({"rank": i, "date": date})} for i in range(1, limit + 1)]
 

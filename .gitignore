@@ -15,8 +15,6 @@ env/
 !cookbooks/python/hn-time-capsule/intermediate/**
 !cookbooks/python/hn-time-capsule/output/
 !cookbooks/python/hn-time-capsule/output/*
-!cookbooks/typescript/hn-time-capsule/input/
-!cookbooks/typescript/hn-time-capsule/input/**
 !cookbooks/typescript/hn-time-capsule/intermediate/
 !cookbooks/typescript/hn-time-capsule/intermediate/**
 !cookbooks/typescript/hn-time-capsule/output/

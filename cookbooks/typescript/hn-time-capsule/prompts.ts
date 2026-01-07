@@ -1,8 +1,27 @@
 /**
- * Prompts for HN Time Capsule analysis.
+ * Prompts for Hacker News Time Capsule analysis.
  */
 
-export const ANALYZE = `Analyze this HN article from 10 years ago.
+type FileMap = Record<string, string>;
+
+export function FETCH(files: FileMap, idx: number): string {
+    const config = JSON.parse(files["config.json"]);
+    const rank = config.rank;
+    const date = config.date;
+    return `Fetch Hacker News article rank ${rank} from ${date}.
+
+Source: news.ycombinator.com/front?day=${date}
+Comments API: hn.algolia.com/api/v1/items/{item_id}
+
+Write code to download and parse.
+
+Save the following 3 files to output/ (and nothing else):
+- meta.json: rank, title, url, hn_url, points, author, comment_count
+- article.txt: article content (text only, HTML stripped, truncate to 15k chars at sentence boundary)
+- comments.json: comment thread (strip HTML from text)`;
+}
+
+export const ANALYZE = `Analyze this Hacker News article from 10 years ago.
 
 Files in context/:
 - meta.json: article metadata
@@ -17,7 +36,7 @@ With 10 years of hindsight:
 5. Grade commenters
 6. Rate how interesting this retrospective is
 
-Save only result.json to output/ (no other files).`;
+Save a single output/result.json following the provided schema.`;
 
 export const RENDER = `Create a beautiful HTML dashboard from all analyses.
 
@@ -28,13 +47,14 @@ Write a script to:
 2. Aggregate grades per user (keep users with 3+ grades)
 3. Calculate GPA (A=4, B=3, C=2, D=1, F=0, ±0.3)
 4. Generate a single-page HTML app:
-   - Sidebar: articles ranked by score
-   - Main panel: full analysis on click
-   - Hall of Fame: top commenters by GPA
+   - Left sidebar (250px): article list ranked by score, clickable
+   - Center panel: full analysis for selected article
+   - Right sidebar (200px): Hall of Fame leaderboard (top commenters by GPA)
+   - Header: title and date
    - Style: light theme, warm grays, generous whitespace
 
 Design: minimalist, Apple-like, intuitive. Simplicity as ultimate sophistication.
-Do not make it look LLM-generated or vibe-coded. Make it look done by a professional
-human designer with superior taste for beauty.
+Functional and a pleasure to use. Do not make it look LLM-generated or vibe-coded.
+Make it look done by a professional human designer with superior taste for beauty.
 
 Run script and save to output/index.html`;

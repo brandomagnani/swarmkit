@@ -14,7 +14,7 @@ Comments API: hn.algolia.com/api/v1/items/{{item_id}}
 
 Write code to download and parse.
 
-Save to output/:
+Save the following 3 filesto output/ (and nothing else):
 - meta.json: rank, title, url, hn_url, points, author, comment_count
 - article.txt: article content (text only, HTML stripped, truncate to 15k chars at sentence boundary)
 - comments.json: comment thread (strip HTML from text)"""
