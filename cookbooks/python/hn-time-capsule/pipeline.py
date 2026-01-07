@@ -5,6 +5,7 @@ Karpathy's 1,486 lines → 50 lines
 """
 
 import json
+import shutil
 from pathlib import Path
 from dotenv import load_dotenv
 from swarmkit import Swarm, SwarmConfig, Pipeline, MapConfig, ReduceConfig, RetryConfig, AgentConfig
@@ -25,6 +26,7 @@ pipeline = (
     .map(MapConfig(
         name='fetch',
         prompt=FETCH,
+        agent=AgentConfig(type='claude', model='sonnet')
     ))
     .map(MapConfig(
         name='analyze',
@@ -40,12 +42,16 @@ pipeline = (
 
 
 async def main():
+    # Clean previous run
+    shutil.rmtree("intermediate", ignore_errors=True)
+    shutil.rmtree("output", ignore_errors=True)
+
     date = "2015-12-01"
     limit = 3
 
     items = [{"config.json": json.dumps({"rank": i, "date": date})} for i in range(1, limit + 1)]
-    print(f"Processing {len(items)} articles from {date}...")
 
+    print(f"Processing {len(items)} articles from {date}...")
     result = await pipeline.run(items)
 
     save_intermediate(result.steps[0].results, "fetch")
