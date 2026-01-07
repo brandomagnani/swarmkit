@@ -26,7 +26,7 @@ pipeline = (
     .map(MapConfig(
         name='fetch',
         prompt=FETCH,
-        agent=AgentConfig(type='codex', model='gpt-5.2-codex')
+        agent=AgentConfig(type='codex')
     ))
     .map(MapConfig(
         name='analyze',

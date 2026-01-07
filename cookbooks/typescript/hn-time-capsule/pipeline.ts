@@ -20,7 +20,7 @@ const pipeline = new Pipeline(swarm)
     .map({
         name: "fetch",
         prompt: FETCH,
-        agent: { type: "codex", model: "gpt-5.2-codex" },
+        agent: { type: "codex" },
     })
     .map({
         name: "analyze",
