@@ -2,12 +2,11 @@
 
 Embed autonomous AI agents into any application — in a few lines of code.
 
-- Secure cloud sandboxes with persistent filesystem
-- Agent response streaming
-- Structured output
-- MCP servers & multi-agent orchestration
-- Swarm abstractions for massively parallel workloads
-- Built-in observability
+- Run any CLI agent (Claude Code, Codex, Gemini CLI, Qwen) in secure cloud sandboxes
+- Persistent filesystem for infinite context
+- Full computer access: terminal, browser, MCP tools
+- Functional programming abstractions (map, filter, reduce) for massively parallel workloads
+- Streaming, structured output, built-in observability
 
 Much more coming...
 
