@@ -39,7 +39,7 @@ const agent = new SwarmKit()
   .withAgent({
     type: "claude",
     model: "haiku",
-  }) // claude, codex, gemini
+  })
   .withSystemPrompt(SYSTEM_PROMPT)
   .withMcpServers(MCP_SERVERS)
   .withSessionTagPrefix("Swarm-agent-ts");
