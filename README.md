@@ -15,8 +15,7 @@
 - Full computer access: terminal, browser, MCP tools
 - Functional programming abstractions (map, filter, reduce) for massively parallel workloads
 - Streaming, structured output, built-in observability
-
-Much more coming...
+- Much more coming...
 
 ## Get Started
 
