@@ -21,20 +21,6 @@ import chalk from "chalk";
 
 const MCP_SERVERS: Record<string, { command: string; args: string[]; env: Record<string, string> }> = {};
 
-// Chrome DevTools MCP - browser automation and debugging
-MCP_SERVERS["chrome-devtools"] = {
-  command: "npx",
-  args: [
-    "chrome-devtools-mcp@latest",
-    "--headless=true",
-    "--isolated=true",
-    "--chromeArg=--no-sandbox",
-    "--chromeArg=--disable-setuid-sandbox",
-    "--chromeArg=--disable-dev-shm-usage",
-  ],
-  env: {},
-};
-
 if (process.env.EXA_API_KEY) {
   // optional: web search
   MCP_SERVERS["exa"] = {
@@ -50,9 +36,7 @@ data from complex documents, analyzing data, producing evidence based reports, a
 `;
 
 const agent = new SwarmKit()
-  .withAgent({
-    type: "gemini", // claude, codex, gemini
-  })
+  .withAgent({ type: "claude", mode: "haiku" }) // claude, codex, gemini
   .withSystemPrompt(SYSTEM_PROMPT)
   .withMcpServers(MCP_SERVERS)
   .withSessionTagPrefix("Swarm-agent-ts");

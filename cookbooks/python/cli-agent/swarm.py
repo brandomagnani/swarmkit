@@ -21,25 +21,7 @@ load_dotenv()  # Load .env file
 # SwarmKit Instance Configuration
 # ─────────────────────────────────────────────────────────────
 
-AGENT = AgentConfig(
-    type="claude",                              # claude, codex, gemini
-)
-
 MCP_SERVERS = {}
-
-# Chrome DevTools MCP - browser automation and debugging
-MCP_SERVERS["chrome-devtools"] = {
-    "command": "npx",
-    "args": [
-        "chrome-devtools-mcp@latest",
-        "--headless=true",
-        "--isolated=true",
-        "--chromeArg=--no-sandbox",
-        "--chromeArg=--disable-setuid-sandbox",
-        "--chromeArg=--disable-dev-shm-usage",
-    ],
-    "env": {}
-}
 
 if os.getenv("EXA_API_KEY"):                    # optional: web search
     MCP_SERVERS["exa"] = {
@@ -54,7 +36,7 @@ data from complex documents, analyzing data, producing evidence based reports, a
 """
 
 agent = SwarmKit(
-    config=AGENT,
+    config=AgentConfig(type="claude", mode="haiku"),  # claude, codex, gemini
     system_prompt=SYSTEM_PROMPT,
     mcp_servers=MCP_SERVERS,
     session_tag_prefix="Swarm-agent-py",
