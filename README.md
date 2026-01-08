@@ -1,6 +1,10 @@
-# SwarmKit
+<p align="center">
+  <img src="assets/swarmkit-logo.png" alt="SwarmKit" height="100">
+</p>
 
-Embed autonomous AI agents into any application — in a few lines of code.
+<p align="center">
+  Embed autonomous AI agents into any application — in a few lines of code.
+</p>
 
 - Run any CLI agent (Claude Code, Codex, Gemini CLI, Qwen) in secure cloud sandboxes
 - Persistent filesystem for infinite context
