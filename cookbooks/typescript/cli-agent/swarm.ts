@@ -36,7 +36,7 @@ data from complex documents, analyzing data, producing evidence based reports, a
 `;
 
 const agent = new SwarmKit()
-  .withAgent({ type: "claude", mode: "haiku" }) // claude, codex, gemini
+  .withAgent({ type: "claude", model: "haiku" }) // claude, codex, gemini
   .withSystemPrompt(SYSTEM_PROMPT)
   .withMcpServers(MCP_SERVERS)
   .withSessionTagPrefix("Swarm-agent-ts");

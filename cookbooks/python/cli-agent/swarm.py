@@ -36,7 +36,7 @@ data from complex documents, analyzing data, producing evidence based reports, a
 """
 
 agent = SwarmKit(
-    config=AgentConfig(type="claude", mode="haiku"),  # claude, codex, gemini
+    config=AgentConfig(type="claude", model="haiku"),  # claude, codex, gemini
     system_prompt=SYSTEM_PROMPT,
     mcp_servers=MCP_SERVERS,
     session_tag_prefix="Swarm-agent-py",
