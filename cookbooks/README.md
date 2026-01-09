@@ -3,10 +3,14 @@
 ### Python
 - [Quickstart](./python/quickstart) - Minimal examples (8 scripts)
 - [CLI Agent](./python/cli-agent) - Sandboxed CLI agent with browser automation
+- [HN Time Capsule](./python/hn-time-capsule) - Scrape & analyze 200 Hacker News articles → HTML dashboard
+- [CRE Portfolio](./python/cre-portfolio) - Extract & analyze commercial real estate rent rolls → JSON + dashboard
 
 ### TypeScript
 - [Quickstart](./typescript/quickstart) - Minimal examples (8 scripts)
 - [CLI Agent](./typescript/cli-agent) - Sandboxed CLI agent with browser automation
+- [HN Time Capsule](./typescript/hn-time-capsule) - Scrape & analyze 200 Hacker News articles → HTML dashboard
+- [CRE Portfolio](./typescript/cre-portfolio) - Extract & analyze commercial real estate rent rolls → JSON + dashboard
 
 ## Get Started
 
