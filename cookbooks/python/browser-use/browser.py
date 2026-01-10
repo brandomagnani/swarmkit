@@ -1,5 +1,5 @@
 """
-09 - MCP Browser-Use
+Browser-Use Cookbook
 Browser automation with browser-use cloud API.
 
 Setup:
