@@ -12,16 +12,16 @@ Scrape Hacker News posts using browser-use cloud API with SwarmKit.
 
 ## Setup
 
-1. Get a browser-use API key from https://browser-use.com
-2. Create a `.env` file:
-   ```
-   BROWSER_USE_API_KEY=your_key_here
-   SWARMKIT_API_KEY=your_swarmkit_key
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+cd cookbooks/python/browser-use
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env with your API keys (SWARMKIT_API_KEY, BROWSER_USE_API_KEY)
+```
+
+Get a browser-use API key from https://browser-use.com
 
 ## Run
 
