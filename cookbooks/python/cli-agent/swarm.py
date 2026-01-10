@@ -45,7 +45,7 @@ CRITICAL: For any browser automation tasks, you MUST use the "browser-use" MCP s
 agent = SwarmKit(
     config=AgentConfig(
         type="claude", 
-        model="haiku"
+        model="opus"
     ), 
     system_prompt=SYSTEM_PROMPT,
     mcp_servers=MCP_SERVERS,
