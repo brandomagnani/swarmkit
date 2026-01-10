@@ -666,32 +666,29 @@ console.log(`Workspace service available at ${url}`);
 ```
 ---
 
-## 4. Workspace setup and Modes
+## 4. Workspace Setup & Structured Output
 
-### 4.1 Knowledge Mode (default)
-
-Ideal for knowledge work applications.
-```ts
-swarmkit.withWorkspaceMode("knowledge"); // implicit default
-```
-
-Calling `run` or `executeCommand` for the first time provisions the workspace:
+Calling `run` or `executeCommand` for the first time provisions a sandbox with the following filesystem:
 
 ```
 /home/user/workspace/
-├── context/   # Input files (read-only) provided by the user
-├── scripts/   # Your code goes here
-├── temp/      # Scratch space
-└── output/    # Final deliverables
+├── context/     # Input files (read-only) provided by the user
+├── scripts/     # Your code goes here
+├── temp/        # Scratch space
+├── output/      # Final deliverables
+└── CLAUDE.md    # System prompt (or AGENT.md, GEMINI.md, QWEN.md depending on agent)
 ```
-Files passed to `withContext()` are uploaded to `context/`. Files passed to `withFiles()` are uploaded relative to the working directory.
 
-SwarmKit also writes a default system prompt:
+Files passed to `context` are uploaded to `context/`. Files passed to `files` are uploaded relative to the working directory.
+
+## Filesystem Instructions
+SwarmKit writes a default filesystem instructions to the agent's config file in the workspace (`CLAUDE.md`, `AGENT.md`, `GEMINI.md`, or `QWEN.md`):
 
 ```
 ## FILESYSTEM INSTRUCTIONS
 
 You are running in a sandbox environment.
+
 Present working directory: /home/user/workspace/
 
 IMPORTANT - Directory structure:
@@ -704,29 +701,66 @@ IMPORTANT - Directory structure:
 ## OUTPUT RESULTS (DELIVERABLES) MUST BE SAVED to `output/` as files.
 ```
 
-Any string passed to `withSystemPrompt()` is appended after this default.
+Any string passed to `systemPrompt` is automatically appended to the agent's config file in the workspace (`CLAUDE.md`, `AGENT.md`, `GEMINI.md`, or `QWEN.md`) after this default.
 
+## Structured Output
 
-### 4.2 SWE Mode
+When you provide a `schema`, SwarmKit instructs the agent to write structured JSON output.
 
-Ideal for coding applications (when working with repositories).
 ```ts
-swarmkit.withWorkspaceMode("swe");
+import { z } from "zod";
+
+const CREDataSchema = z.object({
+    property_name: z.string(),
+    units: z.number(),
+    total_rent: z.number(),
+    occupancy_rate: z.number(),
+});
+
+const swarmkit = new SwarmKit()
+    .withSchema(CREDataSchema)
+    .withContext({
+        "rent_roll.pdf": fs.readFileSync("rent_roll.pdf"),
+    });
+
+await swarmkit.run({ prompt: "Extract CRE data from the rent roll" });
+
+const output = await swarmkit.getOutputFiles();
+console.log(output.data);  // { property_name: '...', units: 120, ... }
 ```
 
-SWE mode is the same as knowledge mode but includes an additional `repo/` folder for code repositories:
+The SDK automatically appends the following to the agent's config file in the workspace (`CLAUDE.md`, `AGENT.md`, `GEMINI.md`, or `QWEN.md`):
 
+~~~
+## STRUCTURED OUTPUT
+
+Your final result MUST be saved to `output/result.json` following this schema:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "property_name": { "type": "string" },
+    "units": { "type": "integer" },
+    "total_rent": { "type": "number" },
+    "occupancy_rate": { "type": "number" }
+  },
+  "required": ["property_name", "units", "total_rent", "occupancy_rate"]
+}
 ```
-/home/user/workspace/
-├── repo/      # Code repository
-├── context/   # Input files (read-only) provided by the user
-├── scripts/   # Your code goes here
-├── temp/      # Scratch space
-└── output/    # Final deliverables
-```
 
-The workspace prompt is automatically written with the `repo/` folder included. All other features (`withSystemPrompt`, `withContext`, `withFiles`, etc.) work the same as knowledge mode.
+You are free to:
+- Reason through the problem step by step
+- Read and analyze context files
+- Use any available tools
+- Process incrementally
+- Create intermediate files in `temp/` or `scripts/`
 
+But your final `output/result.json` MUST conform to the schema above.
+
+### OUTPUT RESULTS (DELIVERABLES) MUST BE WRITTEN to `output/result.json` as files.
+### Never just state results as text.
+~~~
 
 ---
 

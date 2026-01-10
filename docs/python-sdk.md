@@ -268,9 +268,6 @@ swarmkit = SwarmKit(
     # (optional) Custom working directory, default: /home/user/workspace
     working_directory='/home/user/workspace',
 
-    # (optional) Workspace mode: 'knowledge' (default) for knowledge work use cases or 'swe' for coding use cases
-    workspace_mode='knowledge',
-
     # (optional) System prompt appended to default instructions
     system_prompt='You are a careful pair programmer.',
 
@@ -658,27 +655,23 @@ print(f'Workspace service available at {url}')
 ```
 ---
 
-## 4. Workspace setup and Modes
+## 4. Workspace Setup & Structured Output
 
-### 4.1 Knowledge Mode (default)
-
-Ideal for knowledge work applications.
-```python
-SwarmKit(..., workspace_mode='knowledge')  # implicit default
-```
-
-Calling `run` or `execute_command` for the first time provisions the workspace:
+Calling `run` or `execute_command` for the first time provisions a sandbox with the following filesystem:
 
 ```
 /home/user/workspace/
-├── context/   # Input files (read-only) provided by the user
-├── scripts/   # Your code goes here
-├── temp/      # Scratch space
-└── output/    # Final deliverables
+├── context/     # Input files (read-only) provided by the user
+├── scripts/     # Your code goes here
+├── temp/        # Scratch space
+├── output/      # Final deliverables
+└── CLAUDE.md    # System prompt (or AGENT.md, GEMINI.md, QWEN.md depending on agent)
 ```
+
 Files passed to `context` are uploaded to `context/`. Files passed to `files` are uploaded relative to the working directory.
 
-SwarmKit also writes a default system prompt:
+## Filesystem Instructions
+SwarmKit writes a default filesystem instructions to the agent's config file in the workspace (`CLAUDE.md`, `AGENT.md`, `GEMINI.md`, or `QWEN.md`):
 
 ```
 ## FILESYSTEM INSTRUCTIONS
@@ -697,29 +690,66 @@ IMPORTANT - Directory structure:
 ## OUTPUT RESULTS (DELIVERABLES) MUST BE SAVED to `output/` as files.
 ```
 
-Any string passed to `system_prompt` is appended after this default.
+Any string passed to `system_prompt` is automatically appended to the agent's config file in the workspace (`CLAUDE.md`, `AGENT.md`, `GEMINI.md`, or `QWEN.md`) after this default.
 
+## Structured Output
 
-### 4.2 SWE Mode
+When you provide a `schema`, SwarmKit instructs the agent to write structured JSON output.
 
-Ideal for coding applications (when working with repositories).
 ```python
-SwarmKit(..., workspace_mode='swe')
+from pydantic import BaseModel
+
+class CREData(BaseModel):
+    property_name: str
+    units: int
+    total_rent: float
+    occupancy_rate: float
+
+swarmkit = SwarmKit(
+    schema=CREData,
+    context={
+        'rent_roll.pdf': open('rent_roll.pdf', 'rb').read(),
+    },
+)
+
+await swarmkit.run(prompt='Extract CRE data from the rent roll')
+
+output = await swarmkit.get_output_files()
+print(output.data)  # CREData(property_name='...', units=120, ...)
 ```
 
-SWE mode is the same as knowledge mode but includes an additional `repo/` folder for code repositories:
+The SDK automatically appends the following to the agent's config file in the workspace (`CLAUDE.md`, `AGENT.md`, `GEMINI.md`, or `QWEN.md`):
 
+~~~
+## STRUCTURED OUTPUT
+
+Your final result MUST be saved to `output/result.json` following this schema:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "property_name": { "type": "string" },
+    "units": { "type": "integer" },
+    "total_rent": { "type": "number" },
+    "occupancy_rate": { "type": "number" }
+  },
+  "required": ["property_name", "units", "total_rent", "occupancy_rate"]
+}
 ```
-/home/user/workspace/
-├── repo/      # Code repository
-├── context/   # Input files (read-only) provided by the user
-├── scripts/   # Your code goes here
-├── temp/      # Scratch space
-└── output/    # Final deliverables
-```
 
-The workspace prompt is automatically written with the `repo/` folder included. All other features (`system_prompt`, `context`, `files`, etc.) work the same as knowledge mode.
+You are free to:
+- Reason through the problem step by step
+- Read and analyze context files
+- Use any available tools
+- Process incrementally
+- Create intermediate files in `temp/` or `scripts/`
 
+But your final `output/result.json` MUST conform to the schema above.
+
+### OUTPUT RESULTS (DELIVERABLES) MUST BE WRITTEN to `output/result.json` as files.
+### Never just state results as text.
+~~~
 
 ---
 
@@ -895,7 +925,6 @@ swarm = Swarm(SwarmConfig(
     concurrency=4,                   # Max parallel sandboxes (default: 4)
     timeout_ms=3_600_000,            # Default timeout per worker (default: 1 hour)
     tag='my-pipeline',               # Tag prefix for observability
-    workspace_mode='knowledge',      # 'knowledge' (default) or 'swe'
     mcp_servers={...},               # Default MCP servers for all workers
     retry=RetryConfig(               # Default retry config for all operations
         max_attempts=3,
@@ -913,7 +942,6 @@ swarm = Swarm(SwarmConfig(
 | `agent.model` | per type | `'opus'` (claude), `'gpt-5.2'` (codex), etc. |
 | `concurrency` | `4` | Max parallel sandboxes |
 | `timeout_ms` | `3_600_000` | 1 hour per worker |
-| `workspace_mode` | `'knowledge'` | or `'swe'` |
 | `tag` | `'swarm'` | Observability prefix |
 | `retry` | `None` | Set here or per-operation |
 | `verify` | `None` | Per-operation only |
