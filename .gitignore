@@ -11,6 +11,7 @@ env/
 **/input/*
 **/intermediate/*
 **/output/*
+**/output_browser_use/
 !cookbooks/python/hn-time-capsule/intermediate/
 !cookbooks/python/hn-time-capsule/intermediate/**
 !cookbooks/python/hn-time-capsule/output/
