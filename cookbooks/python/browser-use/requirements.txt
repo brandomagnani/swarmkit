@@ -1,0 +1,3 @@
+swarmkit
+python-dotenv
+pydantic
