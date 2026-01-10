@@ -23,11 +23,16 @@ load_dotenv()  # Load .env file
 
 MCP_SERVERS = {}
 
-if os.getenv("EXA_API_KEY"):                    # optional: web search
-    MCP_SERVERS["exa"] = {
+if os.getenv("BROWSER_USE_API_KEY"):            # optional: browser automation
+    MCP_SERVERS["browser-use"] = {
         "command": "npx",
-        "args": ["-y", "mcp-remote", "https://mcp.exa.ai/mcp"],
-        "env": {"EXA_API_KEY": os.getenv("EXA_API_KEY")}
+        "args": [
+            "-y",
+            "mcp-remote",
+            "https://api.browser-use.com/mcp",
+            "--header",
+            f"X-Browser-Use-API-Key: {os.getenv('BROWSER_USE_API_KEY')}",
+        ],
     }
 
 SYSTEM_PROMPT = """Your name is Swarm, a powerful autonomous AI agent.

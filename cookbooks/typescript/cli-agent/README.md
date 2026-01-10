@@ -13,7 +13,7 @@ npm install
 cp .env.example .env
 ```
 
-- Edit `.env` with your API key: `SWARMKIT_API_KEY` ([dashboard.swarmlink.ai](https://dashboard.swarmlink.ai)), `EXA_API_KEY` ([exa.ai](https://exa.ai), optional)
+- Edit `.env` with your API key: `SWARMKIT_API_KEY` ([dashboard.swarmlink.ai](https://dashboard.swarmlink.ai)), `BROWSER_USE_API_KEY` ([browser-use.com](https://browser-use.com), optional)
 
 ## Run
 
@@ -24,5 +24,5 @@ npx tsx swarm.ts
 ## What it does
 
 - Multi-turn conversation with a sandboxed AI agent
-- Agent can write code, create files, browse the web (EXA), automate browsers (Chrome DevTools)
+- Agent can write code, create files, automate browsers (browser-use)
 - Output files are saved to `output/`

@@ -19,14 +19,19 @@ import chalk from "chalk";
 // SwarmKit Instance Configuration
 // ─────────────────────────────────────────────────────────────
 
-const MCP_SERVERS: Record<string, { command: string; args: string[]; env: Record<string, string> }> = {};
+const MCP_SERVERS: Record<string, { command: string; args: string[] }> = {};
 
-if (process.env.EXA_API_KEY) {
-  // optional: web search
-  MCP_SERVERS["exa"] = {
+if (process.env.BROWSER_USE_API_KEY) {
+  // optional: browser automation
+  MCP_SERVERS["browser-use"] = {
     command: "npx",
-    args: ["-y", "mcp-remote", "https://mcp.exa.ai/mcp"],
-    env: { EXA_API_KEY: process.env.EXA_API_KEY },
+    args: [
+      "-y",
+      "mcp-remote",
+      "https://api.browser-use.com/mcp",
+      "--header",
+      `X-Browser-Use-API-Key: ${process.env.BROWSER_USE_API_KEY}`,
+    ],
   };
 }
 
