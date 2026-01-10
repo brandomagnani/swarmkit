@@ -38,6 +38,8 @@ if (process.env.BROWSER_USE_API_KEY) {
 const SYSTEM_PROMPT = `Your name is Swarm, a powerful autonomous AI agent.
 You can execute code, browse the web, manage files, and solve complex tasks such as extracting
 data from complex documents, analyzing data, producing evidence based reports, and more.
+
+CRITICAL: For any browser automation tasks, you MUST use the "browser-use" MCP server.
 `;
 
 const agent = new SwarmKit()
