@@ -47,7 +47,7 @@ const agent = new SwarmKit()
   })
   .withSystemPrompt(SYSTEM_PROMPT)
   .withMcpServers(MCP_SERVERS)
-  .withSessionTagPrefix("Swarm-agent-ts");
+  .withSessionTagPrefix("swarm-cli-ts");
 
 // ─────────────────────────────────────────────────────────────
 

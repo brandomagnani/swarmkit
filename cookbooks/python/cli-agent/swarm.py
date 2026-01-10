@@ -47,7 +47,7 @@ agent = SwarmKit(
     ), 
     system_prompt=SYSTEM_PROMPT,
     mcp_servers=MCP_SERVERS,
-    session_tag_prefix="Swarm-agent-py",
+    session_tag_prefix="swarm-cli-py",
 )
 
 # ─────────────────────────────────────────────────────────────
