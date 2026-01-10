@@ -10,7 +10,7 @@
 
 <br>
 
-- Run any CLI agent (Claude Code, Codex, Gemini CLI, Qwen) in secure cloud sandboxes
+- Run any CLI agent (Claude Code, Codex, Gemini CLI, Qwen Code) in secure cloud sandboxes
 - Persistent filesystem for infinite context
 - Full computer access: terminal, browser, MCP tools
 - Functional programming abstractions (map, filter, reduce) for massively parallel workloads
