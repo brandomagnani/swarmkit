@@ -25,7 +25,8 @@ const swarmkit = new SwarmKit()
             args: ["-y", "mcp-remote", "https://mcp.exa.ai/mcp"],
             env: { EXA_API_KEY: process.env.EXA_API_KEY! }
         }
-    });
+    })
+    .withSkills(["pdf", "dev-browser"]);  // optional skills for the agent
 
 // Run agent
 const result = await swarmkit.run({
@@ -283,6 +284,9 @@ const swarmkit = new SwarmKit()
             env: { EXA_API_KEY: process.env.EXA_API_KEY! }
         }
     })
+
+    // (optional) Skills for the agent (folders from ~/.swarmkit/skills/)
+    .withSkills(["pdf", "dev-browser"])
 
     // (optional) Schema for structured output (agent writes result.json, validated on getOutputFiles())
     // Accepts Zod schemas or JSON Schema objects
@@ -919,8 +923,8 @@ const swarm = new Swarm({
     concurrency: 4,              // Max parallel sandboxes (default: 4)
     timeoutMs: 3_600_000,        // Default timeout per worker (default: 1 hour)
     tag: "my-pipeline",          // Tag prefix for observability
-    workspaceMode: "knowledge",  // "knowledge" (default) or "swe"
     mcpServers: {...},           // Default MCP servers for all workers
+    skills: ["pdf", "dev-browser"],  // Default skills for all workers
     retry: {                     // Default retry config for all operations
         maxAttempts: 3,
         backoffMs: 1000,
@@ -929,7 +933,7 @@ const swarm = new Swarm({
 });
 ```
 
-> **Defaults**: `agent`, `timeoutMs`, `mcpServers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
+> **Defaults**: `agent`, `timeoutMs`, `mcpServers`, `skills`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
 
 | Option | Default | Notes |
 |--------|---------|-------|
@@ -937,11 +941,11 @@ const swarm = new Swarm({
 | `agent.model` | per type | `'opus'` (claude), `'gpt-5.2'` (codex), etc. |
 | `concurrency` | `4` | Max parallel sandboxes |
 | `timeoutMs` | `3_600_000` | 1 hour per worker |
-| `workspaceMode` | `'knowledge'` | or `'swe'` |
 | `tag` | `'swarm'` | Observability prefix |
 | `retry` | `undefined` | Set here or per-operation |
 | `verify` | `undefined` | Per-operation only |
 | `mcpServers` | `undefined` | Set here or per-operation |
+| `skills` | `undefined` | Set here or per-operation |
 
 **Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Authentication](#11-authentication)):
 
@@ -959,7 +963,7 @@ const swarm = new Swarm();  // Auto-resolves agent (claude) and sandbox from env
 
 **VerifyConfig** — LLM-as-judge verifies output, retries with feedback if failed:
 ```ts
-{ criteria: string, maxAttempts?: number, verifierAgent?: AgentOverride, onWorkerComplete?: (idx, attempt, status) => void, onVerifierComplete?: (idx, attempt, passed, feedback?) => void }
+{ criteria: string, maxAttempts?: number, verifierAgent?: AgentOverride, verifierMcpServers?: {...}, verifierSkills?: string[], onWorkerComplete?: (idx, attempt, status) => void, onVerifierComplete?: (idx, attempt, passed, feedback?) => void }
 ```
 
 ## 1. Input Types
@@ -1129,6 +1133,8 @@ const result = await swarm.bestOf({
         judgeAgent: claudeAgent,
         mcpServers: {...},        // (optional) MCP servers for candidates
         judgeMcpServers: {...},   // (optional) MCP servers for judge
+        skills: ["pdf"],          // (optional) Skills for candidates
+        judgeSkills: ["pdf"],     // (optional) Skills for judge
     },
 });
 ```
@@ -1166,6 +1172,7 @@ swarm.map<T>({
     verify?: VerifyConfig,              // LLM-as-judge quality check with retry loop
     retry?: RetryConfig,                // Auto-retry on error with backoff
     mcpServers?: Record<string, McpServerConfig>,
+    skills?: string[],                  // e.g. ["pdf", "dev-browser"]
     timeoutMs?: number,
 }): Promise<SwarmResultList<T>>
 ```
@@ -1246,6 +1253,8 @@ const results = await swarm.map({
         // judgeAgent?: AgentOverride,       // Override judge agent
         // mcpServers?: {...},               // MCP servers for candidates
         // judgeMcpServers?: {...},          // MCP servers for judge
+        // skills?: [...],                   // Skills for candidates
+        // judgeSkills?: [...],              // Skills for judge
     },
 });
 
@@ -1292,6 +1301,7 @@ swarm.filter<T>({
     verify?: VerifyConfig,              // LLM-as-judge quality check with retry loop
     retry?: RetryConfig,                // Auto-retry on error with backoff
     mcpServers?: Record<string, McpServerConfig>,
+    skills?: string[],                  // e.g. ["pdf", "dev-browser"]
     timeoutMs?: number,
 }): Promise<SwarmResultList<T>>
 ```
@@ -1354,6 +1364,7 @@ swarm.reduce<T>({
     verify?: VerifyConfig,              // LLM-as-judge quality check with retry loop
     retry?: RetryConfig,                // Auto-retry on error with backoff
     mcpServers?: Record<string, McpServerConfig>,
+    skills?: string[],                  // e.g. ["pdf", "dev-browser"]
     timeoutMs?: number,
 }): Promise<ReduceResult<T>>
 ```
@@ -1593,6 +1604,7 @@ Each step accepts the same options as the corresponding Swarm method, plus `name
     retry?: RetryConfig,                  // Auto-retry on error
     agent?: AgentOverride,
     mcpServers?: Record<string, McpServerConfig>,
+    skills?: string[],                    // Skills for workers
     systemPrompt?: string,
     timeoutMs?: number,
 })
@@ -1608,6 +1620,7 @@ Each step accepts the same options as the corresponding Swarm method, plus `name
     retry?: RetryConfig,
     agent?: AgentOverride,
     mcpServers?: Record<string, McpServerConfig>,
+    skills?: string[],                    // Skills for workers
     systemPrompt?: string,
     timeoutMs?: number,
 })
@@ -1621,6 +1634,7 @@ Each step accepts the same options as the corresponding Swarm method, plus `name
     retry?: RetryConfig,
     agent?: AgentOverride,
     mcpServers?: Record<string, McpServerConfig>,
+    skills?: string[],                    // Skills for workers
     systemPrompt?: string,
     timeoutMs?: number,
 })

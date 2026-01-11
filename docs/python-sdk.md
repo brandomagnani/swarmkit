@@ -28,7 +28,8 @@ swarmkit = SwarmKit(
             'args': ['-y', 'mcp-remote', 'https://mcp.exa.ai/mcp'],
             'env': {'EXA_API_KEY': os.getenv('EXA_API_KEY')}
         }
-    }
+    },
+    skills=['pdf', 'dev-browser'],  # optional skills for the agent
 )
 
 # Run agent
@@ -296,6 +297,9 @@ swarmkit = SwarmKit(
             'env': {'EXA_API_KEY': os.getenv('EXA_API_KEY')}
         }
     },
+
+    # (optional) Skills for the agent (folders from ~/.swarmkit/skills/)
+    skills=['pdf', 'dev-browser'],
 
     # (optional) Schema for structured output (agent writes result.json, validated on get_output_files())
     # Accepts Pydantic models or JSON Schema dicts
@@ -926,6 +930,7 @@ swarm = Swarm(SwarmConfig(
     timeout_ms=3_600_000,            # Default timeout per worker (default: 1 hour)
     tag='my-pipeline',               # Tag prefix for observability
     mcp_servers={...},               # Default MCP servers for all workers
+    skills=['pdf', 'dev-browser'],   # Default skills for all workers
     retry=RetryConfig(               # Default retry config for all operations
         max_attempts=3,
         backoff_ms=1000,
@@ -934,7 +939,7 @@ swarm = Swarm(SwarmConfig(
 ))
 ```
 
-> **Defaults**: `agent`, `timeout_ms`, `mcp_servers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `best_of`). Pass these options to individual operations to override.
+> **Defaults**: `agent`, `timeout_ms`, `mcp_servers`, `skills`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `best_of`). Pass these options to individual operations to override.
 
 | Option | Default | Notes |
 |--------|---------|-------|
@@ -946,6 +951,7 @@ swarm = Swarm(SwarmConfig(
 | `retry` | `None` | Set here or per-operation |
 | `verify` | `None` | Per-operation only |
 | `mcp_servers` | `None` | Set here or per-operation |
+| `skills` | `None` | Set here or per-operation |
 
 **Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Authentication](#11-authentication)):
 
@@ -975,6 +981,8 @@ VerifyConfig(
     criteria='...',                                         # Required
     max_attempts=3,
     verifier_agent=AgentConfig(...),                        # Optional override
+    verifier_mcp_servers={...},                             # MCP servers for verifier
+    verifier_skills=['pdf'],                                # Skills for verifier
     on_worker_complete=lambda idx, attempt, status: ...,    # Callback
     on_verifier_complete=lambda idx, attempt, passed, feedback: ...,
 )
@@ -1152,6 +1160,8 @@ result = await swarm.best_of(
         judge_agent=claude_agent,
         mcp_servers={...},        # (optional) MCP servers for candidates
         judge_mcp_servers={...},  # (optional) MCP servers for judge
+        skills=['pdf'],           # (optional) Skills for candidates
+        judge_skills=['pdf'],     # (optional) Skills for judge
     ),
 )
 ```
@@ -1189,6 +1199,7 @@ await swarm.map(
     verify=VerifyConfig,                    # LLM-as-judge quality check with retry loop
     retry=RetryConfig,                      # Auto-retry on error with backoff
     mcp_servers=dict[str, McpServerConfig], # Optional
+    skills=list[str],                       # Optional - e.g. ['pdf', 'dev-browser']
     timeout_ms=int,                         # Optional
 ) -> SwarmResultList
 ```
@@ -1265,6 +1276,8 @@ results = await swarm.map(
         # judge_agent=...,         # Override judge agent
         # mcp_servers={...},       # MCP servers for candidates
         # judge_mcp_servers={...}, # MCP servers for judge
+        # skills=[...],            # Skills for candidates
+        # judge_skills=[...],      # Skills for judge
     ),
 )
 
@@ -1311,6 +1324,7 @@ await swarm.filter(
     verify=VerifyConfig,                    # LLM-as-judge quality check with retry loop
     retry=RetryConfig,                      # Auto-retry on error with backoff
     mcp_servers=dict[str, McpServerConfig], # Optional
+    skills=list[str],                       # Optional - e.g. ['pdf', 'dev-browser']
     timeout_ms=int,                         # Optional
 ) -> SwarmResultList
 ```
@@ -1372,6 +1386,7 @@ await swarm.reduce(
     verify=VerifyConfig,                    # LLM-as-judge quality check with retry loop
     retry=RetryConfig,                      # Auto-retry on error with backoff
     mcp_servers=dict[str, McpServerConfig], # Optional
+    skills=list[str],                       # Optional - e.g. ['pdf', 'dev-browser']
     timeout_ms=int,                         # Optional
 ) -> ReduceResult
 ```
@@ -1619,6 +1634,7 @@ MapConfig(
     retry=RetryConfig,                      # Auto-retry on error
     agent=AgentConfig,
     mcp_servers=dict[str, McpServerConfig],
+    skills=list[str],                       # Skills for workers
     system_prompt=str,
     timeout_ms=int,
 )
@@ -1634,6 +1650,7 @@ FilterConfig(
     retry=RetryConfig,
     agent=AgentConfig,
     mcp_servers=dict[str, McpServerConfig],
+    skills=list[str],                       # Skills for workers
     system_prompt=str,
     timeout_ms=int,
 )
@@ -1647,6 +1664,7 @@ ReduceConfig(
     retry=RetryConfig,
     agent=AgentConfig,
     mcp_servers=dict[str, McpServerConfig],
+    skills=list[str],                       # Skills for workers
     system_prompt=str,
     timeout_ms=int,
 )
