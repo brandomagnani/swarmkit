@@ -318,6 +318,15 @@ const swarmkit = new SwarmKit()
 { command?: string, args?: string[], env?: Record<string, string>, url?: string }  // STDIO: command+args, HTTP: url
 ```
 
+## Agent Skills
+
+Skills extend agent capabilities with specialized tools and workflows.
+
+| Skill | Description | Source |
+|-------|-------------|--------|
+| `pdf` | Read, extract, and analyze PDF documents | [anthropics/skills/pdf](https://github.com/anthropics/skills/tree/main/skills/pdf) |
+| `dev-browser` | Browser automation with persistent page state | [SawyerHood/dev-browser](https://github.com/SawyerHood/dev-browser/tree/main) |
+
 ---
 
 ## 3. Runtime Methods
