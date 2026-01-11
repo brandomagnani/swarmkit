@@ -8,6 +8,7 @@
   "dependencies": {
     "@composio/core": "latest",
     "@swarmkit/sdk": "latest",
+    "boxen": "latest",
     "chalk": "latest",
     "cli-spinners": "latest",
     "dotenv": "latest",

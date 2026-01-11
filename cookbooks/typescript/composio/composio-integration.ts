@@ -74,7 +74,7 @@ export class ComposioIntegration {
     }
 
     const req = await this.session.authorize(toolkit);
-    return req.redirect_url;
+    return req.redirectUrl;
   }
 
   async setupWithPreauth(interactive: boolean = true): Promise<McpConfig> {

@@ -73,7 +73,8 @@ class ComposioIntegration:
             self.create_session()
 
         req = self.session.authorize(toolkit)
-        return req.redirect_url
+        # API returns redirectUrl (camelCase)
+        return getattr(req, "redirectUrl", None) or getattr(req, "redirect_url", None)
 
     async def setup_with_preauth(self, interactive: bool = True) -> dict:
         """
