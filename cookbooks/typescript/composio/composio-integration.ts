@@ -36,7 +36,8 @@ export class ComposioIntegration {
   constructor(config: ComposioConfig) {
     this.userId = config.userId;
     this.toolkits = config.toolkits;
-    this.client = new Composio({ apiKey: config.apiKey });
+    const apiKey = config.apiKey || process.env.COMPOSIO_API_KEY;
+    this.client = new Composio({ apiKey });
   }
 
   async createSession() {
@@ -126,7 +127,10 @@ export class ComposioIntegration {
   }
 }
 
-export async function setupComposio(config: ComposioConfig): Promise<McpConfig> {
+export async function setupComposio(
+  config: ComposioConfig,
+  interactive: boolean = true
+): Promise<McpConfig> {
   const integration = new ComposioIntegration(config);
-  return integration.setupWithPreauth();
+  return integration.setupWithPreauth(interactive);
 }
