@@ -320,7 +320,7 @@ const swarmkit = new SwarmKit()
 
 ## Agent Skills
 
-Skills extend agent capabilities with specialized tools and workflows.
+Skills extend agent capabilities with specialized tools and workflows. See [agentskills.io](https://agentskills.io/home) for the open standard.
 
 | Skill | Description | Source |
 |-------|-------------|--------|
