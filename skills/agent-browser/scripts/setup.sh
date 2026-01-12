@@ -1,6 +1,6 @@
 #!/bin/bash
 # Setup script for agent-browser
-# Smart installation - skips already-installed components
+# Smart installation - installs in skill directory, works from anywhere
 
 set -e
 
@@ -12,6 +12,10 @@ NC='\033[0m' # No Color
 log_ok() { echo -e "${GREEN}✓${NC} $1"; }
 log_skip() { echo -e "${YELLOW}→${NC} $1 (skipped)"; }
 
+# Get the skill directory (parent of scripts/)
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SKILL_DIR="$( cd "$SCRIPT_DIR/.." && pwd )"
+
 # ---------------------------------------------------------------------------
 # Check: npm available
 # ---------------------------------------------------------------------------
@@ -22,52 +26,49 @@ if ! command -v npm &> /dev/null; then
 fi
 
 # ---------------------------------------------------------------------------
-# Check: agent-browser CLI installed
+# Install: agent-browser in skill directory
 # ---------------------------------------------------------------------------
-if command -v agent-browser &> /dev/null; then
-    log_skip "agent-browser already installed: $(which agent-browser)"
+cd "$SKILL_DIR"
+
+if [[ -d "node_modules/agent-browser" ]]; then
+    log_skip "agent-browser already installed in skill directory"
 else
-    echo "Installing agent-browser..."
-    # Try global install first, fall back to local install if permission denied
-    if npm install -g agent-browser 2>/dev/null; then
-        log_ok "agent-browser installed globally"
-    else
-        echo "Global install failed (permission denied), installing locally..."
-        npm install agent-browser
-        # Create a wrapper script in a user-writable bin directory
-        mkdir -p "$HOME/.local/bin"
-        cat > "$HOME/.local/bin/agent-browser" << 'EOF'
-#!/bin/bash
-npx agent-browser "$@"
-EOF
-        chmod +x "$HOME/.local/bin/agent-browser"
-        # Add to PATH if not already there
-        if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-            export PATH="$HOME/.local/bin:$PATH"
-            echo "Note: Add ~/.local/bin to your PATH for future sessions"
-        fi
-        log_ok "agent-browser installed locally"
-    fi
+    echo "Installing agent-browser in $SKILL_DIR..."
+    npm install agent-browser
+    log_ok "agent-browser installed"
 fi
 
 # ---------------------------------------------------------------------------
+# Create wrapper script that runs from skill directory
+# ---------------------------------------------------------------------------
+mkdir -p "$HOME/.local/bin"
+cat > "$HOME/.local/bin/agent-browser" << EOF
+#!/bin/bash
+cd "$SKILL_DIR" && npx agent-browser "\$@"
+EOF
+chmod +x "$HOME/.local/bin/agent-browser"
+
+# Add to PATH if not already there
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
+    echo "Note: Add ~/.local/bin to your PATH for future sessions"
+fi
+
+log_ok "Wrapper created at ~/.local/bin/agent-browser"
+
+# ---------------------------------------------------------------------------
 # Check: Playwright Chromium installed
-# Checks both Linux (~/.cache) and macOS (~/Library/Caches) locations
 # ---------------------------------------------------------------------------
 is_chromium_installed() {
     local linux_cache="${HOME}/.cache/ms-playwright"
     local macos_cache="${HOME}/Library/Caches/ms-playwright"
 
-    # Check Linux location
     if [[ -d "$linux_cache" ]] && ls "$linux_cache" 2>/dev/null | grep -q "^chromium"; then
         return 0
     fi
-
-    # Check macOS location
     if [[ -d "$macos_cache" ]] && ls "$macos_cache" 2>/dev/null | grep -q "^chromium"; then
         return 0
     fi
-
     return 1
 }
 
@@ -75,7 +76,6 @@ if is_chromium_installed; then
     log_skip "Playwright Chromium already installed"
 else
     echo "Installing Playwright Chromium..."
-    # Use npx to ensure we can run agent-browser regardless of install method
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         echo "Linux detected - including system dependencies..."
         npx agent-browser install --with-deps
@@ -89,4 +89,4 @@ fi
 # Done
 # ---------------------------------------------------------------------------
 echo ""
-log_ok "Setup complete. agent-browser is ready to use."
+log_ok "Setup complete. Run 'agent-browser' from anywhere."
