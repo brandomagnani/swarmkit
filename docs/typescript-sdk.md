@@ -322,10 +322,62 @@ const swarmkit = new SwarmKit()
 
 Skills extend agent capabilities with specialized tools and workflows. See [agentskills.io](https://agentskills.io/home) for the open standard.
 
+### Documents
 | Skill | Description | Source |
 |-------|-------------|--------|
-| `pdf` | Read, extract, and analyze PDF documents | [anthropics/skills/pdf](https://github.com/anthropics/skills/tree/main/skills/pdf) |
-| `dev-browser` | Browser automation with persistent page state | [SawyerHood/dev-browser](https://github.com/SawyerHood/dev-browser/tree/main) |
+| `pdf` | Read, extract, and analyze PDF documents | [skills/pdf](https://github.com/brandomagnani/swarmkit/tree/main/skills/pdf) |
+| `docx` | Create and edit Word documents | [skills/docx](https://github.com/brandomagnani/swarmkit/tree/main/skills/docx) |
+| `pptx` | Create and edit PowerPoint presentations | [skills/pptx](https://github.com/brandomagnani/swarmkit/tree/main/skills/pptx) |
+| `xlsx` | Create and edit Excel spreadsheets | [skills/xlsx](https://github.com/brandomagnani/swarmkit/tree/main/skills/xlsx) |
+
+### Browser Automation
+| Skill | Description | Source |
+|-------|-------------|--------|
+| `agent-browser` | CLI-based headless browser automation for AI agents | [skills/agent-browser](https://github.com/brandomagnani/swarmkit/tree/main/skills/agent-browser) |
+| `dev-browser` | Browser automation with persistent page state | [skills/dev-browser](https://github.com/brandomagnani/swarmkit/tree/main/skills/dev-browser) |
+| `webapp-testing` | Test web applications | [skills/webapp-testing](https://github.com/brandomagnani/swarmkit/tree/main/skills/webapp-testing) |
+
+### Research & Analysis
+| Skill | Description | Source |
+|-------|-------------|--------|
+| `content-research-writer` | Research and write content | [skills/content-research-writer](https://github.com/brandomagnani/swarmkit/tree/main/skills/content-research-writer) |
+| `lead-research-assistant` | Research and qualify leads | [skills/lead-research-assistant](https://github.com/brandomagnani/swarmkit/tree/main/skills/lead-research-assistant) |
+| `meeting-insights-analyzer` | Analyze meeting insights | [skills/meeting-insights-analyzer](https://github.com/brandomagnani/swarmkit/tree/main/skills/meeting-insights-analyzer) |
+| `developer-growth-analysis` | Analyze developer growth metrics | [skills/developer-growth-analysis](https://github.com/brandomagnani/swarmkit/tree/main/skills/developer-growth-analysis) |
+| `competitive-ads-extractor` | Extract and analyze competitor ads | [skills/competitive-ads-extractor](https://github.com/brandomagnani/swarmkit/tree/main/skills/competitive-ads-extractor) |
+
+### Design & Media
+| Skill | Description | Source |
+|-------|-------------|--------|
+| `canvas-design` | Canvas and design creation | [skills/canvas-design](https://github.com/brandomagnani/swarmkit/tree/main/skills/canvas-design) |
+| `image-enhancer` | Enhance and process images | [skills/image-enhancer](https://github.com/brandomagnani/swarmkit/tree/main/skills/image-enhancer) |
+| `theme-factory` | Create themes and styles | [skills/theme-factory](https://github.com/brandomagnani/swarmkit/tree/main/skills/theme-factory) |
+| `video-downloader` | Download videos from URLs | [skills/video-downloader](https://github.com/brandomagnani/swarmkit/tree/main/skills/video-downloader) |
+| `slack-gif-creator` | Create GIFs for Slack | [skills/slack-gif-creator](https://github.com/brandomagnani/swarmkit/tree/main/skills/slack-gif-creator) |
+
+### Business & Productivity
+| Skill | Description | Source |
+|-------|-------------|--------|
+| `file-organizer` | Organize files and directories | [skills/file-organizer](https://github.com/brandomagnani/swarmkit/tree/main/skills/file-organizer) |
+| `invoice-organizer` | Organize and process invoices | [skills/invoice-organizer](https://github.com/brandomagnani/swarmkit/tree/main/skills/invoice-organizer) |
+| `brand-guidelines` | Brand asset and guidelines management | [skills/brand-guidelines](https://github.com/brandomagnani/swarmkit/tree/main/skills/brand-guidelines) |
+| `internal-comms` | Internal communications tools | [skills/internal-comms](https://github.com/brandomagnani/swarmkit/tree/main/skills/internal-comms) |
+| `tailored-resume-generator` | Generate tailored resumes | [skills/tailored-resume-generator](https://github.com/brandomagnani/swarmkit/tree/main/skills/tailored-resume-generator) |
+| `domain-name-brainstormer` | Brainstorm domain names | [skills/domain-name-brainstormer](https://github.com/brandomagnani/swarmkit/tree/main/skills/domain-name-brainstormer) |
+
+### Development
+| Skill | Description | Source |
+|-------|-------------|--------|
+| `mcp-builder` | Build MCP servers | [skills/mcp-builder](https://github.com/brandomagnani/swarmkit/tree/main/skills/mcp-builder) |
+| `skill-creator` | Create new skills | [skills/skill-creator](https://github.com/brandomagnani/swarmkit/tree/main/skills/skill-creator) |
+| `skill-share` | Share skills with others | [skills/skill-share](https://github.com/brandomagnani/swarmkit/tree/main/skills/skill-share) |
+| `changelog-generator` | Generate changelogs from commits | [skills/changelog-generator](https://github.com/brandomagnani/swarmkit/tree/main/skills/changelog-generator) |
+| `artifacts-builder` | Build artifacts and deliverables | [skills/artifacts-builder](https://github.com/brandomagnani/swarmkit/tree/main/skills/artifacts-builder) |
+
+### Other
+| Skill | Description | Source |
+|-------|-------------|--------|
+| `raffle-winner-picker` | Pick raffle winners randomly | [skills/raffle-winner-picker](https://github.com/brandomagnani/swarmkit/tree/main/skills/raffle-winner-picker) |
 
 ---
 
