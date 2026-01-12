@@ -10,55 +10,63 @@ Run terminal-based AI agents in secure sandboxes with built-in observability.
 
 ## 1. Quick Start
 
+```bash
+# .env
+
+# SwarmKit gateway key (dashboard.swarmlink.ai)
+SWARMKIT_API_KEY=sk-...
+
+# Composio integrations (app.composio.dev)
+COMPOSIO_API_KEY=...
+```
+
+SwarmKit auto-resolves API keys from environment variables.
+
 ```python
 import os
-from swarmkit import SwarmKit, AgentConfig
+from swarmkit import SwarmKit, AgentConfig, ComposioSetup, ComposioConfig
 
-# Build SwarmKit instance
 swarmkit = SwarmKit(
     config=AgentConfig(
         type='codex',
         api_key=os.getenv('SWARMKIT_API_KEY'),
     ),
-    session_tag_prefix='my-agent',  # optional tag for the agent session
-    system_prompt='You are a helpful coding assistant.',
-    mcp_servers={
-        'exa': {
-            'command': 'npx',
-            'args': ['-y', 'mcp-remote', 'https://mcp.exa.ai/mcp'],
-            'env': {'EXA_API_KEY': os.getenv('EXA_API_KEY')}
-        }
-    },
-    skills=['pdf', 'dev-browser'],  # optional skills for the agent
+    session_tag_prefix='my-app',
+    system_prompt='You are Swarm, a powerful AI agent. You can execute code, browse the web, manage files, and solve complex tasks.',
+    skills=['pdf', 'docx', 'pptx', 'dev-browser'],
+    composio=ComposioSetup(
+        user_id='user_123',
+        config=ComposioConfig(toolkits=['gmail', 'notion', 'exa']),
+    ),
 )
 
-# Run agent
-result = await swarmkit.run(prompt='Create a hello world script')
+result = await swarmkit.run(
+    prompt='Go to Hacker News top posts. Spawn 5 parallel sub-agents to screenshot each of the top 5 posts.'
+)
 
 print(result.stdout)
 
-# Get output files
 output = await swarmkit.get_output_files()
 for name, content in output.files.items():
     print(name)
 
-# Clean up
+# Once done, destroy sandbox
 await swarmkit.kill()
 ```
 
-- **Tracing:** Every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces)—no extra setup needed. Optionally use `session_tag_prefix` to label your agent session for easy filtering.
+- **Tracing:** When using `SWARMKIT_API_KEY`, every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces) for observability and replay. Optionally use `session_tag_prefix` to label your agent session for easy filtering.
 
 ## 1.1 Authentication
 
-| | Gateway | Direct (BYOK) |
+| | Gateway Mode | BYOK Mode |
 |---|---------|---------------|
-| Setup | `SWARMKIT_API_KEY` | Model provider keys + E2B sandbox keys |
+| Setup | `SWARMKIT_API_KEY` | Model provider keys + [`E2B_API_KEY`](https://e2b.dev) |
 | Observability | [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) | `~/.swarmkit/observability/` |
 | Billing | Swarmlink | Your provider accounts |
 
 ---
 
-### Gateway Mode
+### 1.1.1 Gateway Mode
 
 Get API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai).
 
@@ -83,9 +91,9 @@ await swarmkit.run(prompt='Hello')
 
 ---
 
-### Direct Mode (BYOK)
+### 1.1.2 BYOK Mode
 
-Use your own provider keys. Requires E2B for sandbox.
+Use your own provider keys. Requires [`E2B_API_KEY`](https://e2b.dev) for sandbox.
 
 ```bash
 # .env
@@ -112,7 +120,7 @@ swarmkit = SwarmKit(
 
 ---
 
-### Use SwarmKit with your Claude Max subscription
+### BYO Claude Max Subscription
 
 ```bash
 # Run in terminal, follow login steps → receive token:
@@ -149,9 +157,9 @@ swarmkit = SwarmKit(
 
 ### Auto-resolve from Environment
 
-Set env vars and the SDK picks them up automatically—no need to pass explicitly. See Agent Reference below for env var names.
+Set env vars and the SDK picks them up automatically—no need to pass explicitly. See [Agent Reference](#113-agent-reference) below for env var names.
 
-### Agent Reference
+### 1.1.3 Agent Reference
 
 | type | models | default | env var (BYOK) |
 |------|--------|---------|----------------|
@@ -234,12 +242,12 @@ swarmkit = SwarmKit(
 
 ```python
 import os
-from swarmkit import SwarmKit, AgentConfig, E2BProvider
+from swarmkit import SwarmKit, AgentConfig, E2BProvider, ComposioSetup, ComposioConfig
 
 # Sandbox provider (auto-resolved from E2B_API_KEY, or explicit)
 sandbox = E2BProvider(
     api_key=os.getenv('E2B_API_KEY'),   # (optional) Auto-resolves from E2B_API_KEY env var
-    default_timeout_ms=3600000,          # (optional) Default sandbox timeout (default: 1 hour)
+    timeout_ms=3600000,                  # (optional) Default sandbox timeout (default: 1 hour)
 )
 ```
 
@@ -260,28 +268,34 @@ swarmkit = SwarmKit(
     # Sandbox provider (auto-resolved from E2B_API_KEY, or use sandbox from above)
     sandbox=sandbox,
 
-    # (optional) Custom working directory, default: /home/user/workspace
-    working_directory='/home/user/workspace',
-
-    # (optional) System prompt appended to default instructions
-    system_prompt='You are a careful pair programmer.',
-
-    # (optional) Environment variables injected into sandbox
-    secrets={'GITHUB_TOKEN': os.getenv('GITHUB_TOKEN')},
-
-    # (optional) Prefix for observability logs
-    session_tag_prefix='my-agent',
-
-    # (optional) Uploads to {workingDir}/context/ on first run
+    # (optional) Uploads to /home/user/workspace/context/ on first run
     context={
         'docs/readme.txt': 'User provided context...',
         'data.json': '{"key": "value"}',
     },
 
-    # (optional) Uploads to {workingDir}/ on first run
-    files={
-        'scripts/setup.sh': '#!/bin/bash\necho hello',
-    },
+    # (optional) System prompt appended to default instructions
+    system_prompt='You are a careful pair programmer.',
+
+    # (optional) Schema for structured output (agent writes result.json, validated on get_output_files())
+    # Accepts Pydantic models or JSON Schema dicts
+    schema=MyPydanticModel,
+
+    # (optional) Skills for the agent
+    skills=['pdf', 'docx', 'pptx', 'dev-browser'],
+
+    # (optional) Composio Tool Router for 1000+ integrations
+    composio=ComposioSetup(
+        user_id='user_123',
+        config=ComposioConfig(toolkits=['gmail', 'notion', 'stripe']),
+    ),
+
+    # (optional) Prefix for observability logs
+    session_tag_prefix='my-agent',
+
+    # ─────────────────────────────────────────────────────────────
+    # Advanced
+    # ─────────────────────────────────────────────────────────────
 
     # (optional) MCP servers for agent tools
     mcp_servers={
@@ -292,22 +306,13 @@ swarmkit = SwarmKit(
         }
     },
 
-    # (optional) Skills for the agent (folders from ~/.swarmkit/skills/)
-    skills=['pdf', 'dev-browser'],
+    # (optional) Environment variables injected into sandbox
+    secrets={'GITHUB_TOKEN': os.getenv('GITHUB_TOKEN')},
 
-    # (optional) Schema for structured output (agent writes result.json, validated on get_output_files())
-    # Accepts Pydantic models or JSON Schema dicts
-    schema=MyPydanticModel,
-
-    # Or with JSON Schema:
-    # schema={
-    #     'type': 'object',
-    #     'properties': {
-    #         'summary': {'type': 'string'},
-    #         'score': {'type': 'number'},
-    #     },
-    #     'required': ['summary', 'score'],
-    # },
+    # (optional) Uploads to /home/user/workspace/ on first run
+    files={
+        'scripts/setup.sh': '#!/bin/bash\necho hello',
+    },
 )
 ```
 
@@ -326,6 +331,21 @@ swarmkit = SwarmKit(
 ## Agent Skills
 
 Skills extend agent capabilities with specialized tools and workflows. See [agentskills.io](https://agentskills.io/home) for the open standard.
+
+```bash
+# .env
+SWARMKIT_API_KEY=sk-...
+```
+
+```python
+from swarmkit import SwarmKit
+
+swarmkit = SwarmKit(
+    skills=['pptx', 'dev-browser'],
+)
+
+await swarmkit.run(prompt='Browse Hacker News top 5 articles and create a slide deck summarizing each')
+```
 
 ### Documents
 | Skill | Description | Source |
@@ -386,6 +406,160 @@ Skills extend agent capabilities with specialized tools and workflows. See [agen
 
 ---
 
+## Composio (Tool Router)
+
+Access 1000+ integrations (GitHub, Gmail, Slack, etc.) via [Composio](https://composio.dev).
+
+[Tool Router Overview](https://docs.composio.dev/tool-router/overview) — How Tool Router works and integration guide.
+
+[Available Toolkits](https://docs.composio.dev/toolkits/introduction) — Browse all 1000+ supported integrations.
+
+```bash
+# .env
+SWARMKIT_API_KEY=sk-...      # SwarmKit gateway key
+COMPOSIO_API_KEY=...         # Get from https://app.composio.dev
+```
+
+```python
+from swarmkit import SwarmKit, ComposioSetup
+
+swarmkit = SwarmKit(
+    composio=ComposioSetup(user_id='user_123'),  # All tools, in-chat OAuth
+)
+
+await swarmkit.run(prompt='Create a GitHub issue for the login bug')
+```
+
+### Authentication Paths
+
+**1. In-chat auth (default)** — Composio prompts user to authenticate via agent output:
+```python
+from swarmkit import SwarmKit, ComposioSetup
+
+swarmkit = SwarmKit(
+    composio=ComposioSetup(user_id='user_123'),  # Agent prompts "Connect to GitHub" when needed
+)
+
+await swarmkit.run(prompt='Star my favorite repos on GitHub')
+```
+
+**2. API key auth** — Bypass OAuth for tools that support API keys:
+```python
+import os
+from swarmkit import SwarmKit, ComposioSetup, ComposioConfig
+
+swarmkit = SwarmKit(
+    composio=ComposioSetup(
+        user_id='user_123',
+        config=ComposioConfig(
+            toolkits=['stripe', 'sendgrid'],
+            keys={
+                'stripe': os.getenv('STRIPE_API_KEY'),
+                'sendgrid': os.getenv('SENDGRID_API_KEY'),
+            },
+        ),
+    ),
+)
+
+await swarmkit.run(prompt='List my recent Stripe payments')
+```
+
+**3. Manual OAuth (app UI)** — Get OAuth URL to show in your settings page:
+```python
+from swarmkit import SwarmKit, ComposioSetup, ComposioConfig
+
+# Get OAuth URL for "Connect GitHub" button
+result = await SwarmKit.composio.auth('user_123', 'github')
+# Render: <a href={result.url}>Connect GitHub</a>
+
+# Check connection status (simple)
+status = await SwarmKit.composio.status('user_123')
+# {'github': True, 'gmail': False, 'slack': True}
+
+# Check single toolkit
+is_github_connected = await SwarmKit.composio.status('user_123', 'github')
+# True | False
+
+# Get detailed connection info (with account IDs)
+connections = await SwarmKit.composio.connections('user_123')
+# [ComposioConnectionStatus(toolkit='github', connected=True, account_id='ca_...'), ...]
+
+# Then use in agent (user already connected via UI)
+swarmkit = SwarmKit(
+    composio=ComposioSetup(
+        user_id='user_123',
+        config=ComposioConfig(toolkits=['github']),
+    ),
+)
+
+await swarmkit.run(prompt='List my open PRs')
+```
+
+**4. White-label OAuth** — Use custom OAuth configs from [Composio dashboard](https://app.composio.dev):
+```python
+from swarmkit import SwarmKit, ComposioSetup, ComposioConfig
+
+swarmkit = SwarmKit(
+    composio=ComposioSetup(
+        user_id='user_123',
+        config=ComposioConfig(
+            toolkits=['github'],
+            auth_configs={'github': 'ac_your_custom_oauth_app'},
+        ),
+    ),
+)
+
+await swarmkit.run(prompt='Create a new private repo')
+```
+
+### Tool Filtering
+
+```python
+from swarmkit import SwarmKit, ComposioSetup, ComposioConfig
+
+swarmkit = SwarmKit(
+    composio=ComposioSetup(
+        user_id='user_123',
+        config=ComposioConfig(
+            toolkits=['github', 'gmail', 'slack'],
+            tools={
+                'github': ['github_create_issue', 'github_list_repos'],  # Enable only these
+                'gmail': {'disable': ['gmail_delete_email']},            # Disable dangerous tools
+                'slack': {'tags': ['readOnlyHint']},                     # Filter by behavior tags
+            },
+        ),
+    ),
+)
+
+await swarmkit.run(prompt='Send a Slack message about the GitHub issue')
+```
+
+### Type Reference
+
+**ComposioSetup** — configuration for `composio=ComposioSetup(...)`:
+```python
+@dataclass
+class ComposioSetup:
+    user_id: str                                            # User's unique identifier
+    config: Optional[ComposioConfig] = None                 # Optional configuration
+
+@dataclass
+class ComposioConfig:
+    toolkits: Optional[List[str]] = None                    # e.g. ['gmail', 'notion', 'stripe']
+    tools: Optional[Dict[str, ToolsFilter]] = None          # Per-toolkit tool filtering
+    keys: Optional[Dict[str, str]] = None                   # API keys (bypasses OAuth)
+    auth_configs: Optional[Dict[str, str]] = None           # Custom OAuth auth config IDs
+
+ToolsFilter = Union[
+    List[str],                                              # Enable only these tools
+    EnableFilter,                                           # {'enable': [...]}
+    DisableFilter,                                          # {'disable': [...]}
+    TagsFilter,                                             # {'tags': [...]}
+]
+```
+
+---
+
 ## 3. Runtime Methods
 
 All runtime calls are `async` and return an `AgentResponse`:
@@ -431,7 +605,6 @@ result = await swarmkit.execute_command(
     background=False,                          # (optional) Run in background
 )
 ```
-- The command automatically executes in the directory set by `working_directory` (default: `/home/user/workspace`).
 
 ### 3.3 Streaming events
 
@@ -777,6 +950,26 @@ output = await swarmkit.get_output_files()
 print(output.data)  # CREData(property_name='...', units=120, ...)
 ```
 
+When a schema is provided, `get_output_files()` automatically validates `output/result.json` and returns:
+
+```python
+@dataclass
+class OutputResult:
+    files: Dict[str, bytes]           # All output files
+    data: Any | None                  # Parsed & validated result.json (None if failed)
+    error: str | None                 # Validation/parse error message
+    raw_data: str | None              # Raw result.json for debugging failed validation
+```
+
+```python
+# Type-safe access to validated data
+if output.data:
+    print(output.data.property_name)  # Pydantic model instance
+else:
+    print(output.error)               # "Schema validation failed: ..."
+    print(output.raw_data)            # Raw JSON for debugging
+```
+
 The SDK automatically appends the following to the agent's config file in the workspace (`CLAUDE.md`, `AGENT.md`, `GEMINI.md`, or `QWEN.md`):
 
 ~~~
@@ -974,7 +1167,7 @@ Use the tag together with the sandbox id to correlate logs with files saved in
 Functional programming for AI agents: `map`, `filter`, `reduce`, `best_of`.
 
 ```python
-from swarmkit import Swarm, SwarmConfig, AgentConfig
+from swarmkit import Swarm, SwarmConfig, AgentConfig, ComposioSetup, ComposioConfig
 from pydantic import BaseModel  # Or use plain JSON Schema dicts instead
 
 agent = AgentConfig(type='claude')
@@ -984,8 +1177,12 @@ swarm = Swarm(SwarmConfig(
     concurrency=4,                   # Max parallel sandboxes (default: 4)
     timeout_ms=3_600_000,            # Default timeout per worker (default: 1 hour)
     tag='my-pipeline',               # Tag prefix for observability
-    mcp_servers={...},               # Default MCP servers for all workers
     skills=['pdf', 'dev-browser'],   # Default skills for all workers
+    composio=ComposioSetup(          # Default Composio config for all workers
+        user_id='user_123',
+        config=ComposioConfig(toolkits=['gmail', 'notion']),
+    ),
+    mcp_servers={...},               # Default MCP servers for all workers
     retry=RetryConfig(               # Default retry config for all operations
         max_attempts=3,
         backoff_ms=1000,
@@ -994,7 +1191,7 @@ swarm = Swarm(SwarmConfig(
 ))
 ```
 
-> **Defaults**: `agent`, `timeout_ms`, `mcp_servers`, `skills`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `best_of`). Pass these options to individual operations to override.
+> **Defaults**: `agent`, `timeout_ms`, `skills`, `composio`, `mcp_servers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `best_of`). Pass these options to individual operations to override.
 
 | Option | Default | Notes |
 |--------|---------|-------|
@@ -1005,8 +1202,9 @@ swarm = Swarm(SwarmConfig(
 | `tag` | `'swarm'` | Observability prefix |
 | `retry` | `None` | Set here or per-operation |
 | `verify` | `None` | Per-operation only |
-| `mcp_servers` | `None` | Set here or per-operation |
 | `skills` | `None` | Set here or per-operation |
+| `composio` | `None` | Set here or per-operation |
+| `mcp_servers` | `None` | Set here or per-operation |
 
 **Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Authentication](#11-authentication)):
 
