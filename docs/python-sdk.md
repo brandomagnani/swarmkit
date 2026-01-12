@@ -335,6 +335,7 @@ Skills extend agent capabilities with specialized tools and workflows. See [agen
 ```bash
 # .env
 SWARMKIT_API_KEY=sk-...
+COMPOSIO_API_KEY=...
 ```
 
 ```python
@@ -798,8 +799,8 @@ renderer.stop_live()
 
 | Method | Destination |
 |--------|-------------|
-| `upload_context()` | `context/{path}` |
-| `upload_files()` | `{workingDir}/{path}` |
+| `upload_context()` | `/home/user/workspace/context/{path}` |
+| `upload_files()` | `/home/user/workspace/{path}` |
 
 ```python
 # Single file
@@ -1191,20 +1192,33 @@ swarm = Swarm(SwarmConfig(
 ))
 ```
 
-> **Defaults**: `agent`, `timeout_ms`, `skills`, `composio`, `mcp_servers`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `best_of`). Pass these options to individual operations to override.
+> **Defaults**: `agent`, `skills`, `composio`, `mcp_servers`, `timeout_ms`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `best_of`). Pass these options to individual operations to override.
+
+**SwarmConfig** — configuration for Swarm instance:
+```python
+SwarmConfig(
+    agent=AgentConfig,
+    skills=list[str],
+    composio=ComposioSetup,
+    mcp_servers=dict[str, McpServerConfig],
+    concurrency=int,
+    timeout_ms=int,
+    tag=str,
+    retry=RetryConfig,
+)
+```
 
 | Option | Default | Notes |
 |--------|---------|-------|
 | `agent.type` | `'claude'` | Auto-resolved from env |
 | `agent.model` | per type | `'opus'` (claude), `'gpt-5.2'` (codex), etc. |
+| `skills` | `None` | Set here or per-operation |
+| `composio` | `None` | Set here or per-operation |
+| `mcp_servers` | `None` | Set here or per-operation |
 | `concurrency` | `4` | Max parallel sandboxes |
 | `timeout_ms` | `3_600_000` | 1 hour per worker |
 | `tag` | `'swarm'` | Observability prefix |
 | `retry` | `None` | Set here or per-operation |
-| `verify` | `None` | Per-operation only |
-| `skills` | `None` | Set here or per-operation |
-| `composio` | `None` | Set here or per-operation |
-| `mcp_servers` | `None` | Set here or per-operation |
 
 **Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Authentication](#11-authentication)):
 
@@ -1234,8 +1248,9 @@ VerifyConfig(
     criteria='...',                                         # Required
     max_attempts=3,
     verifier_agent=AgentConfig(...),                        # Optional override
-    verifier_mcp_servers={...},                             # MCP servers for verifier
     verifier_skills=['pdf'],                                # Skills for verifier
+    verifier_composio=ComposioSetup(...),                   # Composio config for verifier
+    verifier_mcp_servers={...},                             # MCP servers for verifier
     on_worker_complete=lambda idx, attempt, status: ...,    # Callback
     on_verifier_complete=lambda idx, attempt, passed, feedback: ...,
 )
@@ -1333,6 +1348,38 @@ Two types of operations:
 
 **Transforms** produce new output files. **Filter** passes through original input files unchanged.
 
+**BestOfConfig** — run N candidates in parallel, judge picks the best:
+```python
+BestOfConfig(
+    n=int,
+    judge_criteria=str,
+    task_agents=list[AgentConfig],
+    judge_agent=AgentConfig,
+    skills=list[str],
+    judge_skills=list[str],
+    composio=ComposioSetup,
+    judge_composio=ComposioSetup,
+    mcp_servers=dict[str, McpServerConfig],
+    judge_mcp_servers=dict[str, McpServerConfig],
+    on_candidate_complete=Callable[[int, int, str], None],
+    on_judge_complete=Callable[[int, int, str], None],
+)
+```
+
+**VerifyConfig** — LLM-as-judge verifies output, retries with feedback if failed:
+```python
+VerifyConfig(
+    criteria=str,
+    max_attempts=int,
+    verifier_agent=AgentConfig,
+    verifier_skills=list[str],
+    verifier_composio=ComposioSetup,
+    verifier_mcp_servers=dict[str, McpServerConfig],
+    on_worker_complete=Callable[[int, int, str], None],
+    on_verifier_complete=Callable[[int, int, bool, str | None], None],
+)
+```
+
 ### 2.1 best_of
 
 Run N agents on the same `item` in parallel, then a judge picks the best. `Agent[i]` outputs `candidates[i]`, judge selects `winner`.
@@ -1411,10 +1458,12 @@ result = await swarm.best_of(
         task_agents=[claude_agent, codex_agent, gemini_agent],
         judge_criteria='Best solution quality',
         judge_agent=claude_agent,
-        mcp_servers={...},        # (optional) MCP servers for candidates
-        judge_mcp_servers={...},  # (optional) MCP servers for judge
-        skills=['pdf'],           # (optional) Skills for candidates
-        judge_skills=['pdf'],     # (optional) Skills for judge
+        mcp_servers={...},           # (optional) MCP servers for candidates
+        judge_mcp_servers={...},     # (optional) MCP servers for judge
+        skills=['pdf'],              # (optional) Skills for candidates
+        judge_skills=['pdf'],        # (optional) Skills for judge
+        composio=ComposioSetup(...), # (optional) Composio config for candidates
+        judge_composio=ComposioSetup(...),  # (optional) Composio config for judge
     ),
 )
 ```
@@ -1453,6 +1502,7 @@ await swarm.map(
     retry=RetryConfig,                      # Auto-retry on error with backoff
     mcp_servers=dict[str, McpServerConfig], # Optional
     skills=list[str],                       # Optional - e.g. ['pdf', 'dev-browser']
+    composio=ComposioSetup,                 # Composio Tool Router config
     timeout_ms=int,                         # Optional
 ) -> SwarmResultList
 ```
@@ -1578,6 +1628,7 @@ await swarm.filter(
     retry=RetryConfig,                      # Auto-retry on error with backoff
     mcp_servers=dict[str, McpServerConfig], # Optional
     skills=list[str],                       # Optional - e.g. ['pdf', 'dev-browser']
+    composio=ComposioSetup,                 # Composio Tool Router config
     timeout_ms=int,                         # Optional
 ) -> SwarmResultList
 ```
@@ -1640,6 +1691,7 @@ await swarm.reduce(
     retry=RetryConfig,                      # Auto-retry on error with backoff
     mcp_servers=dict[str, McpServerConfig], # Optional
     skills=list[str],                       # Optional - e.g. ['pdf', 'dev-browser']
+    composio=ComposioSetup,                 # Composio Tool Router config
     timeout_ms=int,                         # Optional
 ) -> ReduceResult
 ```
@@ -1838,7 +1890,7 @@ swarm = Swarm(SwarmConfig(
 
 ## 7. Pipeline
 
-Fluent wrapper over Swarm for chaining operations. **All Swarm features work in Pipeline steps** — `schema`, `best_of`, `verify`, `retry`, `agent`, `mcp_servers`, dynamic prompts.
+Fluent wrapper over Swarm for chaining operations. **All Swarm features work in Pipeline steps** — `schema`, `best_of`, `verify`, `retry`, `agent`, `mcp_servers`, `skills`, `composio`, dynamic prompts.
 
 ```python
 from dotenv import load_dotenv
@@ -1888,6 +1940,7 @@ MapConfig(
     agent=AgentConfig,
     mcp_servers=dict[str, McpServerConfig],
     skills=list[str],                       # Skills for workers
+    composio=ComposioSetup,                 # Composio Tool Router config
     system_prompt=str,
     timeout_ms=int,
 )
@@ -1904,6 +1957,7 @@ FilterConfig(
     agent=AgentConfig,
     mcp_servers=dict[str, McpServerConfig],
     skills=list[str],                       # Skills for workers
+    composio=ComposioSetup,                 # Composio Tool Router config
     system_prompt=str,
     timeout_ms=int,
 )
@@ -1918,6 +1972,7 @@ ReduceConfig(
     agent=AgentConfig,
     mcp_servers=dict[str, McpServerConfig],
     skills=list[str],                       # Skills for workers
+    composio=ComposioSetup,                 # Composio Tool Router config
     system_prompt=str,
     timeout_ms=int,
 )

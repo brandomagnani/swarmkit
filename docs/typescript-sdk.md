@@ -298,9 +298,6 @@ const swarmkit = new SwarmKit()
         }
     })
 
-    // (optional) Workspace mode: "knowledge" (default) for knowledge work use cases or "swe" for coding use cases
-    .withWorkspaceMode("knowledge")
-
     // (optional) Environment variables injected into sandbox
     .withSecrets({
         GITHUB_TOKEN: process.env.GITHUB_TOKEN!
