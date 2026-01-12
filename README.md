@@ -17,7 +17,7 @@
 - 500+ integrations (Gmail, GitHub, Slack, Notion & more) via [Composio](https://github.com/ComposioHQ/composio)
 - Functional programming abstractions (map, filter, reduce) for massively parallel workloads
 - Streaming and structured output
-- [Built-in observability](https://dashboard.swarmlink.ai/)
+- Built-in [agent observability and analytics dashboard](https://dashboard.swarmlink.ai/)
 - Much more coming...
 
 ## Get Started
