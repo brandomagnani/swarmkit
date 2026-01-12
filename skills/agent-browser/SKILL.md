@@ -9,15 +9,16 @@ CLI tool for browser automation via bash commands. Uses snapshot + ref workflow 
 
 ## Setup (Run First)
 
-Run setup script before first use to install agent-browser and Chromium:
+Run setup script before first use:
 
 ```bash
-./skills/agent-browser/scripts/setup.sh
+~/.swarmkit/skills/agent-browser/scripts/setup.sh
 ```
 
-This installs:
-- `agent-browser` CLI globally via npm
-- Chromium browser via Playwright
+After setup, use the full path for all commands:
+```bash
+~/.local/bin/agent-browser <command>
+```
 
 ## Core Workflow
 
@@ -27,12 +28,12 @@ This installs:
 4. Repeat snapshot after page changes
 
 ```bash
-agent-browser open example.com
-agent-browser snapshot -i --json   # Get interactive elements with refs
-agent-browser click @e2            # Click by ref
-agent-browser fill @e3 "text"      # Fill input by ref
-agent-browser snapshot -i --json   # Get updated state
-agent-browser close
+~/.local/bin/~/.local/bin/agent-browser open example.com
+~/.local/bin/agent-browser snapshot -i --json   # Get interactive elements with refs
+~/.local/bin/agent-browser click @e2            # Click by ref
+~/.local/bin/agent-browser fill @e3 "text"      # Fill input by ref
+~/.local/bin/agent-browser snapshot -i --json   # Get updated state
+~/.local/bin/agent-browser close
 ```
 
 ## Snapshot Options
@@ -57,65 +58,65 @@ Example output:
 
 ### Navigation
 ```bash
-agent-browser open <url>
-agent-browser back
-agent-browser forward
-agent-browser reload
-agent-browser close
+~/.local/bin/agent-browser open <url>
+~/.local/bin/agent-browser back
+~/.local/bin/agent-browser forward
+~/.local/bin/agent-browser reload
+~/.local/bin/agent-browser close
 ```
 
 ### Interaction
 ```bash
-agent-browser click <sel>              # Click element
-agent-browser dblclick <sel>           # Double-click element
-agent-browser fill <sel> <text>        # Clear and fill input
-agent-browser type <sel> <text>        # Type without clearing
-agent-browser press <key>              # Press key (Enter, Tab, Control+a)
-agent-browser hover <sel>              # Hover element
-agent-browser focus <sel>              # Focus element
-agent-browser check <sel>              # Check checkbox
-agent-browser uncheck <sel>            # Uncheck checkbox
-agent-browser select <sel> <value>     # Select dropdown option
-agent-browser scroll up|down [px]      # Scroll page
-agent-browser scrollintoview <sel>     # Scroll element into view
-agent-browser drag <src> <tgt>         # Drag and drop
-agent-browser upload <sel> <files>     # Upload files
+~/.local/bin/agent-browser click <sel>              # Click element
+~/.local/bin/agent-browser dblclick <sel>           # Double-click element
+~/.local/bin/agent-browser fill <sel> <text>        # Clear and fill input
+~/.local/bin/agent-browser type <sel> <text>        # Type without clearing
+~/.local/bin/agent-browser press <key>              # Press key (Enter, Tab, Control+a)
+~/.local/bin/agent-browser hover <sel>              # Hover element
+~/.local/bin/agent-browser focus <sel>              # Focus element
+~/.local/bin/agent-browser check <sel>              # Check checkbox
+~/.local/bin/agent-browser uncheck <sel>            # Uncheck checkbox
+~/.local/bin/agent-browser select <sel> <value>     # Select dropdown option
+~/.local/bin/agent-browser scroll up|down [px]      # Scroll page
+~/.local/bin/agent-browser scrollintoview <sel>     # Scroll element into view
+~/.local/bin/agent-browser drag <src> <tgt>         # Drag and drop
+~/.local/bin/agent-browser upload <sel> <files>     # Upload files
 ```
 
 ### Getting Data
 ```bash
-agent-browser get text <sel>           # Get text content
-agent-browser get html <sel>           # Get innerHTML
-agent-browser get value <sel>          # Get input value
-agent-browser get attr <sel> <attr>    # Get attribute
-agent-browser get title                # Page title
-agent-browser get url                  # Current URL
-agent-browser get count <sel>          # Count matching elements
-agent-browser get box <sel>            # Get bounding box
+~/.local/bin/agent-browser get text <sel>           # Get text content
+~/.local/bin/agent-browser get html <sel>           # Get innerHTML
+~/.local/bin/agent-browser get value <sel>          # Get input value
+~/.local/bin/agent-browser get attr <sel> <attr>    # Get attribute
+~/.local/bin/agent-browser get title                # Page title
+~/.local/bin/agent-browser get url                  # Current URL
+~/.local/bin/agent-browser get count <sel>          # Count matching elements
+~/.local/bin/agent-browser get box <sel>            # Get bounding box
 ```
 
 ### State Checks
 ```bash
-agent-browser is visible <sel>
-agent-browser is enabled <sel>
-agent-browser is checked <sel>
+~/.local/bin/agent-browser is visible <sel>
+~/.local/bin/agent-browser is enabled <sel>
+~/.local/bin/agent-browser is checked <sel>
 ```
 
 ### Screenshots & PDF
 ```bash
-agent-browser screenshot output.png    # Save screenshot to file
-agent-browser screenshot --full pg.png # Full page screenshot
-agent-browser pdf output.pdf           # Save as PDF
+~/.local/bin/agent-browser screenshot output.png    # Save screenshot to file
+~/.local/bin/agent-browser screenshot --full pg.png # Full page screenshot
+~/.local/bin/agent-browser pdf output.pdf           # Save as PDF
 ```
 
 ### Wait
 ```bash
-agent-browser wait <selector>          # Wait for element
-agent-browser wait <ms>                # Wait for time
-agent-browser wait --text "Welcome"    # Wait for text
-agent-browser wait --url "**/dash"     # Wait for URL pattern
-agent-browser wait --load networkidle  # Wait for load state
-agent-browser wait --fn "window.ready" # Wait for JS condition
+~/.local/bin/agent-browser wait <selector>          # Wait for element
+~/.local/bin/agent-browser wait <ms>                # Wait for time
+~/.local/bin/agent-browser wait --text "Welcome"    # Wait for text
+~/.local/bin/agent-browser wait --url "**/dash"     # Wait for URL pattern
+~/.local/bin/agent-browser wait --load networkidle  # Wait for load state
+~/.local/bin/agent-browser wait --fn "window.ready" # Wait for JS condition
 ```
 
 ## Selectors
@@ -123,43 +124,43 @@ agent-browser wait --fn "window.ready" # Wait for JS condition
 ### Refs (Preferred)
 Use refs from snapshot output:
 ```bash
-agent-browser click @e2
-agent-browser fill @e3 "email@test.com"
+~/.local/bin/agent-browser click @e2
+~/.local/bin/agent-browser fill @e3 "email@test.com"
 ```
 
 ### CSS Selectors
 ```bash
-agent-browser click "#submit"
-agent-browser click ".btn-primary"
-agent-browser click "div > button"
+~/.local/bin/agent-browser click "#submit"
+~/.local/bin/agent-browser click ".btn-primary"
+~/.local/bin/agent-browser click "div > button"
 ```
 
 ### Text & XPath
 ```bash
-agent-browser click "text=Submit"
-agent-browser click "xpath=//button"
+~/.local/bin/agent-browser click "text=Submit"
+~/.local/bin/agent-browser click "xpath=//button"
 ```
 
 ### Semantic Locators
 ```bash
-agent-browser find role button click --name "Submit"
-agent-browser find label "Email" fill "test@test.com"
-agent-browser find text "Sign In" click
-agent-browser find placeholder "Search" fill "query"
+~/.local/bin/agent-browser find role button click --name "Submit"
+~/.local/bin/agent-browser find label "Email" fill "test@test.com"
+~/.local/bin/agent-browser find text "Sign In" click
+~/.local/bin/agent-browser find placeholder "Search" fill "query"
 ```
 
 ## Sessions
 
 Run isolated browser instances:
 ```bash
-agent-browser --session agent1 open site-a.com
-agent-browser --session agent2 open site-b.com
+~/.local/bin/agent-browser --session agent1 open site-a.com
+~/.local/bin/agent-browser --session agent2 open site-b.com
 
 # Or via environment
-AGENT_BROWSER_SESSION=agent1 agent-browser click @e2
+AGENT_BROWSER_SESSION=agent1 ~/.local/bin/agent-browser click @e2
 
 # List sessions
-agent-browser session list
+~/.local/bin/agent-browser session list
 ```
 
 ## Global Options
@@ -175,46 +176,46 @@ agent-browser session list
 
 ### Login Flow
 ```bash
-agent-browser open https://example.com/login
-agent-browser snapshot -i --json
-agent-browser fill @e1 "username"
-agent-browser fill @e2 "password"
-agent-browser click @e3  # Submit button
-agent-browser wait --url "**/dashboard"
-agent-browser snapshot -i --json
+~/.local/bin/agent-browser open https://example.com/login
+~/.local/bin/agent-browser snapshot -i --json
+~/.local/bin/agent-browser fill @e1 "username"
+~/.local/bin/agent-browser fill @e2 "password"
+~/.local/bin/agent-browser click @e3  # Submit button
+~/.local/bin/agent-browser wait --url "**/dashboard"
+~/.local/bin/agent-browser snapshot -i --json
 ```
 
 ### Form Submission
 ```bash
-agent-browser open https://example.com/form
-agent-browser snapshot -i --json
-agent-browser fill @e1 "John Doe"
-agent-browser fill @e2 "john@example.com"
-agent-browser select @e3 "Option A"
-agent-browser check @e4
-agent-browser click @e5  # Submit
-agent-browser wait --text "Success"
+~/.local/bin/agent-browser open https://example.com/form
+~/.local/bin/agent-browser snapshot -i --json
+~/.local/bin/agent-browser fill @e1 "John Doe"
+~/.local/bin/agent-browser fill @e2 "john@example.com"
+~/.local/bin/agent-browser select @e3 "Option A"
+~/.local/bin/agent-browser check @e4
+~/.local/bin/agent-browser click @e5  # Submit
+~/.local/bin/agent-browser wait --text "Success"
 ```
 
 ### Data Extraction
 ```bash
-agent-browser open https://example.com/data
-agent-browser snapshot --json > page_structure.json
-agent-browser get text ".results" --json
-agent-browser screenshot results.png
+~/.local/bin/agent-browser open https://example.com/data
+~/.local/bin/agent-browser snapshot --json > page_structure.json
+~/.local/bin/agent-browser get text ".results" --json
+~/.local/bin/agent-browser screenshot results.png
 ```
 
 ## Debugging
 
 ```bash
-agent-browser --headed open example.com  # See browser window
-agent-browser screenshot debug.png        # Capture current state
-agent-browser highlight <sel>             # Highlight element visually
-agent-browser console                     # View console messages
-agent-browser errors                      # View page errors
-agent-browser trace start                 # Start trace recording
+~/.local/bin/agent-browser --headed open example.com  # See browser window
+~/.local/bin/agent-browser screenshot debug.png        # Capture current state
+~/.local/bin/agent-browser highlight <sel>             # Highlight element visually
+~/.local/bin/agent-browser console                     # View console messages
+~/.local/bin/agent-browser errors                      # View page errors
+~/.local/bin/agent-browser trace start                 # Start trace recording
 # ... do actions ...
-agent-browser trace stop trace.zip        # Save trace
+~/.local/bin/agent-browser trace stop trace.zip        # Save trace
 ```
 
 ## Advanced Commands
