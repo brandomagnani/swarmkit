@@ -1,6 +1,6 @@
 #!/bin/bash
 # Setup script for agent-browser
-# Smart installation - installs in skill directory, works from anywhere
+# Installs agent-browser in skill directory
 
 set -e
 
@@ -39,24 +39,6 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Create wrapper script that runs from skill directory
-# ---------------------------------------------------------------------------
-mkdir -p "$HOME/.local/bin"
-cat > "$HOME/.local/bin/agent-browser" << EOF
-#!/bin/bash
-cd "$SKILL_DIR" && npx agent-browser "\$@"
-EOF
-chmod +x "$HOME/.local/bin/agent-browser"
-
-# Add to PATH if not already there
-if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-    export PATH="$HOME/.local/bin:$PATH"
-    echo "Note: Add ~/.local/bin to your PATH for future sessions"
-fi
-
-log_ok "Wrapper created at ~/.local/bin/agent-browser"
-
-# ---------------------------------------------------------------------------
 # Check: Playwright Chromium installed
 # ---------------------------------------------------------------------------
 is_chromium_installed() {
@@ -89,4 +71,4 @@ fi
 # Done
 # ---------------------------------------------------------------------------
 echo ""
-log_ok "Setup complete. Run '~/.local/bin/agent-browser' from anywhere."
+log_ok "Setup complete. Run: cd skills/agent-browser && npx agent-browser <command>"

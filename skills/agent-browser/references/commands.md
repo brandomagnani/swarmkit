@@ -2,7 +2,7 @@
 
 Complete reference for all agent-browser commands.
 
-> **Note**: All examples use `agent-browser` for brevity. Use full path `~/.local/bin/agent-browser` after setup.
+> **Note**: Run all commands from skill directory: `cd skills/agent-browser && npx agent-browser <command>`
 
 ## Table of Contents
 
