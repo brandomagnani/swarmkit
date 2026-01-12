@@ -8,6 +8,18 @@ Run terminal-based AI agents in secure sandboxes with built-in observability.
 
 ## 1. Quick Start
 
+```bash
+# .env
+
+# SwarmKit gateway key (dashboard.swarmlink.ai)
+SWARMKIT_API_KEY=sk-...
+
+# Composio integrations (app.composio.dev)
+COMPOSIO_API_KEY=...
+```
+
+SwarmKit auto-resolves API keys from environment variables.
+
 ```ts
 import { SwarmKit } from "@swarmkit/sdk";
 
@@ -18,20 +30,13 @@ const swarmkit = new SwarmKit()
         apiKey: process.env.SWARMKIT_API_KEY!,
     })
     .withSessionTagPrefix("my-app") // optional tag for the agent session
-    .withSystemPrompt("You are a helpful coding assistant.")
-    .withMcpServers({
-        "exa": {
-            command: "npx",
-            args: ["-y", "mcp-remote", "https://mcp.exa.ai/mcp"],
-            env: { EXA_API_KEY: process.env.EXA_API_KEY! }
-        }
-    })
-    .withSkills(["pdf", "dev-browser"])   // optional skills for the agent
-    .withComposio("user_123");            // optional Composio tools (GitHub, Gmail, etc.)
+    .withSystemPrompt("You are Swarm, a powerful AI agent. You can execute code, browse the web, manage files, and solve complex tasks.")
+    .withSkills(["pdf", "docx", "pptx", "dev-browser"])  // agent skills for documents, browser, etc.
+    .withComposio("user_123", { toolkits: ["gmail", "notion", "exa"] });  // 1000+ integrations via Composio
 
 // Run agent
 const result = await swarmkit.run({
-    prompt: "Create a hello world script"
+    prompt: "Go to Hacker News top posts. Spawn 5 parallel sub-agents to screenshot each of the top 5 posts."
 });
 
 console.log(result.stdout);
@@ -42,23 +47,23 @@ for (const [name, content] of Object.entries(output.files)) {
     console.log(name);
 }
 
-// Clean up
+// Once done, destroy sandbox
 await swarmkit.kill();
 ```
 
-- **Tracing:** Every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces)—no extra setup needed. Optionally use `withSessionTagPrefix()` to label your agent session for easy filtering.
+- **Tracing:** When using `SWARMKIT_API_KEY`, you get automatic tracing and agent analytics at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) for observability and replay—no extra setup needed. Use `withSessionTagPrefix()` to label sessions for easy filtering.
 
 ## 1.1 Authentication
 
-| | Gateway | Direct (BYOK) |
+| | Gateway Mode | BYOK Mode |
 |---|---------|---------------|
-| Setup | `SWARMKIT_API_KEY` | Model provider keys + E2B sandbox keys |
+| Setup | `SWARMKIT_API_KEY` | [Model provider keys](#113-agent-reference) + [`E2B_API_KEY`](https://e2b.dev) |
 | Observability | [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) | `~/.swarmkit/observability/` |
 | Billing | Swarmlink | Your provider accounts |
 
 ---
 
-### Gateway Mode
+### 1.1.1 Gateway Mode
 
 Get API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai).
 
@@ -81,9 +86,9 @@ await swarmkit.run({ prompt: "Hello" });
 
 ---
 
-### Direct Mode (BYOK)
+### 1.1.2 BYOK Mode
 
-Use your own provider keys. Requires E2B for sandbox.
+Use your own provider keys. Requires [E2B API key](https://e2b.dev) for sandbox.
 
 ```bash
 # .env
@@ -106,9 +111,7 @@ const swarmkit = new SwarmKit()
     .withSandbox(sandbox);
 ```
 
----
-
-### Use SwarmKit with your Claude Max subscription
+### Claude Max Subscription
 
 ```bash
 # Run in terminal, follow login steps → receive token:
@@ -141,11 +144,9 @@ const swarmkit = new SwarmKit()
 
 ---
 
-### Auto-resolve from Environment
+### 1.1.3 Agent Reference
 
-Set env vars and the SDK picks them up automatically—no need to pass explicitly. See Agent Reference below for env var names.
-
-### Agent Reference
+Set env vars and the SDK picks them up automatically—no need to pass explicitly.
 
 | type | models | default | env var (BYOK) |
 |------|--------|---------|----------------|
@@ -243,42 +244,31 @@ const swarmkit = new SwarmKit()
     // Sandbox provider (auto-resolved from E2B_API_KEY, or use sandbox from above)
     .withSandbox(sandbox)
 
-    // (optional) Custom working directory, default: /home/user/workspace
-    .withWorkingDirectory("/home/user/workspace")
-
-    // (optional) Workspace mode: "knowledge" (default) for knowledge work use cases or "swe" for coding use cases
-    .withWorkspaceMode("knowledge")
-
-    // (optional) System prompt appended to default instructions
-    .withSystemPrompt("You are a careful pair programmer.")
-
-    // (optional) Environment variables injected into sandbox
-    .withSecrets({
-        GITHUB_TOKEN: process.env.GITHUB_TOKEN!
-    })
-
-    // (optional) Prefix for observability logs
-    .withSessionTagPrefix("my-agent")
-
-    // (optional) Uploads to {workingDir}/context/ on first run
+    // (optional) Uploads to /home/user/workspace/context/ on first run
     .withContext({
         "docs/readme.txt": "User provided context...",
         "data.json": JSON.stringify({ key: "value" }),
     })
 
-    // (optional) Uploads to {workingDir}/ on first run
-    .withFiles({
-        "scripts/setup.sh": "#!/bin/bash\necho hello",
-    })
+    // (optional) System prompt appended to default instructions
+    .withSystemPrompt("You are a careful pair programmer.")
 
-    // (optional) MCP servers for agent tools
-    .withMcpServers({
-        "exa": {
-            command: "npx",
-            args: ["-y", "mcp-remote", "https://mcp.exa.ai/mcp"],
-            env: { EXA_API_KEY: process.env.EXA_API_KEY! }
-        }
-    })
+    // (optional) Schema for structured output (agent writes result.json, validated on getOutputFiles())
+    // Accepts Zod schemas or JSON Schema objects
+    .withSchema(z.object({
+        summary: z.string(),
+        score: z.number(),
+    }))
+
+    // Or with JSON Schema:
+    // .withSchema({
+    //     type: "object",
+    //     properties: {
+    //         summary: { type: "string" },
+    //         score: { type: "number" },
+    //     },
+    //     required: ["summary", "score"],
+    // })
 
     // (optional) Skills for the agent (folders from ~/.swarmkit/skills/)
     .withSkills(["pdf", "dev-browser"])
@@ -294,22 +284,32 @@ const swarmkit = new SwarmKit()
         authConfigs: { github: "ac_custom_oauth" },       // Custom OAuth configs (white-labeling)
     })
 
-    // (optional) Schema for structured output (agent writes result.json, validated on getOutputFiles())
-    // Accepts Zod schemas or JSON Schema objects
-    .withSchema(z.object({
-        summary: z.string(),
-        score: z.number(),
-    }));
+    // (optional) Prefix for observability logs
+    .withSessionTagPrefix("my-agent")
 
-    // Or with JSON Schema:
-    // .withSchema({
-    //     type: "object",
-    //     properties: {
-    //         summary: { type: "string" },
-    //         score: { type: "number" },
-    //     },
-    //     required: ["summary", "score"],
-    // });
+    // ─── Advanced ───────────────────────────────────────────────────────────────
+
+    // (optional) MCP servers for agent tools
+    .withMcpServers({
+        "exa": {
+            command: "npx",
+            args: ["-y", "mcp-remote", "https://mcp.exa.ai/mcp"],
+            env: { EXA_API_KEY: process.env.EXA_API_KEY! }
+        }
+    })
+
+    // (optional) Workspace mode: "knowledge" (default) for knowledge work use cases or "swe" for coding use cases
+    .withWorkspaceMode("knowledge")
+
+    // (optional) Environment variables injected into sandbox
+    .withSecrets({
+        GITHUB_TOKEN: process.env.GITHUB_TOKEN!
+    })
+
+    // (optional) Uploads to /home/user/workspace/ on first run
+    .withFiles({
+        "scripts/setup.sh": "#!/bin/bash\necho hello",
+    });
 ```
 
 **Note:**
@@ -762,8 +762,8 @@ renderer.stopLive();
 
 | Method | Destination |
 |--------|-------------|
-| `uploadContext()` | `context/{path}` |
-| `uploadFiles()` | `{workingDir}/{path}` |
+| `uploadContext()` | `/home/user/workspace/context/{path}` |
+| `uploadFiles()` | `/home/user/workspace/{path}` |
 
 ```ts
 // Single file

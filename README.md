@@ -16,7 +16,8 @@
 - [Agent skills](https://agentskills.io/home): extend agents with custom capabilities (PDF, dev-browser, etc.)
 - 500+ integrations (Gmail, GitHub, Slack, Notion & more) via [Composio](https://github.com/ComposioHQ/composio)
 - Functional programming abstractions (map, filter, reduce) for massively parallel workloads
-- Streaming, structured output, built-in [observability](https://dashboard.swarmlink.ai/)
+- Streaming and structured output
+- [Built-in observability](https://dashboard.swarmlink.ai/)
 - Much more coming...
 
 ## Get Started
