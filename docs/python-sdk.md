@@ -65,23 +65,17 @@ Get API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai).
 ```bash
 # .env
 SWARMKIT_API_KEY=sk-...
-E2B_API_KEY=e2b_...
 ```
 
 ```python
 import os
-from swarmkit import SwarmKit, AgentConfig, E2BProvider
-
-sandbox = E2BProvider(
-    api_key=os.getenv('E2B_API_KEY'),
-)
+from swarmkit import SwarmKit, AgentConfig
 
 swarmkit = SwarmKit(
     config=AgentConfig(
         type='claude',
         api_key=os.getenv('SWARMKIT_API_KEY'),
     ),
-    sandbox=sandbox,
 )
 
 await swarmkit.run(prompt='Hello')

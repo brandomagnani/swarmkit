@@ -64,22 +64,16 @@ Get API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai).
 ```bash
 # .env
 SWARMKIT_API_KEY=sk-...
-E2B_API_KEY=e2b_...
 ```
 
 ```ts
-import { SwarmKit, E2BProvider } from "@swarmkit/sdk";
-
-const sandbox = new E2BProvider({
-    apiKey: process.env.E2B_API_KEY,
-});
+import { SwarmKit } from "@swarmkit/sdk";
 
 const swarmkit = new SwarmKit()
     .withAgent({
         type: "claude",
         apiKey: process.env.SWARMKIT_API_KEY,
-    })
-    .withSandbox(sandbox);
+    });
 
 await swarmkit.run({ prompt: "Hello" });
 ```
