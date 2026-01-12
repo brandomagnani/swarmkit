@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@composio/core": "latest",
-    "@swarmkit/sdk": "file:../../../../ai-terminal/packages/sdk-ts",
+    "@swarmkit/sdk": "latest",
     "boxen": "latest",
     "chalk": "latest",
     "cli-spinners": "latest",
