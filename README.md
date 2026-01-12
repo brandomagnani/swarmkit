@@ -10,11 +10,13 @@
 
 <br>
 
-- Run any CLI agent (Claude Code, Codex, Gemini CLI, Qwen Code) in secure cloud sandboxes
+- Run any CLI agent ([Claude Code](https://github.com/anthropics/claude-code), [Codex](https://github.com/openai/codex), [Gemini CLI](https://github.com/google-gemini/gemini-cli), [Qwen Code](https://github.com/QwenLM/qwen-code)) in secure cloud sandboxes
 - Persistent filesystem for infinite context
 - Full computer access: terminal, browser, MCP tools
+- [Agent skills](https://agentskills.io/home): extend agents with custom capabilities (PDF, dev-browser, etc.)
+- 500+ integrations (Gmail, GitHub, Slack, Notion & more) via [Composio](https://github.com/ComposioHQ/composio)
 - Functional programming abstractions (map, filter, reduce) for massively parallel workloads
-- Streaming, structured output, built-in observability
+- Streaming, structured output, built-in [observability](https://dashboard.swarmlink.ai/)
 - Much more coming...
 
 ## Get Started
