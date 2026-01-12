@@ -28,8 +28,26 @@ if command -v agent-browser &> /dev/null; then
     log_skip "agent-browser already installed: $(which agent-browser)"
 else
     echo "Installing agent-browser..."
-    npm install -g agent-browser
-    log_ok "agent-browser installed"
+    # Try global install first, fall back to local install if permission denied
+    if npm install -g agent-browser 2>/dev/null; then
+        log_ok "agent-browser installed globally"
+    else
+        echo "Global install failed (permission denied), installing locally..."
+        npm install agent-browser
+        # Create a wrapper script in a user-writable bin directory
+        mkdir -p "$HOME/.local/bin"
+        cat > "$HOME/.local/bin/agent-browser" << 'EOF'
+#!/bin/bash
+npx agent-browser "$@"
+EOF
+        chmod +x "$HOME/.local/bin/agent-browser"
+        # Add to PATH if not already there
+        if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+            export PATH="$HOME/.local/bin:$PATH"
+            echo "Note: Add ~/.local/bin to your PATH for future sessions"
+        fi
+        log_ok "agent-browser installed locally"
+    fi
 fi
 
 # ---------------------------------------------------------------------------
@@ -57,11 +75,12 @@ if is_chromium_installed; then
     log_skip "Playwright Chromium already installed"
 else
     echo "Installing Playwright Chromium..."
+    # Use npx to ensure we can run agent-browser regardless of install method
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         echo "Linux detected - including system dependencies..."
-        agent-browser install --with-deps
+        npx agent-browser install --with-deps
     else
-        agent-browser install
+        npx agent-browser install
     fi
     log_ok "Playwright Chromium installed"
 fi
