@@ -951,6 +951,27 @@ const output = await swarmkit.getOutputFiles();
 console.log(output.data);  // { property_name: '...', units: 120, ... }
 ```
 
+When a schema is provided, `getOutputFiles()` automatically validates `output/result.json` and returns:
+
+```ts
+interface OutputResult<T> {
+    files: FileMap,                   // All output files
+    data: T | null,                   // Parsed & validated result.json (null if failed)
+    error?: string,                   // Validation/parse error message
+    rawData?: string,                 // Raw result.json for debugging failed validation
+}
+```
+
+```ts
+// Type-safe access to validated data
+if (output.data) {
+    console.log(output.data.property_name);  // TypeScript knows the shape
+} else {
+    console.error(output.error);             // "Schema validation failed: ..."
+    console.log(output.rawData);             // Raw JSON for debugging
+}
+```
+
 The SDK automatically appends the following to the agent's config file in the workspace (`CLAUDE.md`, `AGENT.md`, `GEMINI.md`, or `QWEN.md`):
 
 ~~~
