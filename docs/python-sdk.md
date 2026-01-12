@@ -1242,20 +1242,6 @@ RetryConfig(
 )
 ```
 
-**VerifyConfig** — LLM-as-judge verifies output, retries with feedback if failed:
-```python
-VerifyConfig(
-    criteria='...',                                         # Required
-    max_attempts=3,
-    verifier_agent=AgentConfig(...),                        # Optional override
-    verifier_skills=['pdf'],                                # Skills for verifier
-    verifier_composio=ComposioSetup(...),                   # Composio config for verifier
-    verifier_mcp_servers={...},                             # MCP servers for verifier
-    on_worker_complete=lambda idx, attempt, status: ...,    # Callback
-    on_verifier_complete=lambda idx, attempt, passed, feedback: ...,
-)
-```
-
 ## 1. Input Types
 
 Swarm runs in **knowledge mode** by default—files are uploaded to `context/` in the sandbox.
