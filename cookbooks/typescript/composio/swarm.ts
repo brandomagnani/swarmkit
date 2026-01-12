@@ -10,19 +10,9 @@
 import { SwarmKit, readLocalDir, saveLocalDir } from "@swarmkit/sdk";
 import { mkdirSync } from "fs";
 import "dotenv/config";
-
-import { makeRenderer, readPrompt, console_, printPanel } from "./ui";
-import { ComposioIntegration } from "./composio-integration";
 import chalk from "chalk";
 
-// ─────────────────────────────────────────────────────────────
-// Composio Setup
-// ─────────────────────────────────────────────────────────────
-
-const composio = new ComposioIntegration({
-  userId: "swarm-user-001",
-  toolkits: ["gmail"],
-});
+import { makeRenderer, readPrompt, console_, printPanel } from "./ui";
 
 // ─────────────────────────────────────────────────────────────
 // SwarmKit Agent
@@ -32,23 +22,25 @@ const SYSTEM_PROMPT = `Your name is Swarm, a powerful autonomous AI agent.
 You can execute code, manage files, and take actions across external services via Composio MCP.
 `;
 
-let agent: SwarmKit;
+const agent = new SwarmKit()
+  .withAgent({ type: "claude", model: "sonnet" })
+  .withSystemPrompt(SYSTEM_PROMPT)
+  .withComposio("swarm-user-001", { toolkits: ["gmail"] })
+  .withSessionTagPrefix("swarm-composio-ts");
 
 // ─────────────────────────────────────────────────────────────
 
 async function main() {
   // Pre-authenticate Composio services
-  const composioMcp = await composio.setupWithPreauth();
-
-  // Create agent with Composio MCP
-  agent = new SwarmKit()
-    .withAgent({
-      type: "claude",
-      model: "sonnet",
-    })
-    .withSystemPrompt(SYSTEM_PROMPT)
-    .withMcpServers({ composio: composioMcp })
-    .withSessionTagPrefix("swarm-composio-ts");
+  const status = await SwarmKit.composio.status("swarm-user-001");
+  for (const toolkit of ["gmail"]) {
+    if (!status[toolkit]) {
+      const { url } = await SwarmKit.composio.auth("swarm-user-001", toolkit);
+      console_.print(`\n${chalk.cyan(toolkit)}: ${url}`);
+      console_.print(chalk.dim("Press Enter after authenticating..."));
+      await new Promise<void>(r => process.stdin.once("data", () => r()));
+    }
+  }
 
   const renderer = makeRenderer();
   agent.on("content", (event) => renderer.handleEvent(event));
@@ -97,9 +89,7 @@ async function main() {
 }
 
 async function shutdown() {
-  if (agent) {
-    await agent.kill();
-  }
+  await agent.kill();
   console_.print();
   console_.print();
   console_.printMuted("Goodbye");

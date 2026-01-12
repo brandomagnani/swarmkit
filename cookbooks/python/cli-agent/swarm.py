@@ -49,7 +49,7 @@ agent = SwarmKit(
     ), 
     system_prompt=SYSTEM_PROMPT,
     #mcp_servers=MCP_SERVERS,
-    skills=["dev-browser"],
+    skills=["agent-browser"],
     session_tag_prefix="swarm-cli-py",
 )
 
