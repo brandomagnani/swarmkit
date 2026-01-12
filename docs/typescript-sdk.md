@@ -328,6 +328,21 @@ const swarmkit = new SwarmKit()
 
 Skills extend agent capabilities with specialized tools and workflows. See [agentskills.io](https://agentskills.io/home) for the open standard.
 
+```bash
+# .env
+SWARMKIT_API_KEY=sk-...
+COMPOSIO_API_KEY=...
+```
+
+```ts
+import { SwarmKit } from "@swarmkit/sdk";
+
+const swarmkit = new SwarmKit()
+    .withSkills(["pptx", "dev-browser"]);
+
+await swarmkit.run({ prompt: "Browse Hacker News top 5 articles and create a slide deck summarizing each" });
+```
+
 ### Documents
 | Skill | Description | Source |
 |-------|-------------|--------|
@@ -1096,19 +1111,17 @@ Functional programming for AI agents: `map`, `filter`, `reduce`, `bestOf`.
 import { Swarm } from "@swarmkit/sdk";
 import { z } from "zod";  // Or use plain JSON Schema objects instead
 
-const agent = { type: "claude" };
-
 const swarm = new Swarm({
-    agent,                       // Default agent for all operations
-    concurrency: 4,              // Max parallel sandboxes (default: 4)
-    timeoutMs: 3_600_000,        // Default timeout per worker (default: 1 hour)
-    tag: "my-pipeline",          // Tag prefix for observability
-    mcpServers: {...},           // Default MCP servers for all workers
+    agent: { type: "claude" },   // Default agent for all operations
     skills: ["pdf", "dev-browser"],  // Default skills for all workers
     composio: {                  // Default Composio config for all workers
         userId: "user_123",
         config: { toolkits: ["github", "linear"] },
     },
+    mcpServers: {...},           // Default MCP servers for all workers
+    concurrency: 4,              // Max parallel sandboxes (default: 4)
+    timeoutMs: 3_600_000,        // Default timeout per worker (default: 1 hour)
+    tag: "my-pipeline",          // Tag prefix for observability
     retry: {                     // Default retry config for all operations
         maxAttempts: 3,
         backoffMs: 1000,
@@ -1117,20 +1130,33 @@ const swarm = new Swarm({
 });
 ```
 
-> **Defaults**: `agent`, `timeoutMs`, `mcpServers`, `skills`, `composio`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
+> **Defaults**: `agent`, `skills`, `composio`, `mcpServers`, `timeoutMs`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
+
+**SwarmConfig** — configuration for Swarm instance:
+```ts
+{
+    agent?: AgentOverride,
+    skills?: string[],
+    composio?: ComposioSetup,
+    mcpServers?: Record<string, McpServerConfig>,
+    concurrency?: number,
+    timeoutMs?: number,
+    tag?: string,
+    retry?: RetryConfig,
+}
+```
 
 | Option | Default | Notes |
 |--------|---------|-------|
 | `agent.type` | `'claude'` | Auto-resolved from env |
 | `agent.model` | per type | `'opus'` (claude), `'gpt-5.2'` (codex), etc. |
+| `skills` | `undefined` | Set here or per-operation |
+| `composio` | `undefined` | Set here or per-operation |
+| `mcpServers` | `undefined` | Set here or per-operation |
 | `concurrency` | `4` | Max parallel sandboxes |
 | `timeoutMs` | `3_600_000` | 1 hour per worker |
 | `tag` | `'swarm'` | Observability prefix |
 | `retry` | `undefined` | Set here or per-operation |
-| `verify` | `undefined` | Per-operation only |
-| `mcpServers` | `undefined` | Set here or per-operation |
-| `skills` | `undefined` | Set here or per-operation |
-| `composio` | `undefined` | Set here or per-operation |
 
 **Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Authentication](#11-authentication)):
 
@@ -1143,12 +1169,13 @@ const swarm = new Swarm();  // Auto-resolves agent (claude) and sandbox from env
 
 **RetryConfig** — auto-retry on error with exponential backoff:
 ```ts
-{ maxAttempts?: number, backoffMs?: number, backoffMultiplier?: number, retryOn?: (r) => boolean, onItemRetry?: (idx, attempt, error) => void }
-```
-
-**VerifyConfig** — LLM-as-judge verifies output, retries with feedback if failed:
-```ts
-{ criteria: string, maxAttempts?: number, verifierAgent?: AgentOverride, verifierMcpServers?: {...}, verifierSkills?: string[], verifierComposio?: ComposioSetup, onWorkerComplete?: (idx, attempt, status) => void, onVerifierComplete?: (idx, attempt, passed, feedback?) => void }
+{
+    maxAttempts?: number,
+    backoffMs?: number,
+    backoffMultiplier?: number,
+    retryOn?: (result) => boolean,
+    onItemRetry?: (idx, attempt, error) => void,
+}
 ```
 
 ## 1. Input Types
@@ -1242,6 +1269,38 @@ Two types of operations:
 | `reduce` | transform | `inputs` → `output` (agent synthesizes) | agent output |
 
 **Transforms** produce new output files. **Filter** passes through original input files unchanged.
+
+**BestOfConfig** — run N candidates in parallel, judge picks the best:
+```ts
+{
+    n?: number,
+    judgeCriteria: string,
+    taskAgents?: AgentOverride[],
+    judgeAgent?: AgentOverride,
+    skills?: string[],
+    judgeSkills?: string[],
+    composio?: ComposioSetup,
+    judgeComposio?: ComposioSetup,
+    mcpServers?: Record<string, McpServerConfig>,
+    judgeMcpServers?: Record<string, McpServerConfig>,
+    onCandidateComplete?: (idx, candIdx, status) => void,
+    onJudgeComplete?: (idx, winnerIdx, reasoning) => void,
+}
+```
+
+**VerifyConfig** — LLM-as-judge verifies output, retries with feedback if failed:
+```ts
+{
+    criteria: string,
+    maxAttempts?: number,
+    verifierAgent?: AgentOverride,
+    verifierSkills?: string[],
+    verifierComposio?: ComposioSetup,
+    verifierMcpServers?: Record<string, McpServerConfig>,
+    onWorkerComplete?: (idx, attempt, status) => void,
+    onVerifierComplete?: (idx, attempt, passed, feedback?) => void,
+}
+```
 
 ### 2.1 bestOf
 
