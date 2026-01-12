@@ -89,4 +89,4 @@ fi
 # Done
 # ---------------------------------------------------------------------------
 echo ""
-log_ok "Setup complete. Run 'agent-browser' from anywhere."
+log_ok "Setup complete. Run '~/.local/bin/agent-browser' from anywhere."

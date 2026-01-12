@@ -28,7 +28,7 @@ After setup, use the full path for all commands:
 4. Repeat snapshot after page changes
 
 ```bash
-~/.local/bin/~/.local/bin/agent-browser open example.com
+~/.local/bin/agent-browser open example.com
 ~/.local/bin/agent-browser snapshot -i --json   # Get interactive elements with refs
 ~/.local/bin/agent-browser click @e2            # Click by ref
 ~/.local/bin/agent-browser fill @e3 "text"      # Fill input by ref

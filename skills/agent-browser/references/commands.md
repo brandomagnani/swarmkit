@@ -2,6 +2,8 @@
 
 Complete reference for all agent-browser commands.
 
+> **Note**: All examples use `agent-browser` for brevity. Use full path `~/.local/bin/agent-browser` after setup.
+
 ## Table of Contents
 
 - [Cookies & Storage](#cookies--storage)
