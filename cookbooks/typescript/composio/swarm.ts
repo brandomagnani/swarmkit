@@ -25,21 +25,19 @@ You can execute code, manage files, and take actions across external services vi
 const agent = new SwarmKit()
   .withAgent({ type: "claude", model: "sonnet" })
   .withSystemPrompt(SYSTEM_PROMPT)
-  .withComposio("swarm-user-001", { toolkits: ["gmail"] })
+  .withComposio("swarm-user-002", { toolkits: ["gmail"] })
   .withSessionTagPrefix("swarm-composio-ts");
 
 // ─────────────────────────────────────────────────────────────
 
 async function main() {
   // Pre-authenticate Composio services
-  const status = await SwarmKit.composio.status("swarm-user-001");
-  for (const toolkit of ["gmail"]) {
-    if (!status[toolkit]) {
-      const { url } = await SwarmKit.composio.auth("swarm-user-001", toolkit);
-      console_.print(`\n${chalk.cyan(toolkit)}: ${url}`);
-      console_.print(chalk.dim("Press Enter after authenticating..."));
-      await new Promise<void>(r => process.stdin.once("data", () => r()));
-    }
+  const status = await SwarmKit.composio.status("swarm-user-002") as Record<string, boolean>;
+  for (const toolkit of ["gmail"].filter(t => !status[t])) {
+    const { url } = await SwarmKit.composio.auth("swarm-user-002", toolkit);
+    console_.print(`\n${chalk.cyan(toolkit)}: ${url}`);
+    console_.print(chalk.dim("Press Enter after authenticating..."));
+    await new Promise<void>(r => process.stdin.once("data", () => r()));
   }
 
   const renderer = makeRenderer();
