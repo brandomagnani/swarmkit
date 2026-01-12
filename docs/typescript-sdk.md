@@ -513,6 +513,29 @@ const swarmkit = new SwarmKit()
 await swarmkit.run({ prompt: "Send a Slack message about the GitHub issue" });
 ```
 
+### Type Reference
+
+**ComposioSetup** — configuration for `.withComposio(userId, config?)`:
+```ts
+interface ComposioSetup {
+    userId: string,                                         // User's unique identifier
+    config?: ComposioConfig,                                // Optional configuration
+}
+
+interface ComposioConfig {
+    toolkits?: string[],                                    // e.g. ["gmail", "notion", "stripe"]
+    tools?: Record<string, ToolsFilter>,                    // Per-toolkit tool filtering
+    keys?: Record<string, string>,                          // API keys (bypasses OAuth)
+    authConfigs?: Record<string, string>,                   // Custom OAuth auth config IDs
+}
+
+type ToolsFilter =
+    | string[]                                              // Enable only these tools
+    | { enable: string[] }                                  // Enable only these tools
+    | { disable: string[] }                                 // Disable these tools
+    | { tags: string[] };                                   // Filter by behavior tags
+```
+
 ---
 
 ## 3. Runtime Methods
