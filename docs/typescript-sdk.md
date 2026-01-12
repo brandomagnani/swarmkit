@@ -111,7 +111,7 @@ const swarmkit = new SwarmKit()
     .withSandbox(sandbox);
 ```
 
-### Claude Max Subscription
+### BYO Claude Max Subscription
 
 ```bash
 # Run in terminal, follow login steps → receive token:
@@ -582,7 +582,6 @@ const result = await swarmkit.executeCommand("pytest", {
     background: false,                         // (optional) Run in background
 });
 ```
-- The command automatically executes in the directory set by `withWorkingDirectory()` (default: `/home/user/workspace`).
 
 ### 3.3 Streaming events
 
