@@ -48,8 +48,7 @@ agent = SwarmKit(
         model="opus"
     ), 
     system_prompt=SYSTEM_PROMPT,
-    #mcp_servers=MCP_SERVERS,
-    skills=["agent-browser"],
+    mcp_servers=MCP_SERVERS,
     session_tag_prefix="swarm-cli-py",
 )
 
