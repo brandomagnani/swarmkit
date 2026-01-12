@@ -26,7 +26,8 @@ const swarmkit = new SwarmKit()
             env: { EXA_API_KEY: process.env.EXA_API_KEY! }
         }
     })
-    .withSkills(["pdf", "dev-browser"]);  // optional skills for the agent
+    .withSkills(["pdf", "dev-browser"])   // optional skills for the agent
+    .withComposio("user_123");            // optional Composio tools (GitHub, Gmail, etc.)
 
 // Run agent
 const result = await swarmkit.run({
@@ -282,6 +283,17 @@ const swarmkit = new SwarmKit()
     // (optional) Skills for the agent (folders from ~/.swarmkit/skills/)
     .withSkills(["pdf", "dev-browser"])
 
+    // (optional) Composio Tool Router for 1000+ integrations (GitHub, Gmail, Slack, etc.)
+    .withComposio("user_123", {
+        toolkits: ["github", "gmail"],                    // Restrict to specific toolkits
+        tools: {                                          // Per-toolkit tool filtering
+            github: ["github_create_issue"],              // Enable specific tools
+            gmail: { disable: ["gmail_delete_email"] },   // Disable specific tools
+        },
+        keys: { stripe: "sk_live_..." },                  // API keys for direct auth (bypasses OAuth)
+        authConfigs: { github: "ac_custom_oauth" },       // Custom OAuth configs (white-labeling)
+    })
+
     // (optional) Schema for structured output (agent writes result.json, validated on getOutputFiles())
     // Accepts Zod schemas or JSON Schema objects
     .withSchema(z.object({
@@ -372,6 +384,119 @@ Skills extend agent capabilities with specialized tools and workflows. See [agen
 | Skill | Description | Source |
 |-------|-------------|--------|
 | `raffle-winner-picker` | Pick raffle winners randomly | [skills/raffle-winner-picker](https://github.com/brandomagnani/swarmkit/tree/main/skills/raffle-winner-picker) |
+
+---
+
+## Composio (Tool Router)
+
+Access 1000+ integrations (GitHub, Gmail, Slack, etc.) via [Composio](https://composio.dev).
+
+[Tool Router Overview](https://docs.composio.dev/tool-router/overview) — How Tool Router works and integration guide.
+
+[Available Toolkits](https://docs.composio.dev/toolkits/introduction) — Browse all 1000+ supported integrations.
+
+```bash
+# .env
+SWARMKIT_API_KEY=sk-...      # SwarmKit gateway key
+COMPOSIO_API_KEY=...         # Get from https://app.composio.dev
+```
+
+```ts
+import { SwarmKit } from "@swarmkit/sdk";
+
+const swarmkit = new SwarmKit()
+    .withComposio("user_123");  // All tools, in-chat OAuth
+
+await swarmkit.run({ prompt: "Create a GitHub issue for the login bug" });
+```
+
+### Authentication Paths
+
+**1. In-chat auth (default)** — Composio prompts user to authenticate via agent output:
+```ts
+import { SwarmKit } from "@swarmkit/sdk";
+
+const swarmkit = new SwarmKit()
+    .withComposio("user_123");  // Agent prompts "Connect to GitHub" when needed
+
+await swarmkit.run({ prompt: "Star my favorite repos on GitHub" });
+```
+
+**2. API key auth** — Bypass OAuth for tools that support API keys:
+```ts
+import { SwarmKit } from "@swarmkit/sdk";
+
+const swarmkit = new SwarmKit()
+    .withComposio("user_123", {
+        toolkits: ["stripe", "sendgrid"],
+        keys: {
+            stripe: process.env.STRIPE_API_KEY!,
+            sendgrid: process.env.SENDGRID_API_KEY!,
+        },
+    });
+
+await swarmkit.run({ prompt: "List my recent Stripe payments" });
+```
+
+**3. Manual OAuth (app UI)** — Get OAuth URL to show in your settings page:
+```ts
+import { SwarmKit } from "@swarmkit/sdk";
+
+// Get OAuth URL for "Connect GitHub" button
+const { url } = await SwarmKit.composio.auth("user_123", "github");
+// Render: <a href={url}>Connect GitHub</a>
+
+// Check connection status (simple)
+const status = await SwarmKit.composio.status("user_123");
+// { github: true, gmail: false, slack: true }
+
+// Check single toolkit
+const isGitHubConnected = await SwarmKit.composio.status("user_123", "github");
+// true | false
+
+// Get detailed connection info (with account IDs)
+const connections = await SwarmKit.composio.connections("user_123");
+// [{ toolkit: "github", connected: true, accountId: "ca_..." }, ...]
+
+// Then use in agent (user already connected via UI)
+const swarmkit = new SwarmKit()
+    .withComposio("user_123", {
+        toolkits: ["github"],
+    });
+
+await swarmkit.run({ prompt: "List my open PRs" });
+```
+
+**4. White-label OAuth** — Use custom OAuth configs from [Composio dashboard](https://app.composio.dev):
+```ts
+import { SwarmKit } from "@swarmkit/sdk";
+
+const swarmkit = new SwarmKit()
+    .withComposio("user_123", {
+        toolkits: ["github"],
+        authConfigs: { github: "ac_your_custom_oauth_app" },
+    });
+
+await swarmkit.run({ prompt: "Create a new private repo" });
+```
+
+### Tool Filtering
+
+```ts
+import { SwarmKit } from "@swarmkit/sdk";
+
+const swarmkit = new SwarmKit()
+    .withComposio("user_123", {
+        toolkits: ["github", "gmail", "slack"],
+        tools: {
+            github: ["github_create_issue", "github_list_repos"],  // Enable only these
+            gmail: { disable: ["gmail_delete_email"] },            // Disable dangerous tools
+            slack: { tags: ["readOnlyHint"] },                     // Filter by behavior tags
+        },
+    });
+
+await swarmkit.run({ prompt: "Send a Slack message about the GitHub issue" });
+```
 
 ---
 
@@ -980,6 +1105,10 @@ const swarm = new Swarm({
     tag: "my-pipeline",          // Tag prefix for observability
     mcpServers: {...},           // Default MCP servers for all workers
     skills: ["pdf", "dev-browser"],  // Default skills for all workers
+    composio: {                  // Default Composio config for all workers
+        userId: "user_123",
+        config: { toolkits: ["github", "linear"] },
+    },
     retry: {                     // Default retry config for all operations
         maxAttempts: 3,
         backoffMs: 1000,
@@ -988,7 +1117,7 @@ const swarm = new Swarm({
 });
 ```
 
-> **Defaults**: `agent`, `timeoutMs`, `mcpServers`, `skills`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
+> **Defaults**: `agent`, `timeoutMs`, `mcpServers`, `skills`, `composio`, and `retry` set here are inherited by all operations (`map`, `filter`, `reduce`, `bestOf`). Pass these options to individual operations to override.
 
 | Option | Default | Notes |
 |--------|---------|-------|
@@ -1001,6 +1130,7 @@ const swarm = new Swarm({
 | `verify` | `undefined` | Per-operation only |
 | `mcpServers` | `undefined` | Set here or per-operation |
 | `skills` | `undefined` | Set here or per-operation |
+| `composio` | `undefined` | Set here or per-operation |
 
 **Minimal setup** — with `SWARMKIT_API_KEY` set (see [1.1 Authentication](#11-authentication)):
 
@@ -1018,7 +1148,7 @@ const swarm = new Swarm();  // Auto-resolves agent (claude) and sandbox from env
 
 **VerifyConfig** — LLM-as-judge verifies output, retries with feedback if failed:
 ```ts
-{ criteria: string, maxAttempts?: number, verifierAgent?: AgentOverride, verifierMcpServers?: {...}, verifierSkills?: string[], onWorkerComplete?: (idx, attempt, status) => void, onVerifierComplete?: (idx, attempt, passed, feedback?) => void }
+{ criteria: string, maxAttempts?: number, verifierAgent?: AgentOverride, verifierMcpServers?: {...}, verifierSkills?: string[], verifierComposio?: ComposioSetup, onWorkerComplete?: (idx, attempt, status) => void, onVerifierComplete?: (idx, attempt, passed, feedback?) => void }
 ```
 
 ## 1. Input Types
@@ -1143,7 +1273,7 @@ Run N agents on the same `item` in parallel, then a judge picks the best. `Agent
 swarm.bestOf<T>({
     item: FileMap | SwarmResult,
     prompt: string,
-    config: BestOfConfig,               // { n?, judgeCriteria, taskAgents?, judgeAgent?, onCandidateComplete?, onJudgeComplete? }
+    config: BestOfConfig,               // { n?, judgeCriteria, taskAgents?, judgeAgent?, mcpServers?, judgeMcpServers?, skills?, judgeSkills?, composio?, judgeComposio?, ... }
     name?: string,                      // Operation name for observability (appears in meta.operationName)
     schema?: z.ZodType<T> | JsonSchema,
     systemPrompt?: string,
@@ -1190,6 +1320,8 @@ const result = await swarm.bestOf({
         judgeMcpServers: {...},   // (optional) MCP servers for judge
         skills: ["pdf"],          // (optional) Skills for candidates
         judgeSkills: ["pdf"],     // (optional) Skills for judge
+        composio: {...},          // (optional) Composio config for candidates
+        judgeComposio: {...},     // (optional) Composio config for judge
     },
 });
 ```
@@ -1228,6 +1360,7 @@ swarm.map<T>({
     retry?: RetryConfig,                // Auto-retry on error with backoff
     mcpServers?: Record<string, McpServerConfig>,
     skills?: string[],                  // e.g. ["pdf", "dev-browser"]
+    composio?: ComposioSetup,           // Composio Tool Router config
     timeoutMs?: number,
 }): Promise<SwarmResultList<T>>
 ```
@@ -1310,6 +1443,8 @@ const results = await swarm.map({
         // judgeMcpServers?: {...},          // MCP servers for judge
         // skills?: [...],                   // Skills for candidates
         // judgeSkills?: [...],              // Skills for judge
+        // composio?: {...},                 // Composio for candidates
+        // judgeComposio?: {...},            // Composio for judge
     },
 });
 
@@ -1357,6 +1492,7 @@ swarm.filter<T>({
     retry?: RetryConfig,                // Auto-retry on error with backoff
     mcpServers?: Record<string, McpServerConfig>,
     skills?: string[],                  // e.g. ["pdf", "dev-browser"]
+    composio?: ComposioSetup,           // Composio Tool Router config
     timeoutMs?: number,
 }): Promise<SwarmResultList<T>>
 ```
@@ -1420,6 +1556,7 @@ swarm.reduce<T>({
     retry?: RetryConfig,                // Auto-retry on error with backoff
     mcpServers?: Record<string, McpServerConfig>,
     skills?: string[],                  // e.g. ["pdf", "dev-browser"]
+    composio?: ComposioSetup,           // Composio Tool Router config
     timeoutMs?: number,
 }): Promise<ReduceResult<T>>
 ```
@@ -1614,7 +1751,7 @@ const swarm = new Swarm({
 
 ## 7. Pipeline
 
-Fluent wrapper over Swarm for chaining operations. **All Swarm features work in Pipeline steps** — `schema`, `bestOf`, `verify`, `retry`, `agent`, `mcpServers`, dynamic prompts.
+Fluent wrapper over Swarm for chaining operations. **All Swarm features work in Pipeline steps** — `schema`, `bestOf`, `verify`, `retry`, `agent`, `mcpServers`, `skills`, `composio`, dynamic prompts.
 
 ```ts
 import "dotenv/config";
@@ -1660,6 +1797,7 @@ Each step accepts the same options as the corresponding Swarm method, plus `name
     agent?: AgentOverride,
     mcpServers?: Record<string, McpServerConfig>,
     skills?: string[],                    // Skills for workers
+    composio?: ComposioSetup,             // Composio Tool Router config
     systemPrompt?: string,
     timeoutMs?: number,
 })
@@ -1676,6 +1814,7 @@ Each step accepts the same options as the corresponding Swarm method, plus `name
     agent?: AgentOverride,
     mcpServers?: Record<string, McpServerConfig>,
     skills?: string[],                    // Skills for workers
+    composio?: ComposioSetup,             // Composio Tool Router config
     systemPrompt?: string,
     timeoutMs?: number,
 })
@@ -1690,6 +1829,7 @@ Each step accepts the same options as the corresponding Swarm method, plus `name
     agent?: AgentOverride,
     mcpServers?: Record<string, McpServerConfig>,
     skills?: string[],                    // Skills for workers
+    composio?: ComposioSetup,             // Composio Tool Router config
     systemPrompt?: string,
     timeoutMs?: number,
 })
