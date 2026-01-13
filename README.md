@@ -20,6 +20,13 @@
 - Built-in [agent observability and analytics dashboard](https://dashboard.swarmlink.ai/)
 - Much more coming...
 
+Copy the swarmkit-dev skill to Claude Code, Codex, or your favorite CLI agent and start building with SwarmKit:
+
+```bash
+git clone https://github.com/brandomagnani/swarmkit.git
+cp -r swarmkit/skills/swarmkit-dev ~/.claude/skills/
+```
+
 ## Get Started
 
 ### 1. Install the SDK
