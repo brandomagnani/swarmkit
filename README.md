@@ -20,7 +20,7 @@
 - Built-in [agent observability and analytics dashboard](https://dashboard.swarmlink.ai/)
 - Much more coming...
 
-Add the `swarmkit-dev` SKILL to your favorite coding agent and start building with SwarmKit:
+Add the [`swarmkit-dev`](skills/swarmkit-dev/SKILL.md) SKILL to your favorite coding agent and start building with SwarmKit:
 
 ```bash
 git clone https://github.com/brandomagnani/swarmkit.git
