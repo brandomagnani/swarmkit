@@ -147,6 +147,12 @@ swarmkit.on("content", (event) => {
 | `tool_call_update` | Tool finished | `toolCallId`, `status?`, `title?`, `content?` |
 | `plan` | TodoWrite updates | `entries[]` with `content`, `status`, `priority` |
 
+**Key patterns:**
+- `tool_call` (start) and `tool_call_update` (end) share `toolCallId`
+- `tool_call_update` may arrive before `tool_call` (handle out-of-order)
+- Flush messages before rendering tools/plan (preserves interleaving)
+- `kind` values: `read`, `edit`, `search`, `execute`, `think`, `fetch`, `switch_mode`, `other`
+
 ### Composio Static Methods
 
 ```ts
