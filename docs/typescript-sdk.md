@@ -1103,7 +1103,7 @@ Additionally, every run and command is logged locally to structured JSON lines u
 Each file contains three entry types:
 
 ```json
-{"_meta":{"tag":"my-prefix-a1b2c3d4","provider":"e2b","sandbox_id":"sbx_123","agent":"qwen","timestamp":"2025-10-26T20:15:17.984Z"}}
+{"_meta":{"tag":"my-prefix-a1b2c3d4","provider":"e2b","agent":"qwen","model":"qwen-coder-plus-latest","sandbox_id":"sbx_123","timestamp":"2025-10-26T20:15:17.984Z"}}
 {"_prompt":{"text":"hello how are you?"}}
 {"jsonrpc":"2.0","method":"session/update", ...}
 ```
