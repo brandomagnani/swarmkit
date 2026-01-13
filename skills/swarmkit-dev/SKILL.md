@@ -1,0 +1,180 @@
+---
+name: swarmkit-dev
+description: |
+  SwarmKit SDK development for TypeScript and Python. Use when building applications with SwarmKit to run AI agents (Claude, Codex, Gemini, Qwen) in secure sandboxes. Triggers: (1) Creating SwarmKit applications, (2) Configuring agents with skills, Composio, MCP servers, (3) Using Swarm abstractions (map, filter, reduce, best_of), (4) Building Pipelines, (5) Structured output with schemas, (6) Session management, streaming, observability. Covers both TypeScript (@swarmkit/sdk) and Python (swarmkit) SDKs.
+---
+
+# SwarmKit SDK
+
+Run terminal-based AI agents in secure sandboxes with built-in observability.
+
+## SDK Choice
+
+| Language | Package | Syntax Reference |
+|----------|---------|------------------|
+| TypeScript | `@swarmkit/sdk` | [references/typescript.md](references/typescript.md) |
+| Python | `swarmkit` | [references/python.md](references/python.md) |
+
+Both SDKs are functionally identical. Choose based on application language.
+
+## Core Concepts
+
+### 1. SwarmKit (Single Agent)
+
+For single-agent tasks with multi-turn conversations.
+
+```
+SwarmKit → run() → getOutputFiles()
+```
+
+**Key capabilities:**
+- Agent configuration (type, model, reasoning effort)
+- Skills (pdf, docx, dev-browser, etc.)
+- Composio integrations (GitHub, Gmail, Slack, etc.)
+- MCP servers for custom tools
+- Structured output via schema
+- Context/files upload, session management
+
+### 2. Swarm (Parallel Agents)
+
+For parallel processing with functional abstractions.
+
+| Operation | Type | Description |
+|-----------|------|-------------|
+| `map` | transform | Process items in parallel → outputs |
+| `filter` | gate | Evaluate items, condition decides pass/fail |
+| `reduce` | synthesize | Many items → single output |
+| `best_of` | select | N candidates → judge picks winner |
+
+**When to use:**
+- `map`: Batch processing (analyze 100 docs)
+- `filter`: Quality gates (keep only critical items)
+- `reduce`: Synthesis (combine into report)
+- `best_of`: Quality (run 3 agents, pick best)
+
+### 3. Pipeline (Chained Operations)
+
+Fluent wrapper for chaining Swarm operations.
+
+```
+Pipeline → .map() → .filter() → .reduce() → .run()
+```
+
+Reusable across different data batches.
+
+## Authentication
+
+| Mode | Setup | Use Case |
+|------|-------|----------|
+| Gateway | `SWARMKIT_API_KEY` | Managed billing, observability |
+| BYOK | Provider keys + `E2B_API_KEY` | Direct provider access |
+
+## Agent Types
+
+| Type | Models | Default | Env Var |
+|------|--------|---------|---------|
+| `claude` | opus, sonnet, haiku | opus | `ANTHROPIC_API_KEY` |
+| `codex` | gpt-5.2, gpt-5.2-codex | gpt-5.2 | `OPENAI_API_KEY` |
+| `gemini` | gemini-3-pro-preview, etc. | gemini-3-flash-preview | `GEMINI_API_KEY` |
+| `qwen` | qwen3-coder-plus | qwen3-coder-plus | `OPENAI_API_KEY` |
+
+## Workspace Structure
+
+Agents run in sandboxes with this filesystem:
+
+```
+/home/user/workspace/
+├── context/     # Input files (read-only)
+├── scripts/     # Agent code
+├── temp/        # Scratch space
+└── output/      # Final deliverables
+```
+
+## Structured Output
+
+Provide a schema (Zod/JSON Schema for TS, Pydantic/dict for Python) and the agent writes `output/result.json`.
+
+```
+withSchema(schema) → run() → getOutputFiles() → { files, data, error }
+```
+
+## Key Patterns
+
+### Skills + Composio + MCP hierarchy
+
+```
+.withSkills([...])           # Agent capabilities
+.withComposio(userId, {...}) # 1000+ integrations
+.withMcpServers({...})       # Custom tools (advanced)
+```
+
+### Streaming Events
+
+| Event | Description |
+|-------|-------------|
+| `content` | Parsed events (recommended) |
+| `stdout` | Raw JSONL output |
+| `stderr` | Error output |
+
+Content events: `agent_message_chunk`, `agent_thought_chunk`, `tool_call`, `tool_call_update`, `plan`
+
+### Session Management
+
+```
+run() → run() → run()     # Same session, maintains history
+getSession() → save       # Persist session ID
+setSession(id) → run()    # Reconnect later
+pause() / resume()        # Suspend/reactivate billing
+kill()                    # Destroy sandbox
+```
+
+## Swarm Operations Detail
+
+### Input: FileMap
+
+```
+FileMap = { "path": content }  # path in context/, content is string or bytes
+```
+
+Items can be: single file, multiple files, or entire folders per worker.
+
+### Result Types
+
+**SwarmResult** (from map, filter, best_of):
+- `status`: 'success' | 'filtered' | 'error'
+- `data`: Parsed schema or null
+- `files`: Output files
+- `meta`: Operation metadata
+
+**SwarmResultList** (from map, filter):
+- `.success` / `.filtered` / `.error` accessors
+
+**ReduceResult** (from reduce):
+- Single result with `data`, `files`, `meta`
+
+### Chaining
+
+When chaining, `result.json` from previous step → `data.json` in next step's context.
+
+### Quality Options
+
+**verify**: LLM-as-judge verifies output, retries with feedback
+```
+verify: { criteria: "...", maxAttempts: 3 }
+```
+
+**bestOf**: Run N candidates, judge picks best
+```
+bestOf: { n: 3, judgeCriteria: "..." }
+```
+
+**retry**: Auto-retry on error with backoff
+```
+retry: { maxAttempts: 3, backoffMs: 1000 }
+```
+
+## Language-Specific Syntax
+
+For complete syntax and examples:
+- TypeScript: [references/typescript.md](references/typescript.md)
+- Python: [references/python.md](references/python.md)
