@@ -279,6 +279,41 @@ swarm = Swarm(SwarmConfig(
 ))
 ```
 
+### Operation Signatures
+
+```python
+# map - parallel processing with optional quality options
+await swarm.map(
+    items,                    # list[FileMap] | list[SwarmResult]
+    prompt,                   # str | Callable[[FileMap, int], str]
+    schema=None,              # Pydantic model or JSON Schema dict
+    agent=None, best_of=None, verify=None, retry=None, skills=None, composio=None, mcp_servers=None, system_prompt=None, timeout_ms=None
+) # → list[SwarmResult]
+
+# filter - gate with condition (schema & condition required)
+await swarm.filter(
+    items, prompt,
+    schema,                   # Required
+    condition,                # Callable[[Any], bool] - Required
+    agent=None, verify=None, retry=None, skills=None, composio=None, mcp_servers=None, system_prompt=None, timeout_ms=None
+    # Note: best_of NOT available
+) # → SwarmResultList with .success, .filtered, .error
+
+# reduce - synthesize many → one
+await swarm.reduce(
+    items, prompt, schema=None,
+    agent=None, verify=None, retry=None, skills=None, composio=None, mcp_servers=None, system_prompt=None, timeout_ms=None
+    # Note: best_of NOT available
+) # → ReduceResult
+
+# best_of - N candidates, judge picks winner
+await swarm.best_of(
+    item,                     # FileMap | SwarmResult (single item)
+    prompt, config,           # BestOfConfig with judge_criteria
+    schema=None, agent=None, retry=None, skills=None, composio=None, mcp_servers=None, system_prompt=None, timeout_ms=None
+) # → BestOfResult
+```
+
 ### map
 
 ```python
@@ -405,6 +440,20 @@ print(result.judge_reasoning)
 ---
 
 ## Pipeline
+
+### Step Config Signatures
+
+```python
+# MapConfig - same options as swarm.map() + name
+MapConfig(name=None, prompt, schema=None, best_of=None, verify=None, retry=None, agent=None, skills=None, composio=None, mcp_servers=None, system_prompt=None, timeout_ms=None)
+
+# FilterConfig - same options as swarm.filter() + name + emit
+FilterConfig(name=None, prompt, schema, condition, emit=None, verify=None, retry=None, agent=None, skills=None, composio=None, mcp_servers=None, system_prompt=None, timeout_ms=None)
+# emit: 'success' | 'filtered' | 'all' (default: 'success')
+
+# ReduceConfig - same options as swarm.reduce() + name (terminal step)
+ReduceConfig(name=None, prompt, schema=None, verify=None, retry=None, agent=None, skills=None, composio=None, mcp_servers=None, system_prompt=None, timeout_ms=None)
+```
 
 ```python
 from swarmkit import Swarm, Pipeline, MapConfig, FilterConfig, ReduceConfig, BestOfConfig, VerifyConfig, RetryConfig

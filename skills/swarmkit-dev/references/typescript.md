@@ -247,6 +247,41 @@ const swarm = new Swarm({
 });
 ```
 
+### Operation Signatures
+
+```ts
+// map - parallel processing with optional quality options
+swarm.map({
+    items,                    // FileMap[] | SwarmResult[]
+    prompt,                   // string | (files, idx) => string
+    schema?,                  // Zod schema or JSON Schema
+    agent?, bestOf?, verify?, retry?, skills?, composio?, mcpServers?, systemPrompt?, timeoutMs?
+}) // → SwarmResult[]
+
+// filter - gate with condition (schema & condition required)
+swarm.filter({
+    items, prompt,
+    schema,                   // Required
+    condition,                // (data) => boolean - Required
+    agent?, verify?, retry?, skills?, composio?, mcpServers?, systemPrompt?, timeoutMs?
+    // Note: bestOf NOT available
+}) // → { success, filtered, error }
+
+// reduce - synthesize many → one
+swarm.reduce({
+    items, prompt, schema?,
+    agent?, verify?, retry?, skills?, composio?, mcpServers?, systemPrompt?, timeoutMs?
+    // Note: bestOf NOT available
+}) // → ReduceResult
+
+// bestOf - N candidates, judge picks winner
+swarm.bestOf({
+    item,                     // FileMap | SwarmResult (single item)
+    prompt, config,           // BestOfConfig with judgeCriteria
+    schema?, agent?, retry?, skills?, composio?, mcpServers?, systemPrompt?, timeoutMs?
+}) // → BestOfResult
+```
+
 ### map
 
 ```ts
@@ -375,6 +410,20 @@ console.log(result.judgeReasoning);
 ---
 
 ## Pipeline
+
+### Step Config Signatures
+
+```ts
+// MapConfig - same options as swarm.map() + name
+{ name?, prompt, schema?, bestOf?, verify?, retry?, agent?, skills?, composio?, mcpServers?, systemPrompt?, timeoutMs? }
+
+// FilterConfig - same options as swarm.filter() + name + emit
+{ name?, prompt, schema, condition, emit?, verify?, retry?, agent?, skills?, composio?, mcpServers?, systemPrompt?, timeoutMs? }
+// emit: "success" | "filtered" | "all" (default: "success")
+
+// ReduceConfig - same options as swarm.reduce() + name (terminal step)
+{ name?, prompt, schema?, verify?, retry?, agent?, skills?, composio?, mcpServers?, systemPrompt?, timeoutMs? }
+```
 
 ```ts
 import { Swarm, Pipeline } from "@swarmkit/sdk";
