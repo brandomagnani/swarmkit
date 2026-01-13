@@ -54,13 +54,21 @@ For parallel processing with functional abstractions.
 
 ### 3. Pipeline (Chained Operations)
 
-Fluent wrapper for chaining Swarm operations.
+**Preferred API for most workflows.** Fluent, readable, reusable.
 
 ```
 Pipeline → .map() → .filter() → .reduce() → .run()
 ```
 
 Reusable across different data batches.
+
+**Pipeline vs standalone Swarm calls:**
+- Use **Pipeline** for chains (map → filter → reduce) - cleaner API
+- Use **Swarm.bestOf()** only for standalone best-of-N on single item (not available as pipeline step)
+
+**Pipeline restrictions:**
+- `best_of` only available as option within `.map({ bestOf })`, not as standalone step
+- `.reduce()` is terminal - no steps after
 
 ## Authentication
 
