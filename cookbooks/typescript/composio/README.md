@@ -39,5 +39,5 @@ npx tsx swarm.ts
 
 Edit `swarm.ts` to change:
 
-- `userId` - Unique ID for user's Composio session
-- `toolkits` - Which services to enable (or remove for all 500+)
+- `USER_ID` - Unique ID for user's Composio session
+- `ENABLED_TOOLKITS` - Which services to enable (or `[]` for all 500+)

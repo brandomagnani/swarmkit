@@ -9,53 +9,59 @@ Run: python swarm.py
 """
 import asyncio
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
-from swarmkit import SwarmKit, AgentConfig, read_local_dir, save_local_dir
-from ui import make_renderer, read_prompt, console
-from rich.panel import Panel
-from composio_integration import ComposioIntegration
+
+from swarmkit import SwarmKit, AgentConfig, ComposioSetup, ComposioConfig, read_local_dir, save_local_dir
+from ui import console, make_renderer, read_prompt
 
 load_dotenv()
 
 # ─────────────────────────────────────────────────────────────
-# Composio Setup
+# Configuration
 # ─────────────────────────────────────────────────────────────
 
-composio = ComposioIntegration(
-    user_id="swarm-user-001",
-    toolkits=["gmail"],
-)
-
-# ─────────────────────────────────────────────────────────────
-# SwarmKit Agent
-# ─────────────────────────────────────────────────────────────
+USER_ID = "swarm-user-002"
+ENABLED_TOOLKITS = ["gmail"]
 
 SYSTEM_PROMPT = """Your name is Swarm, a powerful autonomous AI agent.
 You can execute code, manage files, and take actions across external services via Composio MCP.
 """
 
+# ─────────────────────────────────────────────────────────────
+# SwarmKit Agent
+# ─────────────────────────────────────────────────────────────
+
 agent = SwarmKit(
     config=AgentConfig(type="claude", model="sonnet"),
     system_prompt=SYSTEM_PROMPT,
-    mcp_servers={"composio": composio.get_mcp_config()},
+    composio=ComposioSetup(
+        user_id=USER_ID,
+        config=ComposioConfig(toolkits=ENABLED_TOOLKITS),
+    ),
     session_tag_prefix="swarm-composio-py",
 )
 
 # ─────────────────────────────────────────────────────────────
 
+
 async def main():
     # Pre-authenticate Composio services
-    await composio.setup_with_preauth()
+    status = await SwarmKit.composio.status(USER_ID)
+    for toolkit in ENABLED_TOOLKITS:
+        if not status.get(toolkit, False):
+            result = await SwarmKit.composio.auth(USER_ID, toolkit)
+            console.print(f"\n[cyan]{toolkit}[/cyan]: {result.url}")
+            console.print("[dim]Press Enter after authenticating...[/dim]")
+            await asyncio.to_thread(input)
 
     renderer = make_renderer()
-    agent.on("content", renderer.handle_event)
+    agent.on("content", lambda event: renderer.handle_event(event))
 
     console.print()
-    console.print(Panel.fit(
-        "[bold cyan]Swarm[/bold cyan] + [bold magenta]Composio[/bold magenta]\n"
-        "[dim]AI Agent with external integrations[/dim]",
-        border_style="cyan",
-    ))
+    console.print("[bold cyan]Swarm[/bold cyan] + [bold magenta]Composio[/bold magenta]")
+    console.print("[dim]AI Agent with external integrations[/dim]")
     console.print()
 
     while True:
@@ -64,17 +70,19 @@ async def main():
             continue
         if prompt in ("/quit", "/exit", "/q"):
             await agent.kill()
-            console.print("\n[muted]👋 Goodbye[/muted]")
+            console.print()
+            console.print("[dim]Goodbye[/dim]")
             break
 
-        console.print()
         renderer.reset()
         renderer.start_live()
 
         # Upload input files to agent's context
-        input_files = read_local_dir("input")
-        if input_files:
-            await agent.upload_context(input_files)
+        input_dir = Path("input")
+        if input_dir.exists():
+            input_files = read_local_dir(str(input_dir))
+            if input_files:
+                await agent.upload_context(input_files)
 
         await agent.run(prompt=prompt)
         renderer.stop_live()
@@ -85,17 +93,23 @@ async def main():
             save_local_dir("output", output.files)
             console.print()
             for name in output.files:
-                console.print(f"[success]📄 Saved: output/{name}[/success]")
+                console.print(f"[green]Saved: output/{name}[/green]")
 
         console.print()
 
+
 async def shutdown():
     await agent.kill()
-    console.print("\n\n[muted]👋 Goodbye[/muted]")
+    console.print()
+    console.print("[dim]Goodbye[/dim]")
+
+
+# ─────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    os.makedirs("input", exist_ok=True)
-    os.makedirs("output", exist_ok=True)
+    Path("input").mkdir(exist_ok=True)
+    Path("output").mkdir(exist_ok=True)
+
     try:
         asyncio.run(main())
     except KeyboardInterrupt:

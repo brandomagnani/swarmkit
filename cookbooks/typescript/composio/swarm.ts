@@ -15,26 +15,33 @@ import chalk from "chalk";
 import { makeRenderer, readPrompt, console_, printPanel } from "./ui";
 
 // ─────────────────────────────────────────────────────────────
-// SwarmKit Agent
+// Configuration
 // ─────────────────────────────────────────────────────────────
+
+const USER_ID = "swarm-user-002";
+const ENABLED_TOOLKITS = ["gmail"];
 
 const SYSTEM_PROMPT = `Your name is Swarm, a powerful autonomous AI agent.
 You can execute code, manage files, and take actions across external services via Composio MCP.
 `;
 
+// ─────────────────────────────────────────────────────────────
+// SwarmKit Agent
+// ─────────────────────────────────────────────────────────────
+
 const agent = new SwarmKit()
   .withAgent({ type: "claude", model: "sonnet" })
   .withSystemPrompt(SYSTEM_PROMPT)
-  .withComposio("swarm-user-002", { toolkits: ["gmail"] })
+  .withComposio(USER_ID, { toolkits: ENABLED_TOOLKITS })
   .withSessionTagPrefix("swarm-composio-ts");
 
 // ─────────────────────────────────────────────────────────────
 
 async function main() {
   // Pre-authenticate Composio services
-  const status = await SwarmKit.composio.status("swarm-user-002") as Record<string, boolean>;
-  for (const toolkit of ["gmail"].filter(t => !status[t])) {
-    const { url } = await SwarmKit.composio.auth("swarm-user-002", toolkit);
+  const status = await SwarmKit.composio.status(USER_ID) as Record<string, boolean>;
+  for (const toolkit of ENABLED_TOOLKITS.filter(t => !status[t])) {
+    const { url } = await SwarmKit.composio.auth(USER_ID, toolkit);
     console_.print(`\n${chalk.cyan(toolkit)}: ${url}`);
     console_.print(chalk.dim("Press Enter after authenticating..."));
     await new Promise<void>(r => process.stdin.once("data", () => r()));
