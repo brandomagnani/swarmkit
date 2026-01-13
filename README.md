@@ -20,11 +20,14 @@
 - Built-in [agent observability and analytics dashboard](https://dashboard.swarmlink.ai/)
 - Much more coming...
 
-Copy the swarmkit-dev skill to Claude Code, Codex, or your favorite CLI agent and start building with SwarmKit:
+Add the `swarmkit-dev` SKILL to your favorite coding agent and start building with SwarmKit:
 
 ```bash
 git clone https://github.com/brandomagnani/swarmkit.git
-cp -r swarmkit/skills/swarmkit-dev ~/.claude/skills/
+cp -r swarmkit/skills/swarmkit-dev ~/.claude/skills/       # Claude Code
+cp -r swarmkit/skills/swarmkit-dev ~/.codex/skills/        # Codex
+cp -r swarmkit/skills/swarmkit-dev ~/.gemini/skills/       # Gemini CLI
+cp -r swarmkit/skills/swarmkit-dev ~/.qwen-code/skills/    # Qwen Code
 ```
 
 ## Get Started
