@@ -17,6 +17,16 @@ Run terminal-based AI agents in secure sandboxes with built-in observability.
 
 Both SDKs are functionally identical. Choose based on application language.
 
+## Quick Start
+
+```bash
+# TypeScript
+npm install @swarmkit/sdk
+
+# Python
+pip install swarmkit
+```
+
 ## Core Concepts
 
 ### 1. SwarmKit (Single Agent)
