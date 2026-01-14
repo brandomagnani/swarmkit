@@ -31,7 +31,7 @@ const swarmkit = new SwarmKit()
     })
     .withSessionTagPrefix("my-app") // optional tag for the agent session
     .withSystemPrompt("You are Swarm, a powerful AI agent. You can execute code, browse the web, manage files, and solve complex tasks.")
-    .withSkills(["pdf", "docx", "pptx"])  // agent skills (browser-use included by default)
+    .withSkills(["pdf", "docx", "pptx"])  // browser-use included by default
     .withComposio("user_123", { toolkits: ["gmail", "notion", "exa"] });  // 1000+ integrations via Composio
 
 // Run agent
@@ -279,7 +279,7 @@ const swarmkit = new SwarmKit()
     // })
 
     // (optional) Skills for the agent (browser-use included by default)
-    .withSkills(["pdf"])
+    .withSkills(["pdf", "docx", "pptx"])
 
     // (optional) Composio Tool Router for 1000+ integrations (GitHub, Gmail, Slack, etc.)
     .withComposio("user_123", {
