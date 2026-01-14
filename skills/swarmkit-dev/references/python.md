@@ -28,7 +28,7 @@ from swarmkit import SwarmKit, AgentConfig, ComposioSetup, ComposioConfig
 
 swarmkit = SwarmKit(
     config=AgentConfig(type='claude'),
-    skills=['pdf', 'dev-browser'],
+    skills=['pdf', 'docx'],  # browser-use included by default with SWARMKIT_API_KEY
     composio=ComposioSetup(
         user_id='user_123',
         config=ComposioConfig(toolkits=['github', 'gmail']),
@@ -227,9 +227,11 @@ Log files: `~/.swarmkit/observability/sessions/{tag}_{provider}_{sandboxId}_{age
 
 Skills extend agent capabilities with specialized tools and workflows.
 
+> **Note:** `browser-use` is included by default with Gateway mode (`SWARMKIT_API_KEY`).
+
 ```python
 swarmkit = SwarmKit(
-    skills=['pdf', 'dev-browser'],
+    skills=['pdf', 'docx'],  # browser-use included by default
 )
 ```
 

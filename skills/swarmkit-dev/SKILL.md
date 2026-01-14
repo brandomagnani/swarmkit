@@ -39,7 +39,7 @@ SwarmKit → run() → getOutputFiles()
 
 **Key capabilities:**
 - Agent configuration (type, model, reasoning effort)
-- Skills (pdf, docx, dev-browser, etc.)
+- Skills (pdf, docx, pptx, etc.)
 - Composio integrations (GitHub, Gmail, Slack, etc.)
 - MCP servers for custom tools
 - Structured output via schema
@@ -84,8 +84,12 @@ Reusable across different data batches.
 
 | Mode | Setup | Use Case |
 |------|-------|----------|
-| Gateway | `SWARMKIT_API_KEY` | Managed billing, observability |
+| Gateway | `SWARMKIT_API_KEY` | Managed billing, observability, browser-use |
 | BYOK | Provider keys + `E2B_API_KEY` | Direct provider access |
+
+**Gateway Features** (when using `SWARMKIT_API_KEY`):
+- **Tracing:** Automatic observability at dashboard.swarmlink.ai
+- **Browser Automation:** `browser-use` integrated by default—no extra setup
 
 ## Agent Types
 
@@ -121,10 +125,12 @@ withSchema(schema) → run() → getOutputFiles() → { files, data, error }
 ### Skills + Composio + MCP hierarchy
 
 ```
-.withSkills([...])           # Agent capabilities
+.withSkills([...])           # Agent capabilities (browser-use included by default with Gateway)
 .withComposio(userId, {...}) # 1000+ integrations
 .withMcpServers({...})       # Custom tools (advanced)
 ```
+
+> **Note:** With `SWARMKIT_API_KEY`, browser-use is already integrated. Additional browser skills (dev-browser, agent-browser) are optional.
 
 ### Streaming Events
 

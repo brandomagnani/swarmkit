@@ -26,7 +26,7 @@ import { SwarmKit } from "@swarmkit/sdk";
 
 const swarmkit = new SwarmKit()
     .withAgent({ type: "claude" })
-    .withSkills(["pdf", "dev-browser"])
+    .withSkills(["pdf", "docx"])  // browser-use included by default with SWARMKIT_API_KEY
     .withComposio("user_123", { toolkits: ["github", "gmail"] });
 
 await swarmkit.run({ prompt: "Analyze this document" });
@@ -203,9 +203,11 @@ Log files: `~/.swarmkit/observability/sessions/{tag}_{provider}_{sandboxId}_{age
 
 Skills extend agent capabilities with specialized tools and workflows.
 
+> **Note:** `browser-use` is included by default with Gateway mode (`SWARMKIT_API_KEY`).
+
 ```ts
 const swarmkit = new SwarmKit()
-    .withSkills(["pdf", "dev-browser"]);
+    .withSkills(["pdf", "docx"]);  // browser-use included by default
 ```
 
 [Browse all available skills](https://github.com/brandomagnani/swarmkit/tree/main/skills)
