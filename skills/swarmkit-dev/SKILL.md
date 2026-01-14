@@ -87,18 +87,19 @@ Reusable across different data batches.
 | Gateway | `SWARMKIT_API_KEY` | Managed billing, observability, browser-use |
 | BYOK | Provider keys + `E2B_API_KEY` | Direct provider access |
 
-**Gateway Features** (when using `SWARMKIT_API_KEY`):
-- **Tracing:** Automatic observability at dashboard.swarmlink.ai
-- **Browser Automation:** `browser-use` integrated by default—no extra setup
+**Gateway Mode** (when using `SWARMKIT_API_KEY`):
+- E2B sandbox auto-provisioned—no need to build `E2BProvider` or pass `sandbox=`
+- `browser-use` integrated by default—agents can browse, screenshot, fill forms
+- Automatic tracing at dashboard.swarmlink.ai
 
 ## Agent Types
 
 | Type | Models | Default | Env Var |
 |------|--------|---------|---------|
-| `claude` | opus, sonnet, haiku | opus | `ANTHROPIC_API_KEY` |
-| `codex` | gpt-5.2, gpt-5.2-codex | gpt-5.2 | `OPENAI_API_KEY` |
-| `gemini` | gemini-3-pro-preview, etc. | gemini-3-flash-preview | `GEMINI_API_KEY` |
-| `qwen` | qwen3-coder-plus | qwen3-coder-plus | `OPENAI_API_KEY` |
+| `"claude"` | `"opus"` `"sonnet"` `"haiku"` | `"opus"` | `ANTHROPIC_API_KEY` |
+| `"codex"` | `"gpt-5.2"` `"gpt-5.2-codex"` | `"gpt-5.2"` | `OPENAI_API_KEY` |
+| `"gemini"` | `"gemini-3-pro-preview"` `"gemini-3-flash-preview"` | `"gemini-3-flash-preview"` | `GEMINI_API_KEY` |
+| `"qwen"` | `"qwen3-coder-plus"` | `"qwen3-coder-plus"` | `OPENAI_API_KEY` |
 
 ## Workspace Structure
 
