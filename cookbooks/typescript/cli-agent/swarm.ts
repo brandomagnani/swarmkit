@@ -3,6 +3,11 @@
  * Swarm CLI Agent - A sandboxed CLI agent that can think, execute code,
  * browse the web, read / edit files, and solve complex tasks.
  *
+ * Setup:
+ *   export SWARMKIT_API_KEY=your-api-key
+ *
+ * Gateway mode automatically includes browser-use MCP server.
+ *
  * - Put files in `input/` folder - they're uploaded to the agent's context before each run
  * - Files the agent creates are automatically downloaded to your `output/` folder
  *
@@ -10,7 +15,6 @@
  */
 import { SwarmKit, readLocalDir, saveLocalDir } from "@swarmkit/sdk";
 import { mkdirSync } from "fs";
-import "dotenv/config";
 
 import { makeRenderer, readPrompt, console_, printPanel } from "./ui";
 import chalk from "chalk";
@@ -19,21 +23,19 @@ import chalk from "chalk";
 // SwarmKit Instance Configuration
 // ─────────────────────────────────────────────────────────────
 
-const MCP_SERVERS: Record<string, { command: string; args: string[] }> = {};
-
-if (process.env.BROWSER_USE_API_KEY) {
-  // optional: browser automation
-  MCP_SERVERS["browser-use"] = {
-    command: "npx",
-    args: [
-      "-y",
-      "mcp-remote",
-      "https://api.browser-use.com/mcp",
-      "--header",
-      `X-Browser-Use-API-Key: ${process.env.BROWSER_USE_API_KEY}`,
-    ],
-  };
-}
+// Gateway mode: browser-use MCP is auto-configured via SWARMKIT_API_KEY
+// For BYOK mode, uncomment and set BROWSER_USE_API_KEY:
+//
+// const MCP_SERVERS: Record<string, { command: string; args: string[] }> = {};
+// if (process.env.BROWSER_USE_API_KEY) {
+//   MCP_SERVERS["browser-use"] = {
+//     command: "npx",
+//     args: [
+//       "-y", "mcp-remote", "https://api.browser-use.com/mcp",
+//       "--header", `X-Browser-Use-API-Key: ${process.env.BROWSER_USE_API_KEY}`,
+//     ],
+//   };
+// }
 
 const SYSTEM_PROMPT = `Your name is Swarm, a powerful autonomous AI agent.
 You can execute code, browse the web, manage files, and solve complex tasks such as extracting
@@ -43,12 +45,9 @@ CRITICAL: For any browser automation tasks, you MUST use the "browser-use" MCP s
 `;
 
 const agent = new SwarmKit()
-  .withAgent({
-    type: "claude",
-    model: "haiku",
-  })
+  .withAgent({ type: "claude", model: "haiku" })
   .withSystemPrompt(SYSTEM_PROMPT)
-  .withMcpServers(MCP_SERVERS)
+  // .withMcpServers(MCP_SERVERS)  // Uncomment for BYOK mode
   .withSessionTagPrefix("swarm-cli-ts");
 
 // ─────────────────────────────────────────────────────────────

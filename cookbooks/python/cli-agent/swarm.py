@@ -3,6 +3,11 @@
 Swarm CLI Agent - A sandboxed CLI agent that can think, execute code,
 browse the web, read / edit files, and solve complex tasks.
 
+Setup:
+  export SWARMKIT_API_KEY=your-api-key
+
+Gateway mode automatically includes browser-use MCP server.
+
 - Put files in `input/` folder - they're uploaded to the agent's context before each run
 - Files the agent creates are automatically downloaded to your `output/` folder
 
@@ -10,30 +15,26 @@ Run: python swarm.py
 """
 import asyncio
 import os
-from dotenv import load_dotenv
 from swarmkit import SwarmKit, AgentConfig, read_local_dir, save_local_dir
 from ui import make_renderer, read_prompt, console
 from rich.panel import Panel
-
-load_dotenv()  # Load .env file
 
 # ─────────────────────────────────────────────────────────────
 # SwarmKit Instance Configuration
 # ─────────────────────────────────────────────────────────────
 
-MCP_SERVERS = {}
-
-if os.getenv("BROWSER_USE_API_KEY"):            # optional: browser automation
-    MCP_SERVERS["browser-use"] = {
-        "command": "npx",
-        "args": [
-            "-y",
-            "mcp-remote",
-            "https://api.browser-use.com/mcp",
-            "--header",
-            f"X-Browser-Use-API-Key: {os.getenv('BROWSER_USE_API_KEY')}",
-        ],
-    }
+# Gateway mode: browser-use MCP is auto-configured via SWARMKIT_API_KEY
+# For BYOK mode, uncomment and set BROWSER_USE_API_KEY:
+#
+# MCP_SERVERS = {}
+# if os.getenv("BROWSER_USE_API_KEY"):
+#     MCP_SERVERS["browser-use"] = {
+#         "command": "npx",
+#         "args": [
+#             "-y", "mcp-remote", "https://api.browser-use.com/mcp",
+#             "--header", f"X-Browser-Use-API-Key: {os.getenv('BROWSER_USE_API_KEY')}",
+#         ],
+#     }
 
 SYSTEM_PROMPT = """Your name is Swarm, a powerful autonomous AI agent.
 You can execute code, browse the web, manage files, and solve complex tasks such as extracting
@@ -43,12 +44,9 @@ CRITICAL: For any browser automation tasks, you MUST use the "browser-use" MCP s
 """
 
 agent = SwarmKit(
-    config=AgentConfig(
-        type="claude", 
-        model="opus"
-    ), 
+    config=AgentConfig(type="claude", model="opus"),
     system_prompt=SYSTEM_PROMPT,
-    mcp_servers=MCP_SERVERS,
+    # mcp_servers=MCP_SERVERS,  # Uncomment for BYOK mode
     session_tag_prefix="swarm-cli-py",
 )
 
