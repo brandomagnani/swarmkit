@@ -3,46 +3,35 @@
  * Browser automation with browser-use cloud API.
  *
  * Setup:
- * 1. Get an API key from https://browser-use.com
- * 2. Set BROWSER_USE_API_KEY in your .env file
+ *   export SWARMKIT_API_KEY=your-api-key
+ *
+ * Gateway mode automatically includes browser-use MCP server.
  */
 
-import "dotenv/config";
 import { Swarm, Pipeline } from "@swarmkit/sdk";
 
 import { buildItems, setupRunDir, saveResults } from "./items";
 import { visitPostPrompt } from "./prompt";
 import { HNPostResultSchema } from "./schema";
 
-// Load API key
-const apiKey = process.env.BROWSER_USE_API_KEY ?? "";
-if (!apiKey) {
-    throw new Error(
-        "Missing BROWSER_USE_API_KEY. Add it to your .env file (see header comment)."
-    );
-}
+// Gateway mode: browser-use MCP is auto-configured via SWARMKIT_API_KEY
+// For BYOK mode, uncomment mcpServers and add to Swarm config below:
+//
+// const mcpServers = {
+//     "browser-use": {
+//         command: "npx",
+//         args: [
+//             "-y", "mcp-remote", "https://api.browser-use.com/mcp",
+//             "--header", `X-Browser-Use-API-Key: ${process.env.BROWSER_USE_API_KEY}`,
+//         ],
+//     },
+// };
 
-// MCP servers extend agent capabilities with external tools.
-// browser-use cloud API - no local browser required.
-const mcpServers = {
-    "browser-use": {
-        command: "npx",
-        args: [
-            "-y",
-            "mcp-remote",
-            "https://api.browser-use.com/mcp",
-            "--header",
-            `X-Browser-Use-API-Key: ${apiKey}`,
-        ],
-    },
-};
-
-// Pipeline configuration
 const swarm = new Swarm({
     tag: "quickstart-hn-browser-use",
     concurrency: 4,
     retry: { maxAttempts: 2 },
-    mcpServers,
+    // mcpServers,  // Uncomment for BYOK mode
 });
 
 const pipeline = new Pipeline(swarm).map({
@@ -50,7 +39,7 @@ const pipeline = new Pipeline(swarm).map({
     prompt: visitPostPrompt,
     schema: HNPostResultSchema,
     agent: { type: "claude", model: "haiku" },
-    timeoutMs: 15 * 60 * 1000, // 15 minutes per post
+    timeoutMs: 15 * 60 * 1000,
     verify: {
         criteria: `
             The result must meet ALL these requirements:
@@ -66,15 +55,14 @@ const pipeline = new Pipeline(swarm).map({
 });
 
 async function main(): Promise<void> {
-    // Scrape top 3 Hacker News posts with browser-use
     const items = buildItems(3);
     const { runDir, postsDir, startedAt } = setupRunDir(items);
 
-    console.log(`Visiting top ${items.length} Hacker News posts (ranks 1-${items.length})...`);
+    console.log(`Visiting top ${items.length} Hacker News posts...`);
     const result = await pipeline.run(items);
 
     saveResults(result, items, postsDir, runDir, startedAt);
-    console.log(`Done. All artifacts saved to: ${runDir}`);
+    console.log(`Done. Artifacts saved to: ${runDir}`);
 }
 
 main().catch(console.error);

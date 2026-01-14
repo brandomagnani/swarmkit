@@ -3,50 +3,38 @@ Browser-Use Cookbook
 Browser automation with browser-use cloud API.
 
 Setup:
-1. Get an API key from https://browser-use.com
-2. Set BROWSER_USE_API_KEY in your .env file
+  export SWARMKIT_API_KEY=your-api-key
+
+Gateway mode automatically includes browser-use MCP server.
 """
 import asyncio
 import os
 
-from dotenv import load_dotenv
 from swarmkit import AgentConfig, MapConfig, Pipeline, RetryConfig, Swarm, SwarmConfig, VerifyConfig
 
 from items import build_items, save_results, setup_run_dir
 from prompt import visit_post_prompt
 from schema import HNPostResult
 
-load_dotenv()
+# Gateway mode: browser-use MCP is auto-configured via SWARMKIT_API_KEY
+# For BYOK mode, uncomment mcp_servers and add to SwarmConfig below:
+#
+# mcp_servers = {
+#     "browser-use": {
+#         "command": "npx",
+#         "args": [
+#             "-y", "mcp-remote", "https://api.browser-use.com/mcp",
+#             "--header", f"X-Browser-Use-API-Key: {os.getenv('BROWSER_USE_API_KEY')}",
+#         ],
+#     }
+# }
 
-# Load API key
-api_key = os.getenv("BROWSER_USE_API_KEY", "")
-if not api_key:
-    raise RuntimeError(
-        "Missing BROWSER_USE_API_KEY. Add it to your .env file (see header comment)."
-    )
-
-# MCP servers extend agent capabilities with external tools.
-# browser-use cloud API - no local browser required.
-mcp_servers = {
-    "browser-use": {
-        "command": "npx",
-        "args": [
-            "-y",
-            "mcp-remote",
-            "https://api.browser-use.com/mcp",
-            "--header",
-            f"X-Browser-Use-API-Key: {api_key}",
-        ],
-    }
-}
-
-# Pipeline configuration
 swarm = Swarm(
     SwarmConfig(
         tag="quickstart-hn-browser-use",
         concurrency=4,
         retry=RetryConfig(max_attempts=2),
-        mcp_servers=mcp_servers,
+        # mcp_servers=mcp_servers,  # Uncomment for BYOK mode
     )
 )
 
@@ -56,7 +44,7 @@ pipeline = Pipeline(swarm).map(
         prompt=visit_post_prompt,
         schema=HNPostResult,
         agent=AgentConfig(type="claude", model="haiku"),
-        timeout_ms=15 * 60 * 1000,  # 15 minutes per post
+        timeout_ms=15 * 60 * 1000,
         verify=VerifyConfig(
             criteria="""
                 The result must meet ALL these requirements:
@@ -74,15 +62,15 @@ pipeline = Pipeline(swarm).map(
 
 
 async def main():
-    # Scrape top 3 Hacker News posts with browser-use
     items = build_items(count=3)
     run_dir, posts_dir, started_at = setup_run_dir(items)
 
-    print(f"Visiting top {len(items)} Hacker News posts (ranks 1-{len(items)})...")
+    print(f"Visiting top {len(items)} Hacker News posts...")
     result = await pipeline.run(items)
 
     save_results(result, items, posts_dir, run_dir, started_at)
-    print(f"Done. All artifacts saved to: {run_dir}")
+    print(f"Done. Artifacts saved to: {run_dir}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())
