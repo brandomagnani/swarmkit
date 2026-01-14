@@ -78,11 +78,8 @@ swarmkit = SwarmKit(
         ),
     ),
     mcp_servers={
-        'exa': {
-            'command': 'npx',
-            'args': ['-y', 'mcp-remote', 'https://mcp.exa.ai/mcp'],
-            'env': {'EXA_API_KEY': os.getenv('EXA_API_KEY')},
-        },
+        'local': {'command': 'npx', 'args': ['-y', 'some-mcp'], 'env': {'API_KEY': '...'}},
+        'remote': {'type': 'http', 'url': 'https://...', 'headers': {'x-api-key': '...'}},
     },
     secrets={'GITHUB_TOKEN': os.getenv('GITHUB_TOKEN')},
     session_tag_prefix='my-app',
@@ -564,6 +561,20 @@ class RetryConfig:
     backoff_multiplier: float = 2
     retry_on: Callable[[SwarmResult], bool] | None = None
     on_item_retry: Callable[[int, int, str], None] | None = None
+```
+
+### McpServerConfig
+
+```python
+# STDIO: command present → local subprocess
+# HTTP:  url + type: "http" → remote server
+# SSE:   url without type → remote (default)
+McpServerConfig = {
+    'type': str,                                      # "stdio" | "http" | "sse"
+    'command': str, 'args': list, 'cwd': str,         # STDIO
+    'url': str, 'headers': dict[str, str],            # HTTP/SSE
+    'env': dict[str, str],                            # Common
+}
 ```
 
 ### BestOfConfig

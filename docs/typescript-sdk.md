@@ -53,12 +53,36 @@ await swarmkit.kill();
 
 - **Tracing:** When using `SWARMKIT_API_KEY`, you get automatic tracing and agent analytics at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) for observability and replay—no extra setup needed. Use `withSessionTagPrefix()` to label sessions for easy filtering.
 
+### Browser Automation
+
+```bash
+# .env
+SWARMKIT_API_KEY=sk-...
+```
+
+```ts
+const swarmkit = new SwarmKit()
+    .withAgent({ type: "claude", apiKey: process.env.SWARMKIT_API_KEY });
+
+await swarmkit.run({
+    prompt: "Go to Hacker News, screenshot the top 5 articles, save them to output/",
+});
+
+const output = await swarmkit.getOutputFiles();
+await swarmkit.kill();
+```
+
+`browser-use` is integrated by default with Gateway mode—no extra setup needed.
+
+---
+
 ## 1.1 Authentication
 
 | | Gateway Mode | BYOK Mode |
 |---|---------|---------------|
 | Setup | `SWARMKIT_API_KEY` | [Model provider keys](#113-agent-reference) + [`E2B_API_KEY`](https://e2b.dev) |
 | Observability | [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) | `~/.swarmkit/observability/` |
+| Browser | `browser-use` integrated | Via skills or MCP |
 | Billing | Swarmlink | Your provider accounts |
 
 ---

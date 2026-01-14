@@ -64,11 +64,8 @@ const swarmkit = new SwarmKit()
         keys: { stripe: "sk_live_..." },
     })
     .withMcpServers({
-        exa: {
-            command: "npx",
-            args: ["-y", "mcp-remote", "https://mcp.exa.ai/mcp"],
-            env: { EXA_API_KEY: process.env.EXA_API_KEY! },
-        },
+        local: { command: "npx", args: ["-y", "some-mcp"], env: { API_KEY: "..." } },
+        remote: { type: "http", url: "https://...", headers: { "x-api-key": "..." } },
     })
     .withSecrets({ GITHUB_TOKEN: process.env.GITHUB_TOKEN! })
     .withSessionTagPrefix("my-app");
@@ -526,6 +523,20 @@ interface RetryConfig {
     backoffMultiplier?: number;
     retryOn?: (result: SwarmResult) => boolean;
     onItemRetry?: (idx: number, attempt: number, error: string) => void;
+}
+```
+
+### McpServerConfig
+
+```ts
+// STDIO: command present → local subprocess
+// HTTP:  url + type: "http" → remote server
+// SSE:   url without type → remote (default)
+interface McpServerConfig {
+    type?: "stdio" | "http" | "sse";
+    command?: string; args?: string[]; cwd?: string;  // STDIO
+    url?: string; headers?: Record<string, string>;   // HTTP/SSE
+    env?: Record<string, string>;                     // Common
 }
 ```
 
