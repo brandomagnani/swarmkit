@@ -31,7 +31,7 @@ const swarmkit = new SwarmKit()
     })
     .withSessionTagPrefix("my-app") // optional tag for the agent session
     .withSystemPrompt("You are Swarm, a powerful AI agent. You can execute code, browse the web, manage files, and solve complex tasks.")
-    .withSkills(["pdf", "docx", "pptx", "dev-browser"])  // agent skills for documents, browser, etc.
+    .withSkills(["pdf", "docx", "pptx"])  // agent skills for documents, etc.
     .withComposio("user_123", { toolkits: ["gmail", "notion", "exa"] });  // 1000+ integrations via Composio
 
 // Run agent
@@ -52,27 +52,7 @@ await swarmkit.kill();
 ```
 
 - **Tracing:** When using `SWARMKIT_API_KEY`, you get automatic tracing and agent analytics at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) for observability and replay—no extra setup needed. Use `withSessionTagPrefix()` to label sessions for easy filtering.
-
-### Browser Automation
-
-```bash
-# .env
-SWARMKIT_API_KEY=sk-...
-```
-
-```ts
-const swarmkit = new SwarmKit()
-    .withAgent({ type: "claude", apiKey: process.env.SWARMKIT_API_KEY });
-
-await swarmkit.run({
-    prompt: "Go to Hacker News, screenshot the top 5 articles, save them to output/",
-});
-
-const output = await swarmkit.getOutputFiles();
-await swarmkit.kill();
-```
-
-`browser-use` is integrated by default with Gateway mode—no extra setup needed.
+- **Browser Automation:** Gateway mode includes `browser-use` integration—agents can browse the web, take screenshots, fill forms, and interact with pages out of the box.
 
 ---
 

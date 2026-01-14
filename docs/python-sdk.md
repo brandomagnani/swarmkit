@@ -33,7 +33,7 @@ swarmkit = SwarmKit(
     ),
     session_tag_prefix='my-app',
     system_prompt='You are Swarm, a powerful AI agent. You can execute code, browse the web, manage files, and solve complex tasks.',
-    skills=['pdf', 'docx', 'pptx', 'dev-browser'],
+    skills=['pdf', 'docx', 'pptx'],
     composio=ComposioSetup(
         user_id='user_123',
         config=ComposioConfig(toolkits=['gmail', 'notion', 'exa']),
@@ -55,34 +55,7 @@ await swarmkit.kill()
 ```
 
 - **Tracing:** When using `SWARMKIT_API_KEY`, every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces) for observability and replay. Optionally use `session_tag_prefix` to label your agent session for easy filtering.
-
-### Browser Automation
-
-```bash
-# .env
-SWARMKIT_API_KEY=sk-...
-```
-
-```python
-import os
-from swarmkit import SwarmKit, AgentConfig
-
-swarmkit = SwarmKit(
-    config=AgentConfig(
-        type='claude',
-        api_key=os.getenv('SWARMKIT_API_KEY'),
-    ),
-)
-
-await swarmkit.run(
-    prompt='Go to Hacker News, screenshot the top 5 articles, save them to output/'
-)
-
-output = await swarmkit.get_output_files()
-await swarmkit.kill()
-```
-
-`browser-use` is integrated by default with Gateway mode—no extra setup needed.
+- **Browser Automation:** Gateway mode includes `browser-use` integration—agents can browse the web, take screenshots, fill forms, and interact with pages out of the box.
 
 ---
 
@@ -313,7 +286,7 @@ swarmkit = SwarmKit(
     schema=MyPydanticModel,
 
     # (optional) Skills for the agent
-    skills=['pdf', 'docx', 'pptx', 'dev-browser'],
+    skills=['pdf', 'docx', 'pptx'],
 
     # (optional) Composio Tool Router for 1000+ integrations
     composio=ComposioSetup(
