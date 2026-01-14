@@ -301,9 +301,14 @@ swarmkit = SwarmKit(
     mcp_servers={
         'exa': {
             'command': 'npx',
-            'args': ['-y', 'mcp-remote', 'https://mcp.exa.ai/mcp'],
-            'env': {'EXA_API_KEY': os.getenv('EXA_API_KEY')}
-        }
+            'args': ['-y', 'exa-mcp-server'],
+            'env': {'EXA_API_KEY': '...'},
+        },
+        'api': {
+            'type': 'http',
+            'url': 'https://example.com/mcp',
+            'headers': {'x-api-key': '...'},
+        },
     },
 
     # (optional) Environment variables injected into sandbox
@@ -324,8 +329,20 @@ swarmkit = SwarmKit(
 - `schema` accepts both Pydantic model classes and JSON Schema dicts.
 
 **McpServerConfig** — MCP server connection (STDIO or HTTP/SSE):
+
+| Fields | Transport |
+|--------|-----------|
+| `command` | stdio (local subprocess) |
+| `url` + `type: "http"` | HTTP (remote) |
+| `url` (no type) | SSE (remote, default) |
+
 ```python
-{'command': str, 'args': list[str], 'env': dict[str, str], 'url': str}  # STDIO: command+args, HTTP: url
+McpServerConfig = {
+    'type': str,                          # "stdio" | "http" | "sse" (auto-detected)
+    'command': str, 'args': list, 'cwd': str,        # STDIO
+    'url': str, 'headers': dict[str, str],           # HTTP/SSE
+    'env': dict[str, str],                           # Common
+}
 ```
 
 ## Agent Skills

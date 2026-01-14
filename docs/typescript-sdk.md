@@ -291,11 +291,16 @@ const swarmkit = new SwarmKit()
 
     // (optional) MCP servers for agent tools
     .withMcpServers({
-        "exa": {
+        exa: {
             command: "npx",
-            args: ["-y", "mcp-remote", "https://mcp.exa.ai/mcp"],
-            env: { EXA_API_KEY: process.env.EXA_API_KEY! }
-        }
+            args: ["-y", "exa-mcp-server"],
+            env: { EXA_API_KEY: "..." },
+        },
+        api: {
+            type: "http",
+            url: "https://example.com/mcp",
+            headers: { "x-api-key": "..." },
+        },
     })
 
     // (optional) Environment variables injected into sandbox
@@ -317,8 +322,20 @@ const swarmkit = new SwarmKit()
 - `withSchema()` accepts both Zod schemas and JSON Schema objects.
 
 **McpServerConfig** — MCP server connection (STDIO or HTTP/SSE):
+
+| Fields | Transport |
+|--------|-----------|
+| `command` | stdio (local subprocess) |
+| `url` + `type: "http"` | HTTP (remote) |
+| `url` (no type) | SSE (remote, default) |
+
 ```ts
-{ command?: string, args?: string[], env?: Record<string, string>, url?: string }  // STDIO: command+args, HTTP: url
+interface McpServerConfig {
+    type?: "stdio" | "http" | "sse";
+    command?: string;  args?: string[];  cwd?: string;   // STDIO
+    url?: string;  headers?: Record<string, string>;     // HTTP/SSE
+    env?: Record<string, string>;                        // Common
+}
 ```
 
 ## Agent Skills
