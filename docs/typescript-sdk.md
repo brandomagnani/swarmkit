@@ -31,7 +31,7 @@ const swarmkit = new SwarmKit()
     })
     .withSessionTagPrefix("my-app") // optional tag for the agent session
     .withSystemPrompt("You are Swarm, a powerful AI agent. You can execute code, browse the web, manage files, and solve complex tasks.")
-    .withSkills(["pdf", "docx", "pptx"])  // agent skills for documents, etc.
+    .withSkills(["pdf", "docx", "pptx"])  // agent skills (browser-use included by default)
     .withComposio("user_123", { toolkits: ["gmail", "notion", "exa"] });  // 1000+ integrations via Composio
 
 // Run agent
@@ -51,8 +51,12 @@ for (const [name, content] of Object.entries(output.files)) {
 await swarmkit.kill();
 ```
 
-- **Tracing:** When using `SWARMKIT_API_KEY`, you get automatic tracing and agent analytics at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) for observability and replay—no extra setup needed. Use `withSessionTagPrefix()` to label sessions for easy filtering.
-- **Browser Automation:** Gateway mode includes `browser-use` integration—agents can browse the web, take screenshots, fill forms, and interact with pages out of the box.
+## Gateway Features
+
+When using `SWARMKIT_API_KEY`:
+
+- **Tracing:** Automatic tracing and agent analytics at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) for observability and replay—no extra setup needed. Use `withSessionTagPrefix()` to label sessions for easy filtering.
+- **Browser Automation:** `browser-use` integration included—agents can browse the web, take screenshots, fill forms, and interact with pages out of the box.
 
 ---
 
@@ -67,7 +71,7 @@ await swarmkit.kill();
 
 ---
 
-### 1.1.1 Gateway Mode
+### 1.1.1 Gateway Mode (SWARMKIT_API_KEY)
 
 Get API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai).
 
@@ -274,8 +278,8 @@ const swarmkit = new SwarmKit()
     //     required: ["summary", "score"],
     // })
 
-    // (optional) Skills for the agent (folders from ~/.swarmkit/skills/)
-    .withSkills(["pdf", "dev-browser"])
+    // (optional) Skills for the agent (browser-use included by default)
+    .withSkills(["pdf"])
 
     // (optional) Composio Tool Router for 1000+ integrations (GitHub, Gmail, Slack, etc.)
     .withComposio("user_123", {
@@ -356,7 +360,7 @@ COMPOSIO_API_KEY=...
 import { SwarmKit } from "@swarmkit/sdk";
 
 const swarmkit = new SwarmKit()
-    .withSkills(["pptx", "dev-browser"]);
+    .withSkills(["pptx"]);  // browser-use included by default
 
 await swarmkit.run({ prompt: "Browse Hacker News top 5 articles and create a slide deck summarizing each" });
 ```
@@ -370,6 +374,9 @@ await swarmkit.run({ prompt: "Browse Hacker News top 5 articles and create a sli
 | `xlsx` | Create and edit Excel spreadsheets | [skills/xlsx](https://github.com/brandomagnani/swarmkit/tree/main/skills/xlsx) |
 
 ### Browser Automation
+
+> **Note:** `browser-use` is included by default with Gateway mode (when using `SWARMKIT_API_KEY`). These skills provide additional browser capabilities.
+
 | Skill | Description | Source |
 |-------|-------------|--------|
 | `agent-browser` | CLI-based headless browser automation for AI agents | [skills/agent-browser](https://github.com/brandomagnani/swarmkit/tree/main/skills/agent-browser) |
@@ -1174,7 +1181,7 @@ import { z } from "zod";  // Or use plain JSON Schema objects instead
 
 const swarm = new Swarm({
     agent: { type: "claude" },   // Default agent for all operations
-    skills: ["pdf", "dev-browser"],  // Default skills for all workers
+    skills: ["pdf"],                 // Default skills (browser-use included by default)
     composio: {                  // Default Composio config for all workers
         userId: "user_123",
         config: { toolkits: ["github", "linear"] },
@@ -1479,7 +1486,7 @@ swarm.map<T>({
     verify?: VerifyConfig,              // LLM-as-judge quality check with retry loop
     retry?: RetryConfig,                // Auto-retry on error with backoff
     mcpServers?: Record<string, McpServerConfig>,
-    skills?: string[],                  // e.g. ["pdf", "dev-browser"]
+    skills?: string[],                  // e.g. ["pdf"]
     composio?: ComposioSetup,           // Composio Tool Router config
     timeoutMs?: number,
 }): Promise<SwarmResultList<T>>
@@ -1611,7 +1618,7 @@ swarm.filter<T>({
     verify?: VerifyConfig,              // LLM-as-judge quality check with retry loop
     retry?: RetryConfig,                // Auto-retry on error with backoff
     mcpServers?: Record<string, McpServerConfig>,
-    skills?: string[],                  // e.g. ["pdf", "dev-browser"]
+    skills?: string[],                  // e.g. ["pdf"]
     composio?: ComposioSetup,           // Composio Tool Router config
     timeoutMs?: number,
 }): Promise<SwarmResultList<T>>
@@ -1675,7 +1682,7 @@ swarm.reduce<T>({
     verify?: VerifyConfig,              // LLM-as-judge quality check with retry loop
     retry?: RetryConfig,                // Auto-retry on error with backoff
     mcpServers?: Record<string, McpServerConfig>,
-    skills?: string[],                  // e.g. ["pdf", "dev-browser"]
+    skills?: string[],                  // e.g. ["pdf"]
     composio?: ComposioSetup,           // Composio Tool Router config
     timeoutMs?: number,
 }): Promise<ReduceResult<T>>

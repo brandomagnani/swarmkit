@@ -33,7 +33,7 @@ swarmkit = SwarmKit(
     ),
     session_tag_prefix='my-app',
     system_prompt='You are Swarm, a powerful AI agent. You can execute code, browse the web, manage files, and solve complex tasks.',
-    skills=['pdf', 'docx', 'pptx'],
+    skills=['pdf', 'docx', 'pptx'],  # browser-use included by default
     composio=ComposioSetup(
         user_id='user_123',
         config=ComposioConfig(toolkits=['gmail', 'notion', 'exa']),
@@ -54,8 +54,12 @@ for name, content in output.files.items():
 await swarmkit.kill()
 ```
 
-- **Tracing:** When using `SWARMKIT_API_KEY`, every run is automatically logged to [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces) for observability and replay. Optionally use `session_tag_prefix` to label your agent session for easy filtering.
-- **Browser Automation:** Gateway mode includes `browser-use` integration—agents can browse the web, take screenshots, fill forms, and interact with pages out of the box.
+## Gateway Features
+
+When using `SWARMKIT_API_KEY`:
+
+- **Tracing:** Automatic tracing and agent analytics at [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces) for observability and replay—no extra setup needed. Use `session_tag_prefix` to label sessions for easy filtering.
+- **Browser Automation:** `browser-use` integration included—agents can browse the web, take screenshots, fill forms, and interact with pages out of the box.
 
 ---
 
@@ -70,7 +74,7 @@ await swarmkit.kill()
 
 ---
 
-### 1.1.1 Gateway Mode
+### 1.1.1 Gateway Mode (SWARMKIT_API_KEY)
 
 Get API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai).
 
@@ -285,7 +289,7 @@ swarmkit = SwarmKit(
     # Accepts Pydantic models or JSON Schema dicts
     schema=MyPydanticModel,
 
-    # (optional) Skills for the agent
+    # (optional) Skills for the agent (browser-use included by default)
     skills=['pdf', 'docx', 'pptx'],
 
     # (optional) Composio Tool Router for 1000+ integrations
@@ -363,7 +367,7 @@ COMPOSIO_API_KEY=...
 from swarmkit import SwarmKit
 
 swarmkit = SwarmKit(
-    skills=['pptx', 'dev-browser'],
+    skills=['pptx'],  # browser-use included by default
 )
 
 await swarmkit.run(prompt='Browse Hacker News top 5 articles and create a slide deck summarizing each')
@@ -378,6 +382,9 @@ await swarmkit.run(prompt='Browse Hacker News top 5 articles and create a slide 
 | `xlsx` | Create and edit Excel spreadsheets | [skills/xlsx](https://github.com/brandomagnani/swarmkit/tree/main/skills/xlsx) |
 
 ### Browser Automation
+
+> **Note:** `browser-use` is included by default with Gateway mode (when using `SWARMKIT_API_KEY`). These skills provide additional browser capabilities.
+
 | Skill | Description | Source |
 |-------|-------------|--------|
 | `agent-browser` | CLI-based headless browser automation for AI agents | [skills/agent-browser](https://github.com/brandomagnani/swarmkit/tree/main/skills/agent-browser) |
@@ -1199,7 +1206,7 @@ swarm = Swarm(SwarmConfig(
     concurrency=4,                   # Max parallel sandboxes (default: 4)
     timeout_ms=3_600_000,            # Default timeout per worker (default: 1 hour)
     tag='my-pipeline',               # Tag prefix for observability
-    skills=['pdf', 'dev-browser'],   # Default skills for all workers
+    skills=['pdf'],                  # Default skills (browser-use included by default)
     composio=ComposioSetup(          # Default Composio config for all workers
         user_id='user_123',
         config=ComposioConfig(toolkits=['gmail', 'notion']),
@@ -1508,7 +1515,7 @@ await swarm.map(
     verify=VerifyConfig,                    # LLM-as-judge quality check with retry loop
     retry=RetryConfig,                      # Auto-retry on error with backoff
     mcp_servers=dict[str, McpServerConfig], # Optional
-    skills=list[str],                       # Optional - e.g. ['pdf', 'dev-browser']
+    skills=list[str],                       # Optional - e.g. ['pdf']
     composio=ComposioSetup,                 # Composio Tool Router config
     timeout_ms=int,                         # Optional
 ) -> SwarmResultList
@@ -1634,7 +1641,7 @@ await swarm.filter(
     verify=VerifyConfig,                    # LLM-as-judge quality check with retry loop
     retry=RetryConfig,                      # Auto-retry on error with backoff
     mcp_servers=dict[str, McpServerConfig], # Optional
-    skills=list[str],                       # Optional - e.g. ['pdf', 'dev-browser']
+    skills=list[str],                       # Optional - e.g. ['pdf']
     composio=ComposioSetup,                 # Composio Tool Router config
     timeout_ms=int,                         # Optional
 ) -> SwarmResultList
@@ -1697,7 +1704,7 @@ await swarm.reduce(
     verify=VerifyConfig,                    # LLM-as-judge quality check with retry loop
     retry=RetryConfig,                      # Auto-retry on error with backoff
     mcp_servers=dict[str, McpServerConfig], # Optional
-    skills=list[str],                       # Optional - e.g. ['pdf', 'dev-browser']
+    skills=list[str],                       # Optional - e.g. ['pdf']
     composio=ComposioSetup,                 # Composio Tool Router config
     timeout_ms=int,                         # Optional
 ) -> ReduceResult
