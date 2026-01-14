@@ -15,9 +15,12 @@ Run: python swarm.py
 """
 import asyncio
 import os
+from dotenv import load_dotenv
 from swarmkit import SwarmKit, AgentConfig, read_local_dir, save_local_dir
 from ui import make_renderer, read_prompt, console
 from rich.panel import Panel
+
+load_dotenv()
 
 # ─────────────────────────────────────────────────────────────
 # SwarmKit Instance Configuration

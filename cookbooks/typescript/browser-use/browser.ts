@@ -8,6 +8,7 @@
  * Gateway mode automatically includes browser-use MCP server.
  */
 
+import "dotenv/config";
 import { Swarm, Pipeline } from "@swarmkit/sdk";
 
 import { buildItems, setupRunDir, saveResults } from "./items";

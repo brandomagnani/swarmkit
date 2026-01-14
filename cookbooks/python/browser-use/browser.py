@@ -9,8 +9,11 @@ Gateway mode automatically includes browser-use MCP server.
 """
 import asyncio
 import os
+from dotenv import load_dotenv
 
 from swarmkit import AgentConfig, MapConfig, Pipeline, RetryConfig, Swarm, SwarmConfig, VerifyConfig
+
+load_dotenv()
 
 from items import build_items, save_results, setup_run_dir
 from prompt import visit_post_prompt

@@ -13,6 +13,7 @@
  *
  * Run: npx tsx swarm.ts
  */
+import "dotenv/config";
 import { SwarmKit, readLocalDir, saveLocalDir } from "@swarmkit/sdk";
 import { mkdirSync } from "fs";
 
