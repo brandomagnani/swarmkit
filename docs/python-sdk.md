@@ -28,7 +28,6 @@ from swarmkit import SwarmKit, AgentConfig, ComposioSetup, ComposioConfig
 
 swarmkit = SwarmKit(
     config=AgentConfig(
-        type='codex',
         api_key=os.getenv('SWARMKIT_API_KEY'),
     ),
     session_tag_prefix='my-app',

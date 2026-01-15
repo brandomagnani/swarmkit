@@ -23,10 +23,8 @@ SwarmKit auto-resolves API keys from environment variables.
 ```ts
 import { SwarmKit } from "@swarmkit/sdk";
 
-// Build SwarmKit instance
 const swarmkit = new SwarmKit()
     .withAgent({
-        type: "codex",
         apiKey: process.env.SWARMKIT_API_KEY!,
     })
     .withSessionTagPrefix("my-app") // optional tag for the agent session
