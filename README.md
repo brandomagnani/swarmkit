@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/swarmkit-logo.png" alt="SwarmKit" height="100">
+  <img src="assets/swarmkit-logo.png" alt="SwarmKit" height="200">
 </p>
 
 <br>
