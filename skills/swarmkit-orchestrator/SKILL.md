@@ -16,7 +16,7 @@ source scripts/setup.sh  # Creates .venv, installs swarmkit
 
 Requires `SWARMKIT_API_KEY` (or provider keys + `E2B_API_KEY` for BYOK).
 
-> **Gateway mode:** `SWARMKIT_API_KEY` is already set in this sandbox. No configuration needed—just run the script.
+> **Note:** In Gateway mode, `SWARMKIT_API_KEY` is automatically injected into this sandbox by the parent SwarmKit process. The SDK picks it up from the environment—no manual configuration needed. This enables recursive orchestration: agents can spawn agents.
 
 ## Boilerplate
 

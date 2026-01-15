@@ -90,6 +90,8 @@ API keys auto-resolve from environment variables.
 | BYOK | Provider key + `E2B_API_KEY` | Direct provider access |
 | Claude Max | `CLAUDE_CODE_OAUTH_TOKEN` + `E2B_API_KEY` | Use existing subscription |
 
+> **Note:** In Gateway mode, `SWARMKIT_API_KEY` is automatically injected into this sandbox by the parent SwarmKit process. The SDK picks it up from the environment—no manual configuration needed.
+
 ### Gateway Mode
 
 ```bash
