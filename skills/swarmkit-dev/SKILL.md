@@ -82,15 +82,61 @@ Reusable across different data batches.
 
 ## Authentication
 
-| Mode | Setup | Use Case |
-|------|-------|----------|
-| Gateway | `SWARMKIT_API_KEY` | Managed billing, observability, browser-use |
-| BYOK | Provider keys + `E2B_API_KEY` | Direct provider access |
+API keys auto-resolve from environment variables.
 
-**Gateway Mode** (when using `SWARMKIT_API_KEY`):
-- E2B sandbox auto-provisioned—no need to build `E2BProvider` or pass `sandbox=`
-- `browser-use` integrated by default—agents can browse, screenshot, fill forms
-- Automatic tracing at dashboard.swarmlink.ai
+| Mode | Setup | Included |
+|------|-------|----------|
+| Gateway | `SWARMKIT_API_KEY` | E2B, browser-use, tracing |
+| BYOK | Provider key + `E2B_API_KEY` | Direct provider access |
+| Claude Max | `CLAUDE_CODE_OAUTH_TOKEN` + `E2B_API_KEY` | Use existing subscription |
+
+### Gateway Mode
+
+```bash
+# .env
+SWARMKIT_API_KEY=sk-...
+```
+
+```
+SwarmKit().withAgent({ type: "claude", apiKey: SWARMKIT_API_KEY })
+```
+
+**Included:** E2B sandbox auto-provisioned, `browser-use` integrated, tracing at dashboard.swarmlink.ai
+
+### BYOK Mode
+
+```bash
+# .env
+ANTHROPIC_API_KEY=sk-...   # or OPENAI_API_KEY, GEMINI_API_KEY
+E2B_API_KEY=e2b_...
+```
+
+```
+sandbox = E2BProvider({ apiKey: E2B_API_KEY })
+SwarmKit().withAgent({ type: "claude", providerApiKey: ANTHROPIC_API_KEY }).withSandbox(sandbox)
+```
+
+### Claude Max (OAuth)
+
+```bash
+claude --setup-token  # Run in terminal → receive token
+```
+
+```bash
+# .env
+CLAUDE_CODE_OAUTH_TOKEN=sk-ant-...
+E2B_API_KEY=e2b_...
+```
+
+```
+SwarmKit().withAgent({ type: "claude", oauthToken: CLAUDE_CODE_OAUTH_TOKEN }).withSandbox(sandbox)
+```
+
+**Full docs:** For more details, fetch the official SDK documentation:
+- TypeScript: https://github.com/brandomagnani/swarmkit/blob/main/docs/typescript-sdk.md
+- Python: https://github.com/brandomagnani/swarmkit/blob/main/docs/python-sdk.md
+
+**BYOK Mode**: Set provider env vars (see Agent Types table) + `E2B_API_KEY`.
 
 ## Agent Types
 
