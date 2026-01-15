@@ -23,7 +23,7 @@ load_dotenv()
 # ─────────────────────────────────────────────────────────────
 
 USER_ID = "swarm-user-002"
-ENABLED_TOOLKITS = ["gmail"]
+ENABLED_TOOLKITS = []
 
 SYSTEM_PROMPT = """Your name is Swarm, a powerful autonomous AI agent.
 You can execute code, manage files, and take actions across external services via Composio MCP.
@@ -38,7 +38,6 @@ agent = SwarmKit(
     system_prompt=SYSTEM_PROMPT,
     composio=ComposioSetup(
         user_id=USER_ID,
-        config=ComposioConfig(toolkits=ENABLED_TOOLKITS),
     ),
     session_tag_prefix="swarm-composio-py",
 )

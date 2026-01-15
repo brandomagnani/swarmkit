@@ -8,6 +8,8 @@ description: |
 
 Run terminal-based AI agents in secure sandboxes with built-in observability.
 
+> **Repo:** https://github.com/brandomagnani/swarmkit — cookbooks in `cookbooks/`, skills in `skills/`
+
 ## SDK Choice
 
 | Language | Package | Syntax Reference |

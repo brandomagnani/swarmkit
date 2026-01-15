@@ -8,6 +8,8 @@ description: |
 
 Spawn parallel AI agents for batch processing, quality competition, and multi-model workflows.
 
+> **Repo:** https://github.com/brandomagnani/swarmkit — cookbooks in `cookbooks/`, skills in `skills/`
+
 ## Setup
 
 ```bash
