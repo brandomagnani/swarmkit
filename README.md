@@ -2,8 +2,6 @@
   <img src="assets/swarmkit-logo.png?v=2" alt="SwarmKit" height="200">
 </p>
 
-<br>
-
 <p align="center">
   Embed autonomous AI agents into any application — in a few lines of code.
 </p>
