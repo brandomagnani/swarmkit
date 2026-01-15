@@ -39,6 +39,7 @@ agent = SwarmKit(
     system_prompt=SYSTEM_PROMPT,
     composio=ComposioSetup(
         user_id=USER_ID,
+        toolkits=ENABLED_TOOLKITS,
     ),
     session_tag_prefix="swarm-composio-py",
 )
