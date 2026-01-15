@@ -23,7 +23,8 @@ load_dotenv()
 # ─────────────────────────────────────────────────────────────
 
 USER_ID = "swarm-user-002"
-ENABLED_TOOLKITS = []
+# Choose from 1000+ integrations: https://docs.composio.dev/toolkits/introduction
+ENABLED_TOOLKITS = ["gmail"]
 
 SYSTEM_PROMPT = """Your name is Swarm, a powerful autonomous AI agent.
 You can execute code, manage files, and take actions across external services via Composio MCP.

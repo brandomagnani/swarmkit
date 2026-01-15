@@ -19,6 +19,7 @@ import { makeRenderer, readPrompt, console_, printPanel } from "./ui";
 // ─────────────────────────────────────────────────────────────
 
 const USER_ID = "swarm-user-002";
+// Choose from 1000+ integrations: https://docs.composio.dev/toolkits/introduction
 const ENABLED_TOOLKITS = ["gmail"];
 
 const SYSTEM_PROMPT = `Your name is Swarm, a powerful autonomous AI agent.
