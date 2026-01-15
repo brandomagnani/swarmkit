@@ -132,9 +132,7 @@ E2B_API_KEY=e2b_...
 SwarmKit().withAgent({ type: "claude", oauthToken: CLAUDE_CODE_OAUTH_TOKEN }).withSandbox(sandbox)
 ```
 
-**Full docs:** For more details, fetch the official SDK documentation:
-- TypeScript: https://github.com/brandomagnani/swarmkit/blob/main/docs/typescript-sdk.md
-- Python: https://github.com/brandomagnani/swarmkit/blob/main/docs/python-sdk.md
+**Full docs:** See [references/typescript.md](references/typescript.md) or [references/python.md](references/python.md)
 
 **BYOK Mode**: Set provider env vars (see Agent Types table) + `E2B_API_KEY`.
 
