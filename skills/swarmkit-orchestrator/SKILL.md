@@ -16,6 +16,8 @@ source scripts/setup.sh  # Creates .venv, installs swarmkit
 
 Requires `SWARMKIT_API_KEY` (or provider keys + `E2B_API_KEY` for BYOK).
 
+> **Gateway mode:** `SWARMKIT_API_KEY` is already set in this sandbox. No configuration needed—just run the script.
+
 ## Boilerplate
 
 ```python
