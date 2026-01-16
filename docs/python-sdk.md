@@ -634,191 +634,316 @@ result = await swarmkit.execute_command(
 )
 ```
 
-### 3.3 Streaming events
+### 3.3 Streaming Events
 
 Both `run()` and `execute_command()` stream output in real-time:
 
 ```python
-# Raw output
+from swarmkit import SwarmKit, AgentConfig
+
+swarmkit = SwarmKit(config=AgentConfig(type='claude'))
+
+# Parsed events (recommended)
+swarmkit.on('content', lambda event: print(event['update']['sessionUpdate']))
+
+# Raw output (debugging)
 swarmkit.on('stdout', lambda data: print(data, end=''))
 swarmkit.on('stderr', lambda data: print(f'[ERR] {data}', end=''))
 
-# Parsed output (recommended)
-swarmkit.on('content', lambda event: print(event['update']))
+await swarmkit.run(prompt='Hello')
 ```
 
-**Events**:
+| Event | Type | Description |
+|-------|------|-------------|
+| `content` | `OutputEvent` | Parsed ACP-style events (recommended) |
+| `stdout` | `str` | Raw JSONL output |
+| `stderr` | `str` | Error output |
 
-| Event | Description |
-|-------|-------------|
-| `content` | Parsed ACP-style events (recommended) |
-| `stdout` | Raw JSONL output |
-| `stderr` | Stderr chunks |
+---
 
-**Content event structure** (`event['update']`):
+### Type Definitions
 
-| `sessionUpdate` | Description | Key Fields |
-|-----------------|-------------|------------|
-| `agent_message_chunk` | Text/image from agent | `content.type`, `content.text` |
-| `agent_thought_chunk` | Reasoning/thinking (Codex/Claude) | `content.type`, `content.text` |
-| `user_message_chunk` | User message echo (Gemini) | `content.type`, `content.text` |
-| `tool_call` | Tool started | `toolCallId`, `title`, `kind`, `status`, `rawInput?`, `content?`, `locations?` |
-| `tool_call_update` | Tool finished | `toolCallId`, `status?`, `title?`, `content?`, `locations?` |
-| `plan` | TodoWrite updates | `entries[]` with `content`, `status`, `priority` |
-
-All listeners are optional.
-
-#### Building a Real-Time UI with Callbacks
-
-When building interactive CLI applications with streaming, use a **stateful renderer class** with callbacks. The recommended pattern uses Rich's `Live` for tool status updates while printing messages directly:
+Use these `TypedDict` definitions for type hints:
 
 ```python
-from rich.console import Console, Group
-from rich.live import Live
-from rich.markdown import Markdown
-from rich.spinner import Spinner
-from rich.text import Text
+from typing import TypedDict, Literal, Union, NotRequired
 
-console = Console()
+# =============================================================================
+# Content Types
+# =============================================================================
 
-class StreamRenderer:
-    def __init__(self):
-        self.current_message = ""
-        self.thought_buffer = ""
-        self.tools = {}           # tool_id -> {title, status, kind, raw_input}
-        self.tool_order = []      # preserve tool ordering
-        self.plan_entries = []    # [{content, status, priority}, ...]
-        self.status_live = None
+class TextContent(TypedDict):
+    type: Literal["text"]
+    text: str
 
-    def reset(self):
-        self._stop_status_live()
-        self.current_message = ""
-        self.thought_buffer = ""
-        self.tools = {}
-        self.tool_order = []
-        self.plan_entries = []
+class ImageContent(TypedDict):
+    type: Literal["image"]
+    data: str          # Base64-encoded
+    mimeType: str      # "image/png", "image/jpeg"
+    uri: NotRequired[str]
 
-    def handle_event(self, event: dict):
-        """Main callback - register with swarmkit.on('content', ...)"""
-        update = event.get("update", {})
-        event_type = update.get("sessionUpdate")
+ContentBlock = Union[TextContent, ImageContent]
 
-        if event_type == "agent_message_chunk":
-            content = update.get("content", {})
-            if content.get("type") == "text":
-                self.current_message += content.get("text", "")
+class DiffContent(TypedDict):
+    type: Literal["diff"]
+    path: str
+    oldText: str | None  # None for new files
+    newText: str
 
-        elif event_type == "agent_thought_chunk":
-            # Reasoning/thinking from Codex or Claude
-            content = update.get("content", {})
-            if content.get("type") == "text":
-                self.thought_buffer += content.get("text", "")
+class WrappedContent(TypedDict):
+    type: Literal["content"]
+    content: ContentBlock
 
-        elif event_type == "tool_call":
-            self._flush_message()  # Print message before tool
-            tool_id = update.get("toolCallId", "")
-            if tool_id not in self.tools:
-                self.tool_order.append(tool_id)
-            self.tools[tool_id] = {
-                'title': update.get("title", "Tool"),
-                'kind': update.get("kind", "other"),  # read, edit, search, execute, think, fetch, switch_mode, other
-                'status': update.get("status", "pending"),
-                'raw_input': update.get("rawInput", {}),
-            }
-            self._refresh_status()
+ToolCallContent = Union[WrappedContent, DiffContent]
 
-        elif event_type == "tool_call_update":
-            tool_id = update.get("toolCallId", "")
-            # Handle out-of-order: update may arrive before tool_call
-            if tool_id not in self.tools:
-                self.tool_order.append(tool_id)
-                self.tools[tool_id] = {
-                    'title': update.get("title", "Tool"),
-                    'kind': "other",
-                    'status': "pending",
-                    'raw_input': {},
-                }
-            self.tools[tool_id]['status'] = update.get("status", "completed")
-            self._refresh_status()
+# =============================================================================
+# Tool Types
+# =============================================================================
 
-        elif event_type == "plan":
-            # TodoWrite updates - list of {content, status, priority}
-            self._flush_message()
-            self.plan_entries = update.get("entries", [])
-            self._render_plan()
+ToolKind = Literal[
+    "read",        # Read, NotebookRead
+    "edit",        # Edit, Write, NotebookEdit
+    "delete",      # (future)
+    "move",        # (future)
+    "search",      # Glob, Grep, LS
+    "execute",     # Bash, BashOutput, KillShell
+    "think",       # Task (subagent)
+    "fetch",       # WebFetch, WebSearch
+    "switch_mode", # ExitPlanMode
+    "other",       # MCP tools, unknown
+]
 
-    def _flush_message(self):
-        if self.current_message.strip():
-            console.print(Markdown(self.current_message))
-            console.print()
-            self.current_message = ""
+ToolCallStatus = Literal["pending", "in_progress", "completed", "failed"]
 
-    def _render_plan(self):
-        """Render plan/todo entries"""
-        if not self.plan_entries:
-            return
-        for entry in self.plan_entries:
-            status = entry.get("status", "pending")
-            content = entry.get("content", "")
-            icon = {"completed": "✓", "in_progress": "→", "pending": "○"}.get(status, "○")
-            style = {"completed": "green", "in_progress": "cyan", "pending": "dim"}.get(status, "dim")
-            console.print(f"[{style}]{icon} {content}[/{style}]")
-        console.print()
+class ToolCallLocation(TypedDict):
+    path: str
+    line: NotRequired[int]
 
-    def _render_status(self):
-        """Render all tools as a Group - updates in place"""
-        lines = []
-        for tool_id in self.tool_order:
-            tool = self.tools[tool_id]
-            status = tool.get('status', 'pending')
-            dot_style = "green" if status == 'completed' else "red" if status == 'failed' else "cyan"
-            line = Text()
-            line.append("● ", style=dot_style)
-            line.append(f"{tool['title']}", style="white")
-            lines.append(line)
-        lines.append(Spinner("dots", style="cyan"))
-        return Group(*lines) if lines else Text("")
+# =============================================================================
+# Session Update Types
+# =============================================================================
 
-    def _refresh_status(self):
-        if self.status_live:
-            self.status_live.update(self._render_status(), refresh=True)
+class AgentMessageChunk(TypedDict):
+    sessionUpdate: Literal["agent_message_chunk"]
+    content: ContentBlock
 
-    def _stop_status_live(self):
-        if self.status_live:
-            self.status_live.stop()
-            self.status_live = None
+class AgentThoughtChunk(TypedDict):
+    sessionUpdate: Literal["agent_thought_chunk"]
+    content: ContentBlock
 
-    def start_live(self):
-        self.status_live = Live(self._render_status(), console=console, refresh_per_second=12)
-        self.status_live.start()
+class UserMessageChunk(TypedDict):
+    sessionUpdate: Literal["user_message_chunk"]
+    content: ContentBlock
 
-    def stop_live(self):
-        self._stop_status_live()
-        self._flush_message()
-        # Optionally display collected thoughts
-        if self.thought_buffer.strip():
-            console.print("[dim]Reasoning:[/dim]")
-            console.print(f"[dim italic]{self.thought_buffer}[/dim italic]")
+class ToolCall(TypedDict):
+    sessionUpdate: Literal["tool_call"]
+    toolCallId: str
+    title: str
+    kind: ToolKind
+    status: ToolCallStatus
+    rawInput: NotRequired[dict]
+    content: NotRequired[list[ToolCallContent]]
+    locations: NotRequired[list[ToolCallLocation]]
 
-# Usage:
-renderer = StreamRenderer()
-swarmkit.on("content", renderer.handle_event)
+class ToolCallUpdate(TypedDict):
+    sessionUpdate: Literal["tool_call_update"]
+    toolCallId: str
+    status: NotRequired[ToolCallStatus]
+    title: NotRequired[str]
+    content: NotRequired[list[ToolCallContent]]
+    locations: NotRequired[list[ToolCallLocation]]
 
-renderer.reset()
-renderer.start_live()
-await swarmkit.run(prompt="Your task here")
-renderer.stop_live()
+PlanEntryStatus = Literal["pending", "in_progress", "completed"]
+
+class PlanEntry(TypedDict):
+    content: str
+    status: PlanEntryStatus
+    priority: Literal["high", "medium", "low"]
+
+class Plan(TypedDict):
+    sessionUpdate: Literal["plan"]
+    entries: list[PlanEntry]
+
+SessionUpdate = Union[
+    AgentMessageChunk,
+    AgentThoughtChunk,
+    UserMessageChunk,
+    ToolCall,
+    ToolCallUpdate,
+    Plan,
+]
+
+# =============================================================================
+# Top-Level Event
+# =============================================================================
+
+class OutputEvent(TypedDict):
+    sessionId: NotRequired[str]
+    update: SessionUpdate
+
+# =============================================================================
+# Browser-Use Response (First-Party Integration)
+# =============================================================================
+
+class BrowserUseResponse(TypedDict):
+    """Browser automation response embedded in ToolCallUpdate.content[].content.text as JSON string."""
+    live_url: NotRequired[str]        # VNC live view URL
+    screenshot_url: NotRequired[str]  # Final screenshot URL
+    steps: NotRequired[list[dict]]    # Per-step screenshots: [{"screenshot_url": "..."}]
 ```
 
-**Key patterns:**
+---
 
-1. **Handle all 5 event types** - `agent_message_chunk`, `agent_thought_chunk`, `tool_call`, `tool_call_update`, `plan`
-2. **Flush messages before tools/plan** - Preserves correct interleaving order
-3. **Track tools by ID** - `tool_call` (start) and `tool_call_update` (end) share `toolCallId`
-4. **Handle out-of-order updates** - `tool_call_update` may arrive before `tool_call`
-5. **Use `kind` for tool categorization** - `read`, `edit`, `search`, `execute`, `think`, `fetch`, `switch_mode`, `other`
+### BrowserUseResponse Extraction
 
-> **Full production example:** See [`cookbooks/agent-python/ui.py`](../cookbooks/agent-python/ui.py) for styled formatting, tool content display, and advanced Live block management.
+Browser automation (`browser-use`) is included by default in Gateway mode. Browser tool responses embed a **JSON string** inside `ToolCallUpdate["content"][].content.text`. You must extract and parse it.
+
+**Extraction function** (use regex first for speed and malformed JSON tolerance, then JSON fallback):
+
+```python
+import re
+import json
+from typing import Optional
+
+def extract_browser_use_urls(text: str) -> dict[str, Optional[str]]:
+    """Extract browser-use URLs from tool response text.
+
+    Returns:
+        {"live_url": str | None, "screenshot_url": str | None}
+    """
+    live_url: Optional[str] = None
+    screenshot_url: Optional[str] = None
+
+    # 1. Regex extraction (fast, handles malformed JSON)
+    live_match = re.search(r'"live_url"\s*:\s*"([^"]+)"', text)
+    if live_match:
+        live_url = live_match.group(1)
+
+    screenshot_match = re.search(r'"screenshot_url"\s*:\s*"([^"]+)"', text)
+    if screenshot_match:
+        screenshot_url = screenshot_match.group(1)
+
+    # 2. JSON fallback (for steps[].screenshot_url)
+    if not live_url or not screenshot_url:
+        try:
+            parsed: BrowserUseResponse = json.loads(text)
+            if not live_url:
+                live_url = parsed.get("live_url")
+            if not screenshot_url:
+                screenshot_url = parsed.get("screenshot_url") or (
+                    parsed.get("steps", [{}])[0].get("screenshot_url")
+                )
+        except (json.JSONDecodeError, IndexError, KeyError):
+            pass
+
+    return {"live_url": live_url, "screenshot_url": screenshot_url}
+```
+
+---
+
+### Event Types Summary
+
+| Type | `sessionUpdate` | Description |
+|------|-----------------|-------------|
+| `AgentMessageChunk` | `"agent_message_chunk"` | Text/image streaming from agent |
+| `AgentThoughtChunk` | `"agent_thought_chunk"` | Reasoning (Codex) or thinking (Claude) |
+| `UserMessageChunk` | `"user_message_chunk"` | User message echo (Gemini) |
+| `ToolCall` | `"tool_call"` | Tool execution started |
+| `ToolCallUpdate` | `"tool_call_update"` | Tool execution finished |
+| `Plan` | `"plan"` | TodoWrite updates (replaces entire list) |
+
+---
+
+### ToolKind Reference
+
+| Kind | Tools | Icon |
+|------|-------|------|
+| `read` | Read, NotebookRead | :page_facing_up: |
+| `edit` | Edit, Write, NotebookEdit | :pencil2: |
+| `search` | Glob, Grep, LS | :mag: |
+| `execute` | Bash, BashOutput, KillShell | :zap: |
+| `think` | Task (subagent) | :brain: |
+| `fetch` | WebFetch, WebSearch | :globe_with_meridians: |
+| `switch_mode` | ExitPlanMode | :twisted_rightwards_arrows: |
+| `other` | MCP tools, unknown | :grey_question: |
+
+---
+
+### UI Integration Example
+
+```python
+from typing import cast
+
+def handle_event(event: OutputEvent) -> None:
+    update = event["update"]
+    event_type = update["sessionUpdate"]
+
+    if event_type == "agent_message_chunk":
+        msg = cast(AgentMessageChunk, update)
+        if msg["content"]["type"] == "text":
+            ui.append_message(msg["content"]["text"])
+        else:
+            img = cast(ImageContent, msg["content"])
+            ui.append_image(img["data"], img["mimeType"])
+
+    elif event_type == "agent_thought_chunk":
+        thought = cast(AgentThoughtChunk, update)
+        ui.append_thought(thought["content"])
+
+    elif event_type == "user_message_chunk":
+        # Gemini echo - typically ignored
+        pass
+
+    elif event_type == "tool_call":
+        tool = cast(ToolCall, update)
+        ui.add_tool(
+            id=tool["toolCallId"],
+            title=tool["title"],
+            kind=tool["kind"],
+            status=tool["status"],
+            locations=tool.get("locations"),
+        )
+
+    elif event_type == "tool_call_update":
+        update_data = cast(ToolCallUpdate, update)
+
+        # 1. Always update tool card with result
+        ui.update_tool(
+            update_data["toolCallId"],
+            status=update_data.get("status"),
+            content=update_data.get("content"),
+        )
+
+        # 2. Extract browser-use URLs if present (first-party integration)
+        for c in update_data.get("content") or []:
+            if c.get("type") == "content":
+                inner = c.get("content", {})
+                if inner.get("type") == "text":
+                    urls = extract_browser_use_urls(inner["text"])
+                    if urls["live_url"]:
+                        ui.show_live_view_button(urls["live_url"])
+                    if urls["screenshot_url"]:
+                        ui.show_screenshot(urls["screenshot_url"])
+
+    elif event_type == "plan":
+        plan = cast(Plan, update)
+        ui.render_plan(plan["entries"])
+
+swarmkit.on("content", handle_event)
+```
+
+---
+
+### Key Patterns
+
+1. **Handle all 6 event types** — Don't silently drop unknown events
+2. **Match tools by ID** — `tool_call` and `tool_call_update` share `toolCallId`
+3. **Handle out-of-order** — `tool_call_update` may arrive before `tool_call`
+4. **Concatenate chunks** — Message text arrives incrementally
+5. **Support images** — `ContentBlock` includes `ImageContent`
+6. **Use `kind` for icons** — Categorize tools visually (read, edit, execute, etc.)
+7. **Track `locations`** — Show affected file paths in UI
+8. **Use `cast()` for narrowing** — TypedDict unions need explicit casting after checking `sessionUpdate`
 
 ### 3.4 Upload: Local → Sandbox
 
