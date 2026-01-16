@@ -23,10 +23,8 @@ SwarmKit auto-resolves API keys from environment variables.
 ```ts
 import { SwarmKit } from "@swarmkit/sdk";
 
-// Build SwarmKit instance
 const swarmkit = new SwarmKit()
     .withAgent({
-        type: "codex",
         apiKey: process.env.SWARMKIT_API_KEY!,
     })
     .withSessionTagPrefix("my-app") // optional tag for the agent session
@@ -608,215 +606,321 @@ const result = await swarmkit.executeCommand("pytest", {
 });
 ```
 
-### 3.3 Streaming events
+### 3.3 Streaming Events
 
-`SwarmKit` extends Node's `EventEmitter`. Both `run()` and `executeCommand()` stream output in real-time:
+`SwarmKit` extends Node's `EventEmitter`. Subscribe to real-time output from `run()` and `executeCommand()`:
 
-```ts
-// Raw output
-swarmkit.on("stdout", chunk => process.stdout.write(chunk));
-swarmkit.on("stderr", chunk => process.stderr.write(chunk));
+```typescript
+import { SwarmKit } from "@swarmkit/sdk";
+import type { OutputEvent } from "@swarmkit/sdk";
 
-// Parsed output (recommended)
-swarmkit.on("content", event => console.log(event.update));
+const swarmkit = new SwarmKit().withAgent({ type: "claude" });
+
+// Parsed events (recommended)
+swarmkit.on("content", (event: OutputEvent) => {
+  console.log(event.update.sessionUpdate, event.update);
+});
+
+// Raw output (debugging)
+swarmkit.on("stdout", (chunk: string) => process.stdout.write(chunk));
+swarmkit.on("stderr", (chunk: string) => process.stderr.write(chunk));
+
+await swarmkit.run({ prompt: "Hello" });
 ```
 
-**Events**:
+| Event | Type | Description |
+|-------|------|-------------|
+| `content` | `OutputEvent` | Parsed ACP-style events (recommended) |
+| `stdout` | `string` | Raw JSONL output |
+| `stderr` | `string` | Error output |
 
-| Event | Description |
-|-------|-------------|
-| `content` | Parsed ACP-style events (recommended) |
-| `stdout` | Raw JSONL output |
-| `stderr` | Stderr chunks |
+---
 
-**Content event structure** (`event.update`):
+### OutputEvent
 
-| `sessionUpdate` | Description | Key Fields |
-|-----------------|-------------|------------|
-| `agent_message_chunk` | Text/image from agent | `content.type`, `content.text` |
-| `agent_thought_chunk` | Reasoning/thinking (Codex/Claude) | `content.type`, `content.text` |
-| `user_message_chunk` | User message echo (Gemini) | `content.type`, `content.text` |
-| `tool_call` | Tool started | `toolCallId`, `title`, `kind`, `status`, `rawInput?`, `content?`, `locations?` |
-| `tool_call_update` | Tool finished | `toolCallId`, `status?`, `title?`, `content?`, `locations?` |
-| `plan` | TodoWrite updates | `entries[]` with `content`, `status`, `priority` |
+Top-level event structure:
 
-All listeners are optional.
+```typescript
+interface OutputEvent {
+  sessionId?: string;
+  update: SessionUpdate;
+}
+```
 
-#### Building a Real-Time UI with Callbacks
+---
 
-When building interactive CLI applications with streaming, use a **stateful renderer class** with callbacks. The recommended pattern uses a live-updating status area for tool calls while printing messages directly:
+### SessionUpdate Types
 
-```ts
-import logUpdate from "log-update";
+Discriminated union on `sessionUpdate` field:
 
-interface ToolInfo {
+```typescript
+type SessionUpdate =
+  | AgentMessageChunk
+  | AgentThoughtChunk
+  | UserMessageChunk
+  | ToolCall
+  | ToolCallUpdate
+  | Plan;
+```
+
+#### Message Events
+
+| Type | `sessionUpdate` | Description |
+|------|-----------------|-------------|
+| `AgentMessageChunk` | `"agent_message_chunk"` | Text/image streaming from agent |
+| `AgentThoughtChunk` | `"agent_thought_chunk"` | Reasoning (Codex) or thinking (Claude) |
+| `UserMessageChunk` | `"user_message_chunk"` | User message echo (Gemini) |
+
+```typescript
+interface AgentMessageChunk {
+  sessionUpdate: "agent_message_chunk";
+  content: ContentBlock;
+}
+
+interface AgentThoughtChunk {
+  sessionUpdate: "agent_thought_chunk";
+  content: ContentBlock;
+}
+
+interface UserMessageChunk {
+  sessionUpdate: "user_message_chunk";
+  content: ContentBlock;
+}
+```
+
+#### Tool Events
+
+| Type | `sessionUpdate` | Description |
+|------|-----------------|-------------|
+| `ToolCall` | `"tool_call"` | Tool execution started |
+| `ToolCallUpdate` | `"tool_call_update"` | Tool execution finished |
+
+```typescript
+interface ToolCall {
+  sessionUpdate: "tool_call";
+  toolCallId: string;
   title: string;
-  kind: string;
-  status: string;
-  rawInput: Record<string, unknown>;
+  kind: ToolKind;
+  status: ToolCallStatus;
+  rawInput?: unknown;
+  content?: ToolCallContent[];
+  locations?: ToolCallLocation[];
+}
+
+interface ToolCallUpdate {
+  sessionUpdate: "tool_call_update";
+  toolCallId: string;
+  status?: ToolCallStatus;
+  title?: string;
+  content?: ToolCallContent[];
+  locations?: ToolCallLocation[];
+}
+```
+
+#### Plan Event
+
+| Type | `sessionUpdate` | Description |
+|------|-----------------|-------------|
+| `Plan` | `"plan"` | TodoWrite updates (replaces entire list) |
+
+```typescript
+interface Plan {
+  sessionUpdate: "plan";
+  entries: PlanEntry[];
 }
 
 interface PlanEntry {
-  status: string;
   content: string;
-  priority?: string;  // "high" | "medium" | "low"
+  status: "pending" | "in_progress" | "completed";
+  priority: "high" | "medium" | "low";
 }
-
-class StreamRenderer {
-  private currentMessage = "";
-  private thoughtBuffer = "";
-  private tools: Map<string, ToolInfo> = new Map();
-  private toolOrder: string[] = [];
-  private planEntries: PlanEntry[] = [];
-  private isLive = false;
-
-  reset(): void {
-    this.stopLive();
-    this.currentMessage = "";
-    this.thoughtBuffer = "";
-    this.tools.clear();
-    this.toolOrder = [];
-    this.planEntries = [];
-  }
-
-  handleEvent(event: { update?: Record<string, unknown> }): void {
-    const update = event.update ?? {};
-    const eventType = update.sessionUpdate as string | undefined;
-
-    if (eventType === "agent_message_chunk") {
-      const content = update.content as Record<string, unknown> | undefined;
-      if (content?.type === "text") {
-        this.currentMessage += (content.text as string) ?? "";
-      }
-
-    } else if (eventType === "agent_thought_chunk") {
-      // Reasoning/thinking from Codex or Claude
-      const content = update.content as Record<string, unknown> | undefined;
-      if (content?.type === "text") {
-        this.thoughtBuffer += (content.text as string) ?? "";
-      }
-
-    } else if (eventType === "tool_call") {
-      this.flushMessage(); // Print message before tool
-      const toolId = (update.toolCallId as string) ?? "";
-      if (!this.tools.has(toolId)) {
-        this.toolOrder.push(toolId);
-      }
-      this.tools.set(toolId, {
-        title: (update.title as string) ?? "Tool",
-        kind: (update.kind as string) ?? "other", // read, edit, search, execute, think, fetch, switch_mode, other
-        status: (update.status as string) ?? "pending",
-        rawInput: (update.rawInput as Record<string, unknown>) ?? {},
-      });
-      this.refreshStatus();
-
-    } else if (eventType === "tool_call_update") {
-      const toolId = (update.toolCallId as string) ?? "";
-      // Handle out-of-order: update may arrive before tool_call
-      if (!this.tools.has(toolId)) {
-        this.toolOrder.push(toolId);
-        this.tools.set(toolId, {
-          title: (update.title as string) ?? "Tool",
-          kind: "other",
-          status: "pending",
-          rawInput: {},
-        });
-      }
-      const tool = this.tools.get(toolId)!;
-      tool.status = (update.status as string) ?? "completed";
-      this.refreshStatus();
-
-    } else if (eventType === "plan") {
-      // TodoWrite updates - list of {content, status, priority}
-      this.flushMessage();
-      this.planEntries = (update.entries as PlanEntry[]) ?? [];
-      this.renderPlan();
-    }
-  }
-
-  private flushMessage(): void {
-    if (this.currentMessage.trim()) {
-      this.clearLive();
-      console.log(this.currentMessage.trim());
-      console.log();
-      this.currentMessage = "";
-      this.startLive();
-    }
-  }
-
-  private renderPlan(): void {
-    if (this.planEntries.length === 0) return;
-    this.clearLive();
-    for (const entry of this.planEntries) {
-      const status = entry.status ?? "pending";
-      const content = entry.content ?? "";
-      const icon = { completed: "✓", in_progress: "→", pending: "○" }[status] ?? "○";
-      console.log(`${icon} ${content}`);
-    }
-    console.log();
-    this.startLive();
-  }
-
-  private renderStatus(): string {
-    const lines: string[] = [];
-    for (const toolId of this.toolOrder) {
-      const tool = this.tools.get(toolId)!;
-      const dot = tool.status === "completed" ? "●" : tool.status === "failed" ? "●" : "●";
-      lines.push(`${dot} ${tool.title}`);
-    }
-    lines.push("⠋ Working...");
-    return lines.join("\n");
-  }
-
-  private refreshStatus(): void {
-    if (this.isLive) {
-      logUpdate(this.renderStatus());
-    }
-  }
-
-  private clearLive(): void {
-    if (this.isLive) {
-      logUpdate("");
-      logUpdate.done();
-      this.isLive = false;
-    }
-  }
-
-  startLive(): void {
-    this.isLive = true;
-    this.refreshStatus();
-  }
-
-  stopLive(): void {
-    this.clearLive();
-    this.flushMessage();
-    // Optionally display collected thoughts
-    if (this.thoughtBuffer.trim()) {
-      console.log("Reasoning:");
-      console.log(this.thoughtBuffer);
-    }
-  }
-}
-
-// Usage:
-const renderer = new StreamRenderer();
-swarmkit.on("content", (event) => renderer.handleEvent(event));
-
-renderer.reset();
-renderer.startLive();
-await swarmkit.run({ prompt: "Your task here" });
-renderer.stopLive();
 ```
 
-**Key patterns:**
+---
 
-1. **Handle all 5 event types** - `agent_message_chunk`, `agent_thought_chunk`, `tool_call`, `tool_call_update`, `plan`
-2. **Flush messages before tools/plan** - Preserves correct interleaving order
-3. **Track tools by ID** - `tool_call` (start) and `tool_call_update` (end) share `toolCallId`
-4. **Handle out-of-order updates** - `tool_call_update` may arrive before `tool_call`
-5. **Use `kind` for tool categorization** - `read`, `edit`, `search`, `execute`, `think`, `fetch`, `switch_mode`, `other`
+### Content Types
 
-> **Full production example:** See [`cookbooks/agent-typescript/ui.ts`](../cookbooks/agent-typescript/ui.ts) for styled formatting with chalk, markdown rendering, spinner animations, and advanced live output management.
+```typescript
+type ContentBlock = TextContent | ImageContent;
+
+interface TextContent {
+  type: "text";
+  text: string;
+}
+
+interface ImageContent {
+  type: "image";
+  data: string;       // Base64-encoded
+  mimeType: string;   // "image/png", "image/jpeg"
+  uri?: string;
+}
+```
+
+---
+
+### Tool Metadata Types
+
+#### ToolKind
+
+Tool category for UI icons:
+
+```typescript
+type ToolKind =
+  | "read"        // Read, NotebookRead
+  | "edit"        // Edit, Write, NotebookEdit
+  | "delete"      // (future)
+  | "move"        // (future)
+  | "search"      // Glob, Grep, LS
+  | "execute"     // Bash, BashOutput, KillShell
+  | "think"       // Task (subagent)
+  | "fetch"       // WebFetch, WebSearch
+  | "switch_mode" // ExitPlanMode
+  | "other";      // MCP tools, unknown
+```
+
+#### ToolCallStatus
+
+```typescript
+type ToolCallStatus = "pending" | "in_progress" | "completed" | "failed";
+```
+
+#### ToolCallLocation
+
+```typescript
+interface ToolCallLocation {
+  path: string;
+  line?: number;
+}
+```
+
+#### ToolCallContent
+
+```typescript
+type ToolCallContent =
+  | { type: "content"; content: ContentBlock }
+  | DiffContent;
+
+interface DiffContent {
+  type: "diff";
+  path: string;
+  oldText: string | null;
+  newText: string;
+}
+```
+
+#### BrowserUseResponse
+
+Browser automation (`browser-use`) is included by default in Gateway mode. Browser tool responses embed a **JSON string** inside `ToolCallUpdate.content[].content.text`. You must extract and parse it.
+
+```typescript
+interface BrowserUseResponse {
+  live_url?: string;                          // VNC live view URL
+  screenshot_url?: string;                    // Final screenshot URL
+  steps?: Array<{ screenshot_url?: string }>; // Per-step screenshots
+}
+```
+
+**Extraction function** (use regex first for speed and malformed JSON tolerance, then JSON.parse fallback for nested access):
+
+```typescript
+function extractBrowserUseUrls(text: string): { liveUrl?: string; screenshotUrl?: string } {
+  let liveUrl: string | undefined;
+  let screenshotUrl: string | undefined;
+
+  // 1. Regex extraction (fast, handles malformed JSON)
+  const liveMatch = text.match(/"live_url"\s*:\s*"([^"]+)"/);
+  if (liveMatch) liveUrl = liveMatch[1];
+
+  const screenshotMatch = text.match(/"screenshot_url"\s*:\s*"([^"]+)"/);
+  if (screenshotMatch) screenshotUrl = screenshotMatch[1];
+
+  // 2. JSON.parse fallback (for steps[].screenshot_url)
+  if (!liveUrl || !screenshotUrl) {
+    try {
+      const parsed = JSON.parse(text) as BrowserUseResponse;
+      if (!liveUrl) liveUrl = parsed.live_url;
+      if (!screenshotUrl) screenshotUrl = parsed.screenshot_url ?? parsed.steps?.[0]?.screenshot_url;
+    } catch {}
+  }
+
+  return { liveUrl, screenshotUrl };
+}
+```
+
+---
+
+### UI Integration Example
+
+```typescript
+import type { OutputEvent } from "@swarmkit/sdk";
+
+function handleEvent(event: OutputEvent): void {
+  const { update } = event;
+
+  switch (update.sessionUpdate) {
+    case "agent_message_chunk":
+      if (update.content.type === "text") {
+        ui.appendMessage(update.content.text);
+      } else {
+        ui.appendImage(update.content.data, update.content.mimeType);
+      }
+      break;
+
+    case "agent_thought_chunk":
+      ui.appendThought(update.content);
+      break;
+
+    case "user_message_chunk":
+      // Gemini echo - typically ignored
+      break;
+
+    case "tool_call":
+      ui.addTool({
+        id: update.toolCallId,
+        title: update.title,
+        kind: update.kind,
+        status: update.status,
+        locations: update.locations,
+      });
+      break;
+
+    case "tool_call_update":
+      // 1. Always update tool card with result
+      ui.updateTool(update.toolCallId, {
+        status: update.status,
+        content: update.content,
+      });
+
+      // 2. Extract browser-use URLs if present (first-party integration)
+      for (const c of update.content ?? []) {
+        if (c.type === "content" && c.content?.type === "text") {
+          const urls = extractBrowserUseUrls(c.content.text);
+          if (urls.liveUrl) ui.showLiveViewButton(urls.liveUrl);
+          if (urls.screenshotUrl) ui.showScreenshot(urls.screenshotUrl);
+        }
+      }
+      break;
+
+    case "plan":
+      ui.renderPlan(update.entries);
+      break;
+  }
+}
+
+swarmkit.on("content", handleEvent);
+```
+
+---
+
+### Key Patterns
+
+1. **Handle all 6 event types** — Don't silently drop unknown events
+2. **Match tools by ID** — `tool_call` and `tool_call_update` share `toolCallId`
+3. **Handle out-of-order** — `tool_call_update` may arrive before `tool_call`
+4. **Concatenate chunks** — Message text arrives incrementally
+5. **Support images** — `ContentBlock` includes `ImageContent`
+6. **Use `kind` for icons** — Categorize tools visually (read, edit, execute, etc.)
+7. **Track `locations`** — Show affected file paths in UI
 
 ### 3.4 Upload: Local → Sandbox
 
