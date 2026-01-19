@@ -105,7 +105,7 @@ SWARMKIT_API_KEY=sk-...
 SwarmKit().withAgent({ type: "claude", apiKey: SWARMKIT_API_KEY })
 ```
 
-**Included:** E2B sandbox auto-provisioned, `browser-use` integrated, tracing at dashboard.swarmlink.ai
+**Included:** E2B sandbox auto-provisioned, `browser-use` integrated, tracing at dashboard.evolvingmachines.ai
 
 ### BYOK Mode
 

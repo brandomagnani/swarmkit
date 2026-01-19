@@ -13,7 +13,7 @@ Run terminal-based AI agents in secure sandboxes with built-in observability.
 ```bash
 # .env
 
-# SwarmKit gateway key (dashboard.swarmlink.ai)
+# SwarmKit gateway key (dashboard.evolvingmachines.ai)
 SWARMKIT_API_KEY=sk-...
 
 # Composio integrations (app.composio.dev)
@@ -57,7 +57,7 @@ await swarmkit.kill()
 
 When using `SWARMKIT_API_KEY`:
 
-- **Tracing:** Automatic tracing and agent analytics at [dashboard.swarmlink.ai/traces](https://dashboard.swarmlink.ai/traces) for observability and replay—no extra setup needed. Use `session_tag_prefix` to label sessions for easy filtering.
+- **Tracing:** Automatic tracing and agent analytics at [dashboard.evolvingmachines.ai/traces](https://dashboard.evolvingmachines.ai/traces) for observability and replay—no extra setup needed. Use `session_tag_prefix` to label sessions for easy filtering.
 - **Browser Automation:** `browser-use` integration included—agents can browse the web, take screenshots, fill forms, and interact with pages out of the box.
 
 ---
@@ -67,15 +67,15 @@ When using `SWARMKIT_API_KEY`:
 | | Gateway Mode | BYOK Mode |
 |---|---------|---------------|
 | Setup | `SWARMKIT_API_KEY` | Model provider keys + [`E2B_API_KEY`](https://e2b.dev) |
-| Observability | [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) | `~/.swarmkit/observability/` |
+| Observability | [dashboard.evolvingmachines.ai](https://dashboard.evolvingmachines.ai) | `~/.swarmkit/observability/` |
 | Browser | `browser-use` integrated | Via skills or MCP |
-| Billing | Swarmlink | Your provider accounts |
+| Billing | Evolving Machines | Your provider accounts |
 
 ---
 
 ### 1.1.1 Gateway Mode (SWARMKIT_API_KEY)
 
-Get API key from [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai).
+Get API key from [dashboard.evolvingmachines.ai](https://dashboard.evolvingmachines.ai).
 
 ```bash
 # .env
@@ -1257,7 +1257,7 @@ await swarmkit.run(prompt='Compare results')  # Back to sandbox A
 
 ## 6. Observability
 
-Full execution traces—including tool calls, file operations (read/write/edit), text responses, and reasoning chunks—are logged to your SwarmKit dashboard at **https://dashboard.swarmlink.ai/traces** for debugging and replay.
+Full execution traces—including tool calls, file operations (read/write/edit), text responses, and reasoning chunks—are logged to your SwarmKit dashboard at **https://dashboard.evolvingmachines.ai/traces** for debugging and replay.
 
 Additionally, every run and command is logged locally to structured JSON lines under `~/.swarmkit/observability/sessions`. File name format:
 
