@@ -20,7 +20,7 @@ pip install swarmkit
 
 ### 2. Unlock full power with SwarmKit API key
 
-Sign up at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/) and get your **SwarmKit API key** for:
+Sign up at [dashboard.evolvingmachines.ai](https://dashboard.evolvingmachines.ai/) and get your **SwarmKit API key** for:
 - Agent execution traces, observability and analytics
 - Centralized billing across all providers
 - Mix any model with any CLI agent
@@ -34,7 +34,7 @@ Check out the [documentation](https://github.com/brandomagnani/swarmkit/tree/mai
 
 - [Community Discord](https://discord.gg/Q36D8dGyNF)
 - [Schedule Demo](https://cal.com/brando-magnani/swarmkit-1-1-onboarding-chat)
-- Email: [brandomagnani@swarmlink.ai](mailto:brandomagnani@swarmlink.ai)
+- Email: [brandomagnani@evolvingmachines.ai](mailto:brandomagnani@evolvingmachines.ai)
 
 ## Reporting Bugs
 

@@ -3,7 +3,7 @@
 A sandboxed CLI agent that can think, execute code, automate browsers (browser-use MCP), read / edit files, and solve complex tasks.
 - Put any files to the `input/` folder that is automatically created upon running `npx tsx Swarm.ts`: these files will be part of the agent context.
 - Ask for anything—any files the agent creates are automatically downloaded to your local `output/` folder.
-- Check traces at https://dashboard.swarmlink.ai/traces. Type `/quit` to exit.
+- Check traces at https://dashboard.evolvingmachines.ai/traces. Type `/quit` to exit.
 
 ## Setup
 
@@ -13,7 +13,7 @@ npm install
 cp .env.example .env
 ```
 
-- Edit `.env` with your API key: `SWARMKIT_API_KEY` ([dashboard.swarmlink.ai](https://dashboard.swarmlink.ai)), `BROWSER_USE_API_KEY` ([browser-use.com](https://browser-use.com), optional)
+- Edit `.env` with your API key: `SWARMKIT_API_KEY` ([dashboard.evolvingmachines.ai](https://dashboard.evolvingmachines.ai)), `BROWSER_USE_API_KEY` ([browser-use.com](https://browser-use.com), optional)
 
 ## Run
 

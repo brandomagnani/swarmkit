@@ -15,7 +15,7 @@
 - 500+ integrations (Gmail, GitHub, Slack, Notion & more) via [Composio](https://github.com/ComposioHQ/composio)
 - Functional programming abstractions (map, filter, reduce) for massively parallel workloads
 - Streaming and structured output
-- Built-in [agent observability and analytics dashboard](https://dashboard.swarmlink.ai/)
+- Built-in [agent observability and analytics dashboard](https://dashboard.evolvingmachines.ai/)
 - Much more coming...
 
 Add the [`swarmkit-dev`](skills/swarmkit-dev/SKILL.md) SKILL to your favorite coding agent and start building with SwarmKit:
@@ -48,7 +48,7 @@ ANTHROPIC_API_KEY=sk-ant-...         # or CLAUDE_CODE_OAUTH_TOKEN (Claude Max), 
 E2B_API_KEY=e2b_...                  # sandbox provider, get at https://e2b.dev
 ```
 
-Or get your SwarmKit API key at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai) ([see 3. below](#swarmkit-gateway)):
+Or get your SwarmKit API key at [dashboard.evolvingmachines.ai](https://dashboard.evolvingmachines.ai) ([see 3. below](#swarmkit-gateway)):
 ```bash
 # .env - Gateway
 SWARMKIT_API_KEY=sk-...
@@ -75,7 +75,7 @@ output = await swarmkit.get_output_files()  # output.files
 
 ### 3. Unlock full power with SwarmKit API key
 
-Sign up at [dashboard.swarmlink.ai](https://dashboard.swarmlink.ai/) and get your **SwarmKit API key** for:
+Sign up at [dashboard.evolvingmachines.ai](https://dashboard.evolvingmachines.ai/) and get your **SwarmKit API key** for:
 - Agent execution traces, observability and analytics
 - Centralized billing across all providers
 - Mix any model with any CLI agent
@@ -95,7 +95,7 @@ Check out the [documentation](https://github.com/brandomagnani/swarmkit/tree/mai
 
 - [Community Discord](https://discord.gg/Q36D8dGyNF)
 - [Schedule Demo](https://cal.com/brando-magnani/swarmkit-1-1-onboarding-chat)
-- Email: [brandomagnani@swarmlink.ai](mailto:brandomagnani@swarmlink.ai)
+- Email: [brandomagnani@evolvingmachines.ai](mailto:brandomagnani@evolvingmachines.ai)
 
 ## Reporting Bugs
 
