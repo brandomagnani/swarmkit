@@ -5,7 +5,48 @@ description: Build production-grade Next.js web applications with shadcn/ui, Tai
 
 # shadcn/ui Webapp Design
 
-Build distinctive, production-grade web interfaces using the modern React stack: **Next.js 14 + Tailwind CSS + shadcn/ui + Framer Motion**.
+Build distinctive, production-grade web interfaces using **Next.js 14 + Tailwind CSS + shadcn/ui + Framer Motion**. This skill guides creation of interfaces that avoid generic "AI slop" aesthetics with exceptional attention to aesthetic details and creative choices.
+
+## Design Thinking
+
+Before coding, understand the context and commit to a **BOLD** aesthetic direction:
+
+- **Purpose**: What problem does this interface solve? Who uses it?
+- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian. Use these for inspiration but design one true to the aesthetic direction.
+- **Constraints**: Technical requirements (framework, performance, accessibility).
+- **Differentiation**: What makes this UNFORGETTABLE? What's the one thing someone will remember?
+
+**CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work—the key is intentionality, not intensity.
+
+## Frontend Aesthetics Guidelines
+
+### Typography
+Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt for distinctive choices that elevate aesthetics. Pair a distinctive display font with a refined body font.
+
+### Color & Theme
+Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
+
+### Motion
+Use Framer Motion for effects and micro-interactions. Focus on high-impact moments: one well-orchestrated page load with staggered reveals creates more delight than scattered micro-interactions. Use scroll-triggering and hover states that surprise.
+
+### Spatial Composition
+Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
+
+### Backgrounds & Visual Details
+Create atmosphere and depth rather than defaulting to solid colors. Apply creative forms: gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, grain overlays.
+
+## Anti-Patterns: Never Use
+
+- Overused font families (Inter, Roboto, Arial, Space Grotesk, system fonts)
+- Cliched color schemes (purple gradients on white backgrounds)
+- Predictable layouts and component patterns
+- Cookie-cutter design lacking context-specific character
+- Generic rounded cards with subtle shadows
+- Stock gradient buttons
+
+**Match implementation complexity to aesthetic vision.** Maximalist designs need elaborate code with extensive animations. Minimalist designs need restraint, precision, and careful attention to spacing and typography.
+
+---
 
 ## Core Stack
 
@@ -37,101 +78,56 @@ npx shadcn@latest add button card input label dialog dropdown-menu tabs toast
 
 ### Existing Project
 
-Check if stack is installed:
-
 ```bash
-# Verify dependencies in package.json
+# Verify dependencies
 grep -E "next|tailwindcss|framer-motion" package.json
+cat components.json  # shadcn config
 
-# Check for shadcn config
-cat components.json
-```
-
-Install missing pieces:
-
-```bash
-# Add Tailwind (if missing)
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-
-# Add shadcn/ui (if missing)
-npx shadcn@latest init
-
-# Add Framer Motion (if missing)
-npm install framer-motion
-
-# Add specific shadcn components as needed
-npx shadcn@latest add [component-name]
+# Install missing pieces
+npm install framer-motion              # if missing
+npx shadcn@latest init                 # if missing
+npx shadcn@latest add [component-name] # as needed
 ```
 
 ## Design System First
 
-Before writing code, establish design tokens. Use the project's `tailwind.config.ts` and `globals.css` for consistency.
-
-### Required: Check Existing Tokens
+Before writing code, read the project's design tokens:
 
 ```bash
-# Always read these files first
 cat tailwind.config.ts
 cat app/globals.css
-cat components.json  # shadcn config
+cat components.json
 ```
 
-### Token Categories
-
-```css
-/* globals.css - CSS variables */
-:root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  --accent: 210 40% 96.1%;
-  --muted: 210 40% 96.1%;
-  --radius: 0.5rem;
-}
-```
+Use established tokens—never invent new colors or spacing.
 
 ## Component Usage
-
-### Import Pattern
 
 Always import from the project's component directory:
 
 ```tsx
-// Correct - use project components
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-
-// Never reinvent these - use shadcn
 ```
-
-### Available Components
 
 Check what's installed: `ls components/ui/`
 
-Common components: `button`, `card`, `dialog`, `dropdown-menu`, `input`, `label`, `select`, `sheet`, `tabs`, `toast`, `tooltip`
-
-If a component doesn't exist, install it:
+If a component doesn't exist:
 ```bash
 npx shadcn@latest add [component-name]
 ```
 
-## Animation Patterns
-
-Use Framer Motion for all animations. See [references/framer-motion-patterns.md](references/framer-motion-patterns.md) for complete examples.
-
-### Quick Reference
+## Animation Quick Reference
 
 ```tsx
 import { motion } from "framer-motion"
 
-// Fade in
+// Fade up on enter
 <motion.div
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  transition={{ duration: 0.3 }}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
 />
 
 // Stagger children
@@ -155,37 +151,17 @@ import { motion } from "framer-motion"
 </motion.div>
 
 // Hover interaction
-<motion.button
-  whileHover={{ scale: 1.02 }}
-  whileTap={{ scale: 0.98 }}
-/>
+<motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} />
 ```
-
-## Anti-Patterns to Avoid
-
-### The "AI Purple Curse"
-
-Never default to:
-- Purple/violet gradients on white backgrounds
-- Inter, Roboto, or system fonts exclusively
-- Generic rounded cards with subtle shadows
-- Predictable 3-column grids
-- Stock gradient buttons
-
-### Instead
-
-- Use the project's existing color tokens
-- Match the brand/aesthetic already established
-- Create visual hierarchy through spacing, not just color
-- Use unexpected layouts when appropriate
 
 ## Workflow
 
 1. **Read existing code** - Understand the project's patterns
 2. **Check design tokens** - Use established colors/spacing
-3. **Use shadcn components** - Never recreate Button, Card, etc.
-4. **Add Framer Motion** - For meaningful interactions
-5. **Test responsiveness** - Mobile-first with Tailwind breakpoints
+3. **Commit to aesthetic direction** - Bold and intentional
+4. **Use shadcn components** - Never recreate primitives
+5. **Add Framer Motion** - For meaningful interactions
+6. **Test responsiveness** - Mobile-first with Tailwind breakpoints
 
 ## Reference Files
 
