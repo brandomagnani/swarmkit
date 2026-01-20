@@ -16,6 +16,54 @@ Build distinctive, production-grade web interfaces using the modern React stack:
 | Components | shadcn/ui | Accessible, customizable component primitives |
 | Animation | Framer Motion | Declarative animations and gestures |
 
+## Setup
+
+### New Project
+
+```bash
+# Create Next.js with Tailwind
+npx create-next-app@latest my-app --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
+cd my-app
+
+# Initialize shadcn/ui
+npx shadcn@latest init
+
+# Install Framer Motion
+npm install framer-motion
+
+# Install common shadcn components
+npx shadcn@latest add button card input label dialog dropdown-menu tabs toast
+```
+
+### Existing Project
+
+Check if stack is installed:
+
+```bash
+# Verify dependencies in package.json
+grep -E "next|tailwindcss|framer-motion" package.json
+
+# Check for shadcn config
+cat components.json
+```
+
+Install missing pieces:
+
+```bash
+# Add Tailwind (if missing)
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+
+# Add shadcn/ui (if missing)
+npx shadcn@latest init
+
+# Add Framer Motion (if missing)
+npm install framer-motion
+
+# Add specific shadcn components as needed
+npx shadcn@latest add [component-name]
+```
+
 ## Design System First
 
 Before writing code, establish design tokens. Use the project's `tailwind.config.ts` and `globals.css` for consistency.
